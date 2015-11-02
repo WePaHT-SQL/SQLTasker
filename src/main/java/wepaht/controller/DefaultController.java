@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Kake
  */
 @Controller
-
 public class DefaultController {
     
-    @ResponseBody
     @RequestMapping(value="*", method=RequestMethod.GET)
     public String hello(){
-        return "Hello World!";
+        return "index";
     }
 }
