@@ -39,7 +39,7 @@ public class TaskController {
     }
     
     @RequestMapping(value="/{id}", method=RequestMethod.GET)
-    public String getTask(@PathVariable Long id, Model model){
+    public String getTask(@PathVariable Long id, Model model ){
         model.addAttribute("task", taskRepository.findOne(id));
 
         model.addAttribute("query", queries.get(id));
@@ -56,6 +56,7 @@ public class TaskController {
         queries.put(id, query);
         
         redirectAttributes.addAttribute("id", id);
+        redirectAttributes.addFlashAttribute("messages", "Query sent.");
         return "redirect:/tasks/{id}";
     }
 }
