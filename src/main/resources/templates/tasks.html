@@ -12,6 +12,6 @@ and open the template in the editor.
         <div th:each="task: ${tasks}">
             <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
         </div>
-        <p>SQL is best</p>
+        <footer>SQL is best</footer>
     </body>
 </html>

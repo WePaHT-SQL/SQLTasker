@@ -6,13 +6,30 @@ and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>TODO supply a title</title>
+        <title>Databases</title>
     </head>
     <body>
+
+        <div th:each="message : ${messages}">
+            <a th:text="${message}"></a>
+        </div>
+
+        <div>
+            <form method="POST" th:action="@{/databases}">
+                <input type="text" name="name" value="Database-name"/>
+                <textarea name="databaseSchema">CREATE TABLE Foo(id integer);
+                                                INSERT INTO Foo (id) VALUES (7);
+                </textarea>
+                <input type="submit" value="Submit Create-tables"/>
+            </form>
+        </div>
+
+
         <div th:each="database: ${databases}">
             <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Task name</a></h3>
             <a th:text="${database.databaseSchema}">Database schema</a>
         </div>
-        <p>SQL is best</p>
+
+        <footer>SQL is best</footer>
     </body>
 </html>

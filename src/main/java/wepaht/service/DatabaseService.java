@@ -15,15 +15,16 @@ public class DatabaseService {
     @Autowired
     private DatabaseRepository dbRepo;
 
-    public boolean createDatabase(String name, String updateQuery) {
+    public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();
 
             db.setName(name);
-            db.setDatabaseSchema(updateQuery);
+            db.setDatabaseSchema(createTable);
 
             //Testing the connection
-            createConnectionToDatabase(name, updateQuery);
+            Connection conn = createConnectionToDatabase(name, createTable);
+            conn.close();
 
             dbRepo.save(db);
 

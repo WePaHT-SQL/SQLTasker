@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title th:text="${database.name}">TODO supply a title</title>
+        <title th:text="${database.name}">Database name</title>
     </head>
     <body>
         <div>
@@ -16,5 +16,6 @@ and open the template in the editor.
             </div>
         </div>
         <a th:href="@{/databases}">Back to listing</a>
+        <footer>SQL is bestest</footer>
     </body>
 </html>
