@@ -12,7 +12,13 @@ and open the template in the editor.
         <div>
             <h2 th:text="${task.name}">Task name</h2>
             <p th:text="${task.description}">Task description</p>
+            <p th:text="${query}">Query result</p>
         </div>
+        <form th:method="POST" th:action="@{/tasks}">
+            <input type="text" name="query"/>
+            <input type="hidden" name="id" th:value="${task.id}"/>
+            <input type="submit" value="Submit query"/>
+        </form>
         <a th:href="@{/tasks}">Back to listing</a>
     </body>
 </html>
