@@ -1,10 +1,12 @@
 package wepaht.domain;
 
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
 @Entity
-public class Database {
+public class Database extends AbstractPersistable<Long> {
 
     private String name;
 

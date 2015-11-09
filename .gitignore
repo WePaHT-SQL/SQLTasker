@@ -1,5 +1,4 @@
 */target/*
 /target/
-*/.idea/**
-*.iml
-/.idea/
+.idea/workspace.xml
+.idea/tasks.xml
