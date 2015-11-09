@@ -14,7 +14,6 @@ import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
 import wepaht.domain.Task;
 import wepaht.repository.TaskRepository;
-
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
