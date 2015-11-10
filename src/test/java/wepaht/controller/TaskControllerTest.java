@@ -20,9 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Created by tatti on 6.11.2015.
@@ -70,6 +68,7 @@ public class TaskControllerTest {
         mockMvc.perform(post(API_URI).param("query", query).param("id",""+ task.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/tasks/{id}"))
+                .andExpect(flash().attributeExists("messages"))
                 .andReturn();
 
     }
