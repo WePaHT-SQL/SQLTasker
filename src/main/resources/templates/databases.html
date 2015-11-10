@@ -12,24 +12,44 @@ and open the template in the editor.
 
         <div th:each="message : ${messages}">
             <a th:text="${message}"></a>
+            <br/>
         </div>
 
         <div>
+            <h2>Create new Database-Schema</h2>
+            <hr/>
             <form method="POST" th:action="@{/databases}">
-                <input type="text" name="name" value="Database-name"/>
+                <label>Database Name</label>
+                <br/>
+                <input type="text" name="name"/>
+
+                <br/>
+
+                <label>Database Create-tables</label>
+                <br/>
                 <textarea name="databaseSchema">CREATE TABLE Foo(id integer);
                                                 INSERT INTO Foo (id) VALUES (7);
                 </textarea>
-                <input type="submit" value="Submit Create-tables"/>
+
+                <br/>
+
+                <input type="submit" value="Submit New Schema"/>
             </form>
+            <hr/>
         </div>
 
+        <br/>
 
+        <h2>Existing Schemas</h2>
         <div th:each="database: ${databases}">
             <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Task name</a></h3>
             <a th:text="${database.databaseSchema}">Database schema</a>
+            <br/>
         </div>
 
+        <br/>
+
+        <hr/>
         <footer>SQL is best</footer>
     </body>
 </html>
