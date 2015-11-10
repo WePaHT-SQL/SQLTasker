@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.repository.TaskRepository;
 
+import javax.annotation.PostConstruct;
+
 /**
  *
  * @author Kake
@@ -25,7 +27,11 @@ import wepaht.repository.TaskRepository;
 public class TaskController {
     
     private Map<Long,String> queries;
-    
+
+    @PostConstruct
+    public void init(){
+        queries = new HashMap<Long,String>();
+    }
     @Autowired
     TaskRepository taskRepository;
     
@@ -33,7 +39,7 @@ public class TaskController {
     public String listTasks(Model model){
         model.addAttribute("tasks", taskRepository.findAll());
         
-        queries = new HashMap<Long,String>();
+       // queries = new HashMap<Long,String>();
         
         return "tasks";
     }
@@ -42,7 +48,7 @@ public class TaskController {
     public String getTask(@PathVariable Long id, Model model ){
         model.addAttribute("task", taskRepository.findOne(id));
 
-//        model.addAttribute("query", queries.get(id));
+     model.addAttribute("query", queries.get(id));
         
         return "task";
     }
@@ -53,7 +59,7 @@ public class TaskController {
         // queryRepositoryRepository.findByTaskId(id).save(query);
         // Datatable table = databaseService.processQuery(query);
         // queries.solutions.add(id, table);
-       // queries.put(id, query);
+        queries.put(id, query);
         
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("messages", "Query sent.");
