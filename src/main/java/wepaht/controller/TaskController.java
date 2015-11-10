@@ -42,7 +42,7 @@ public class TaskController {
     public String getTask(@PathVariable Long id, Model model ){
         model.addAttribute("task", taskRepository.findOne(id));
 
-        model.addAttribute("query", queries.get(id));
+//        model.addAttribute("query", queries.get(id));
         
         return "task";
     }
@@ -53,7 +53,7 @@ public class TaskController {
         // queryRepositoryRepository.findByTaskId(id).save(query);
         // Datatable table = databaseService.processQuery(query);
         // queries.solutions.add(id, table);
-        queries.put(id, query);
+       // queries.put(id, query);
         
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("messages", "Query sent.");

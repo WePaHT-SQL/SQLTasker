@@ -11,14 +11,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import wepaht.Application;
 import wepaht.domain.Task;
 import wepaht.repository.TaskRepository;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 /**
  * Created by tatti on 6.11.2015.
@@ -43,7 +47,7 @@ public class TaskControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
     }
 
-    private Task randomTask(){
+    private Task randomTask() {
         Task task = new Task();
         task.setName(RandomStringUtils.randomAlphanumeric(10));
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
@@ -52,8 +56,21 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void statusIsOkTest() throws Exception{
+    public void statusIsOkTest() throws Exception {
         mockMvc.perform(get(API_URI))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void createQuery() throws Exception {
+        Task task = randomTask();
+        taskRepository.save(task);
+
+        String query ="Jee";          
+        mockMvc.perform(post(API_URI).param("query", query).param("id",""+ task.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/tasks/{id}"))
+                .andReturn();
+
     }
 }
