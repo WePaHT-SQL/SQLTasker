@@ -9,10 +9,17 @@ and open the template in the editor.
         <title th:text="${task.name}">TODO supply a title</title>
     </head>
     <body>
+        <div th:include="fragments/messages_template :: messages"></div>
         <div>
             <h2 th:text="${task.name}">Task name</h2>
             <p th:text="${task.description}">Task description</p>
+            <p th:text="${query}">Query result</p>
         </div>
+        <form th:method="POST" th:action="@{/tasks}">
+            <input type="text" name="query"/>
+            <input type="hidden" name="id" th:value="${task.id}"/>
+            <input type="submit" value="Submit query"/>
+        </form>
         <a th:href="@{/tasks}">Back to listing</a>
 
         <footer>SQL is bestest</footer>
