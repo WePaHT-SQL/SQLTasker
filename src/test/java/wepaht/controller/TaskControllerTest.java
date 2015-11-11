@@ -60,10 +60,10 @@ public class TaskControllerTest {
     @Test
     public void createQuery() throws Exception {
         Task task = randomTask();
-        taskRepository.save(task);
+        task = taskRepository.save(task);
 
         String query ="Jee";          
-        mockMvc.perform(post(API_URI).param("query", query).param("id",""+ task.getId()))
+        mockMvc.perform(post(API_URI + task.getId() + "/query").param("query", query).param("id",""+ task.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/tasks/{id}"))
                 .andExpect(flash().attributeExists("messages"))
