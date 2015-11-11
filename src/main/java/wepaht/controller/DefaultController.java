@@ -19,6 +19,6 @@ public class DefaultController {
     
     @RequestMapping(value="*", method=RequestMethod.GET)
     public String hello(){
-        return "redirect:/tasks";
+        return "index";
     }
 }

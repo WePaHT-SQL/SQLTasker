@@ -10,10 +10,9 @@ and open the template in the editor.
     </head>
     <body>
 
-        <div th:each="message : ${messages}">
-            <a th:text="${message}"></a>
-            <br/>
-        </div>
+        <div th:include="fragments/navbar_template :: navbar"></div>
+
+        <div th:include="fragments/messages_template :: messages"></div>
 
         <div>
             <h2>Create new Database-Schema</h2>
@@ -47,9 +46,6 @@ and open the template in the editor.
             <br/>
         </div>
 
-        <br/>
-
-        <hr/>
-        <footer>SQL is best</footer>
+        <div th:include="fragments/footer_template :: footer"></div>
     </body>
 </html>
