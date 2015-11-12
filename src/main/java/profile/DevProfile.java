@@ -35,8 +35,10 @@ public class DevProfile {
             taskRepository.save(randomTask());
         }
 
-        databaseService.createDatabase("testi", "CREATE TABLE Foo(id integer);" +
-                "INSERT INTO Foo (id) VALUES (3);");
+        databaseService.createDatabase("persons", "CREATE TABLE Persons" +
+                "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));" +
+                "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)" +
+                                "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');");
     }
     
     public Task randomTask(){

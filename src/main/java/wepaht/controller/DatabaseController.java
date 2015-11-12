@@ -16,14 +16,14 @@ import java.util.List;
 public class DatabaseController {
 
     @Autowired
-    DatabaseService dbService;
+    DatabaseService databaseService;
 
     @Autowired
-    DatabaseRepository dbRepository;
+    DatabaseRepository databaseRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     public String listDatabases(Model model) {
-        List<Database> databases = dbRepository.findAll();
+        List<Database> databases = databaseRepository.findAll();
 
         model.addAttribute("databases", databases);
 
@@ -32,18 +32,20 @@ public class DatabaseController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewDatabase(Model model, @PathVariable Long id) throws Exception {
-        Database database = dbRepository.findOne(id);
-        List<String> objects = dbService.listDatabaseObjects(id);
+        Database database = databaseRepository.findOne(id);
+        List<String> objects = databaseService.listDatabaseTables(id);
+        List<String> columns = databaseService.listTableColumns(id, objects.get(0));
 
         model.addAttribute("database", database);
         model.addAttribute("objects", objects);
+        model.addAttribute("columns", columns);
 
         return "database";
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String createDatabase(RedirectAttributes redirectAttributes, @ModelAttribute Database database) {
-        if (dbService.createDatabase(database.getName(), database.getDatabaseSchema())) {
+        if (databaseService.createDatabase(database.getName(), database.getDatabaseSchema())) {
             redirectAttributes.addFlashAttribute("messages", "Database created!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Database creation failed!");

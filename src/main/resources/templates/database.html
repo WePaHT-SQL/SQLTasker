@@ -18,6 +18,11 @@ and open the template in the editor.
             <div th:each="object: ${objects}">
                 <a th:text="${object}">Object</a>
             </div>
+
+            <p>Columns</p>
+            <div th:each="column: ${columns}">
+                <a th:text="${column}">Column</a>
+            </div>
         </div>
 
         <br/>
