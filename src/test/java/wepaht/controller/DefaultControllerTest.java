@@ -35,6 +35,6 @@ public class DefaultControllerTest {
 
     @Test
     public void statusIsRedirect() throws Exception{
-        mockMvc.perform(get(API_URI)).andExpect(status().is3xxRedirection());
+        mockMvc.perform(get(API_URI)).andExpect(status().isOk());
     }
 }

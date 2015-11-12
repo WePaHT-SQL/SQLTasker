@@ -6,18 +6,19 @@
 package wepaht.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-/**
- *
- * @author Kake
- */
 @Entity
 public class Task extends AbstractPersistable<Long> {
     
     private String name;
     private String description;
     private String status;
+
+    @ManyToOne
+    private Database database;
 
     /**
      * @return the name
@@ -60,5 +61,12 @@ public class Task extends AbstractPersistable<Long> {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(Database database) {
+        this.database = database;
+    }
 }
