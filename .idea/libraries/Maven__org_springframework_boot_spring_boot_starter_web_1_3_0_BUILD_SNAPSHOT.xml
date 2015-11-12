@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.springframework.boot:spring-boot-starter-web:1.3.0.BUILD-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/1.3.0.BUILD-SNAPSHOT/spring-boot-starter-web-1.3.0.BUILD-20151111.085516-790.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/1.3.0.BUILD-SNAPSHOT/spring-boot-starter-web-1.3.0.BUILD-20151112.061916-795.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/1.3.0.BUILD-SNAPSHOT/spring-boot-starter-web-1.3.0.BUILD-20151111.085516-790-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/1.3.0.BUILD-SNAPSHOT/spring-boot-starter-web-1.3.0.BUILD-20151112.061916-795-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/1.3.0.BUILD-SNAPSHOT/spring-boot-starter-web-1.3.0.BUILD-20151111.085516-790-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/1.3.0.BUILD-SNAPSHOT/spring-boot-starter-web-1.3.0.BUILD-20151112.061916-795-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

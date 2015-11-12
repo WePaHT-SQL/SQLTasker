@@ -16,7 +16,6 @@ and open the template in the editor.
 
         <div>
             <h2>Create new Database-Schema</h2>
-            <hr/>
             <form method="POST" th:action="@{/databases}">
                 <label>Database Name</label>
                 <br/>
@@ -36,8 +35,6 @@ and open the template in the editor.
             </form>
             <hr/>
         </div>
-
-        <br/>
 
         <h2>Existing Schemas</h2>
         <div th:each="database: ${databases}">
