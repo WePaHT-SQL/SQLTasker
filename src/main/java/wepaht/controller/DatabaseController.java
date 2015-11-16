@@ -6,10 +6,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Database;
+import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 import wepaht.service.DatabaseService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("databases")
@@ -33,12 +35,13 @@ public class DatabaseController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewDatabase(Model model, @PathVariable Long id) throws Exception {
         Database database = databaseRepository.findOne(id);
-        List<String> objects = databaseService.listDatabaseTables(id);
-        List<String> columns = databaseService.listTableColumns(id, objects.get(0));
+        Map<String, Table> databaseTables = databaseService.listDatabase(id);
 
         model.addAttribute("database", database);
-        model.addAttribute("objects", objects);
-        model.addAttribute("columns", columns);
+        model.addAttribute("tables", databaseTables);
+
+        String query = "SELECT FirstName,LastName FROM Persons;";
+        model.addAttribute("query", databaseService.performSelectQuery(id, query));
 
         return "database";
     }
