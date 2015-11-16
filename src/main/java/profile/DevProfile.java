@@ -38,7 +38,11 @@ public class DevProfile {
         databaseService.createDatabase("persons", "CREATE TABLE Persons" +
                 "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));" +
                 "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)" +
-                                "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');");
+                                "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');" +
+                "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)" +
+                                "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');" +
+                "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)" +
+                                "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
     }
     
     public Task randomTask(){

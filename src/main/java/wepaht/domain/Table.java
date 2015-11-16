@@ -4,6 +4,9 @@ package wepaht.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Helper-object to hold for asked table's columns and rows. Intended to ease usage with views.
+ */
 public class Table {
 
     private String name;

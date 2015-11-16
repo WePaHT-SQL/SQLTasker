@@ -91,6 +91,13 @@ public class DatabaseService {
         return objects;
     }
 
+    /**
+     * Lists tables of a single Database-entity. Example of use found in database.html-resource file and
+     * DatabaseController.
+     * @param databaseId ID of selected database
+     * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
+     * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
+     */
     public Map<String, Table> listDatabase(Long databaseId) {
         HashMap<String, Table> listedDatabase = new HashMap<>();
         Database database = databaseRepository.findOne(databaseId);
@@ -115,6 +122,14 @@ public class DatabaseService {
         return listedDatabase;
     }
 
+    /**
+     * Performs a SELECT-query in the selected database. Example of use found in database.html-resource file and
+     * DatabaseController.
+     * @param databaseId ID of the selected database
+     * @param sqlQuery the query. Syntax must be correct in order this to work!
+     * @return a table-object, which contains separately its' columns and rows. In case of syntax error, table-object's
+     * will be named "ERROR".
+     */
     public Table performSelectQuery(Long databaseId, String sqlQuery) {
         Table queryResult = new Table("query");
         Database database = databaseRepository.findOne(databaseId);
@@ -126,7 +141,7 @@ public class DatabaseService {
             ResultSet resultSet = statement.executeQuery(sqlQuery);
 
             queryResult.setColumns(listQueryColumns(resultSet));
-            //queryResult.setRows(listQueryRows(resultSet, queryResult.getColumns()));
+            queryResult.setRows(listQueryRows(resultSet, queryResult.getColumns()));
 
             connection.close();
         } catch (Exception e) {
@@ -153,9 +168,12 @@ public class DatabaseService {
 
     private List<String> listQueryColumns(ResultSet resultSet) throws Exception {
         HashSet<String> columns = new HashSet<>();
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int numberOfColumns = metaData.getColumnCount();
 
-        while(resultSet.next()) {
-            columns.add(resultSet.getString(3));
+        for (int i = 1; i < numberOfColumns + 1; i++) {
+            String columnName = metaData.getColumnName(i);
+            columns.add(columnName);
         }
 
         return new ArrayList<String>(columns);
