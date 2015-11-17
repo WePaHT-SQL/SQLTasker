@@ -111,8 +111,10 @@ public class DatabaseService {
             final Connection finalConnection = connection;
             tables.parallelStream().forEach(tableName -> {
                 Table table = new Table(tableName);
-                table.setColumns(listTableColumns(tableName, finalConnection));
-                table.setRows(listTableRows(tableName, table.getColumns(), finalConnection));
+                try {
+                    table.setColumns(listTableColumns(tableName, finalConnection));
+                    table.setRows(listTableRows(tableName, table.getColumns(), finalConnection));
+                } catch (Exception e) {}
                 listedDatabase.put(tableName, table);
             });
 
@@ -157,9 +159,7 @@ public class DatabaseService {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                } catch (SQLException e) {}
             }
         }
 
@@ -194,61 +194,54 @@ public class DatabaseService {
         return new ArrayList<String>(columns);
     }
 
-    private List<String> listDatabaseTables(Connection connection) {
+    private List<String> listDatabaseTables(Connection connection) throws Exception {
         ArrayList<String> tables = new ArrayList<>();
 
-        try {
-            DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet resultSet = metaData.getTables(null, null, "%", null);
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet resultSet = metaData.getTables(null, null, "%", null);
 
-            while (resultSet.next()) {
-                String tableName = resultSet.getString(3);
+        while (resultSet.next()) {
+            String tableName = resultSet.getString(3);
 
-                if (!defaultTables.contains(tableName)) {
-                    tables.add(tableName);
-                }
+            if (!defaultTables.contains(tableName)) {
+                tables.add(tableName);
             }
-        } catch (Exception e) {}
+        }
 
         return tables;
     }
 
-    private List<String> listTableColumns(String tableName, Connection connection) {
+    private List<String> listTableColumns(String tableName, Connection connection) throws Exception{
         ArrayList<String> columns = new ArrayList<>();
 
-        try {
-            DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet resultSet = metaData.getColumns(null, null, tableName, null);
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet resultSet = metaData.getColumns(null, null, tableName, null);
 
-            while (resultSet.next()) {
-                String columnName = resultSet.getString(4);
+        while (resultSet.next()) {
+            String columnName = resultSet.getString(4);
 
-                columns.add(columnName);
-            }
-        } catch (Exception e) {}
+            columns.add(columnName);
+        }
 
         return columns;
     }
 
-    private List<List<String>> listTableRows(String tableName, List<String> columns, Connection connection) {
+    private List<List<String>> listTableRows(String tableName, List<String> columns, Connection connection) throws Exception {
         List<List<String>> rows = new ArrayList<>();
-        Statement statement = null;
         String selectQuery = "SELECT * FROM " + tableName + ";";
 
-        try {
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(selectQuery);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(selectQuery);
 
-            while (resultSet.next()) {
-                ArrayList<String> row = new ArrayList<>();
+        while (resultSet.next()) {
+            ArrayList<String> row = new ArrayList<>();
 
-                for (String column : columns) {
-                    row.add(resultSet.getString(column));
-                }
-
-                rows.add(row);
+            for (String column : columns) {
+                row.add(resultSet.getString(column));
             }
-        } catch (Exception e) {}
+
+            rows.add(row);
+        }
 
         return rows;
     }
