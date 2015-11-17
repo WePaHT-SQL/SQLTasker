@@ -101,22 +101,30 @@ public class DatabaseService {
     public Map<String, Table> listDatabase(Long databaseId) {
         HashMap<String, Table> listedDatabase = new HashMap<>();
         Database database = databaseRepository.findOne(databaseId);
+        Connection connection = null;
 
         try {
-            Connection connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
 
             List<String> tables = listDatabaseTables(connection);
 
+            final Connection finalConnection = connection;
             tables.parallelStream().forEach(tableName -> {
                 Table table = new Table(tableName);
-                table.setColumns(listTableColumns(tableName, connection));
-                table.setRows(listTableRows(tableName, table.getColumns(), connection));
+                table.setColumns(listTableColumns(tableName, finalConnection));
+                table.setRows(listTableRows(tableName, table.getColumns(), finalConnection));
                 listedDatabase.put(tableName, table);
             });
 
-            connection.close();
+            finalConnection.close();
         } catch (Exception e) {
             listedDatabase.put("ERROR", null);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {}
+            }
         }
 
         return listedDatabase;
@@ -134,18 +142,25 @@ public class DatabaseService {
         Table queryResult = new Table("query");
         Database database = databaseRepository.findOne(databaseId);
         Statement statement = null;
+        Connection connection = null;
 
         try {
-            Connection connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sqlQuery);
 
             queryResult.setColumns(listQueryColumns(resultSet));
             queryResult.setRows(listQueryRows(resultSet, queryResult.getColumns()));
-
-            connection.close();
         } catch (Exception e) {
             queryResult.setName("ERROR");
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return queryResult;

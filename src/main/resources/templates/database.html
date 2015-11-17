@@ -19,7 +19,7 @@ and open the template in the editor.
 
             <div th:each="table : ${tables}">
                 <h2 th:text="${table.key}">Table name</h2>
-                <table>
+                <table th:if="${table.value}">
                     <tr>
                         <div th:each="column : ${table.value.columns}">
                             <th th:text="${column}">Column name</th>
