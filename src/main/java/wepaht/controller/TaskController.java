@@ -20,6 +20,7 @@ import wepaht.repository.TaskRepository;
 import javax.annotation.PostConstruct;
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
+import wepaht.service.TaskResultService;
 
 @Controller
 @RequestMapping("tasks")
@@ -35,6 +36,9 @@ public class TaskController {
 
     @Autowired
     DatabaseService databaseService;
+
+    @Autowired
+    TaskResultService taskResultService;
 
     @PostConstruct
     public void init() {
@@ -69,13 +73,18 @@ public class TaskController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String getTask(@PathVariable Long id, Model model) throws Exception {
-        model.addAttribute("task", taskRepository.findOne(id));
+        Task task = taskRepository.findOne(id);
 
-        if(queries.containsKey(id)){
+        if (queries.containsKey(id)) {
             model.addAttribute("queryResults", databaseService.performSelectQuery(id, queries.get(id)));
+            if (taskResultService.evaluateSubmittedQuery(task, queries.get(id))) {
+                task.setStatus("complete");
+            }
         } else {
             model.addAttribute("queryResults", new Table("dummy"));
         }
+
+        model.addAttribute("task", task);
 
         return "task";
     }
@@ -86,14 +95,13 @@ public class TaskController {
         // checks if the query string has the following structure: select col1(, col2, col3) from table (where col1='xyz')
         if (query.matches("select ([a-zA-Z0-9_]+){1}(, [a-zA-Z0-9_]+)* from [a-zA-Z0-9_]+( where [a-zA-Z0-9_]+='[a-zA-Z0-9_]+')?")) {
             queries.put(id, query);
-            
+
             redirectAttributes.addAttribute("id", id);
             redirectAttributes.addFlashAttribute("messages", "Query sent.");
             return "redirect:/tasks/{id}";
         }
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", "Not a valid query");
+        redirectAttributes.addFlashAttribute("messages", "Not a valid query.");
         return "redirect:/tasks/{id}";
     }
-
 }

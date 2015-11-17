@@ -53,7 +53,7 @@ public class DatabaseService {
                 "USERS",
                 "VIEWS"));
     }
-
+    
     public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();

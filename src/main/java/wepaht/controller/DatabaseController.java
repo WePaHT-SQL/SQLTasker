@@ -41,7 +41,7 @@ public class DatabaseController {
         model.addAttribute("tables", databaseTables);
 
         //for testing and example
-        String testQuery = "SELECT FirstName,LastName FROM Persons;";
+        String testQuery = "SELECT FirstName, LastName FROM Persons;";
         model.addAttribute("query", databaseService.performSelectQuery(id, testQuery));
 
         return "database";
