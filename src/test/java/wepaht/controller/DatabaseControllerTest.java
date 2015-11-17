@@ -16,6 +16,7 @@ import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
 import java.util.List;
+import junit.framework.Assert;
 
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -62,5 +63,25 @@ public class DatabaseControllerTest {
         List<Database> databases = dbRepository.findByName(dbName);
 
         assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
+    }
+    
+    @Test
+    public void databaseViewHasCorrectTables() throws Exception{
+        String dbSchema = "CREATE TABLE Persons(PersonID int, LastName varchar(255), FirstName varchar(255));"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME)"
+                + "VALUES (2, 'Raty', 'Matti');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME)"
+                + "VALUES (1, 'Jaaskelainen', 'Timo');";
+        
+        mockMvc.perform(post(API_URI).param("name", "testDb").param("databaseSchema", dbSchema))
+                .andReturn();
+        
+        Database testDb = dbRepository.findByName("testDb").get(0);
+        
+        mockMvc.perform(get(API_URI+testDb.getId()))
+                .andReturn();
+        
+//        Assert.assertEquals("3", databaseTables.getRows.size());
+//        Assert.assertEquals("2", databaseTables.getColumns.size());
     }
 }

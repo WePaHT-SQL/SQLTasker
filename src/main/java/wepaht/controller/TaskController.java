@@ -18,12 +18,14 @@ import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
 import javax.annotation.PostConstruct;
+import wepaht.domain.Table;
+import wepaht.service.DatabaseService;
 
 @Controller
 @RequestMapping("tasks")
 public class TaskController {
-    
-    private Map<Long,String> queries;
+
+    private Map<Long, String> queries;
 
     @Autowired
     TaskRepository taskRepository;
@@ -31,25 +33,27 @@ public class TaskController {
     @Autowired
     DatabaseRepository databaseRepository;
 
+    @Autowired
+    DatabaseService databaseService;
+
     @PostConstruct
-    public void init(){
-        queries = new HashMap<Long,String>();
+    public void init() {
+        queries = new HashMap<>();
     }
-    
-    @RequestMapping(method=RequestMethod.GET)
-    public String listTasks(Model model){
+
+    @RequestMapping(method = RequestMethod.GET)
+    public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("databases", databaseRepository.findAll());
-        
-       // queries = new HashMap<Long,String>();
-        
+
+        // queries = new HashMap<Long,String>();
         return "tasks";
     }
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
-                             @ModelAttribute Task task,
-                             @RequestParam Long databaseId) {
+            @ModelAttribute Task task,
+            @RequestParam Long databaseId) {
         if (task == null) {
             redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
             return "redirect:/tasks";
@@ -62,28 +66,34 @@ public class TaskController {
 
         return "redirect:/tasks";
     }
-    
-    @RequestMapping(value="/{id}", method=RequestMethod.GET)
-    public String getTask(@PathVariable Long id, Model model ){
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public String getTask(@PathVariable Long id, Model model) throws Exception {
         model.addAttribute("task", taskRepository.findOne(id));
 
-        model.addAttribute("query", queries.get(id));
-        
+        if(queries.containsKey(id)){
+            model.addAttribute("queryResults", databaseService.performSelectQuery(id, queries.get(id)));
+        } else {
+            model.addAttribute("queryResults", new Table("dummy"));
+        }
+
         return "task";
     }
-    
-    @RequestMapping(method=RequestMethod.POST, value = "/{id}/query")
-    public String sendQuery(Model model, RedirectAttributes redirectAttributes
-            , @RequestParam (required=false, defaultValue="") String query, @PathVariable Long id){
-        // queryRepositoryRepository.findByTaskId(id).save(query);
-        // Datatable table = databaseService.processQuery(query);
-        // queries.solutions.add(id, table);
-        queries.put(id, query);
-        
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
+    public String sendQuery(Model model, RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
+
+        // checks if the query string has the following structure: select col1(, col2, col3) from table (where col1='xyz')
+        if (query.matches("select ([a-zA-Z0-9_]+){1}(, [a-zA-Z0-9_]+)* from [a-zA-Z0-9_]+( where [a-zA-Z0-9_]+='[a-zA-Z0-9_]+')?")) {
+            queries.put(id, query);
+            
+            redirectAttributes.addAttribute("id", id);
+            redirectAttributes.addFlashAttribute("messages", "Query sent.");
+            return "redirect:/tasks/{id}";
+        }
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", "Query sent.");
+        redirectAttributes.addFlashAttribute("messages", "Not a valid query");
         return "redirect:/tasks/{id}";
     }
-
 
 }
