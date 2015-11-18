@@ -68,7 +68,7 @@ public class TaskController {
         Database db = databaseRepository.findOne(databaseId);
         task.setDatabase(db);
 
-        if (task.getSolution() != null) {
+        if (task.getSolution() != null || !task.getSolution().isEmpty()) {
             if (!databaseService.isValidSelectQuery(db, task.getSolution())) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
                 return "redirect:/tasks";
@@ -100,19 +100,17 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
     public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
         Task task = taskRepository.findOne(id);
-        List<String> messages = new ArrayList<>();
 
         queries.put(id, query);
-        messages.add("Query sent.");
+        redirectAttributes.addFlashAttribute("messages", "Query sent.");
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
-            messages.add("Your answer is correct!");
+            redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
         }
 
         Table queryResult = databaseService.performSelectQuery(task.getDatabase().getId(), query);
 
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", messages);
         redirectAttributes.addFlashAttribute("queryResults", queryResult);
         return "redirect:/tasks/{id}";
     }

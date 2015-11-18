@@ -27,7 +27,7 @@ and open the template in the editor.
             <h3 th:if="${query}">Queries</h3>
 
             <!-- SELECT query to a database results -->
-            <div>
+            <div th:if="${queryResults}">
                 <h3 th:text="${queryResults.name}">Testing</h3>
 
                 <table>

@@ -47,26 +47,30 @@ public class TaskControllerTest {
     @Autowired
     private DatabaseRepository databaseRepository;
 
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = null;
     
-    private String dbSchema;
+    private Database database = null;
 
     @Before
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
-        
-        dbSchema = "CREATE TABLE Persons(PersonID int, LastName varchar(255), FirstName varchar(255));"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME)"
-                + "VALUES (2, 'Raty', 'Matti');"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME)"
-                + "VALUES (1, 'Jaaskelainen', 'Timo');";
-        databaseService.createDatabase("testdb", dbSchema);
+
+        databaseService.createDatabase("testDatabase4", "CREATE TABLE Persons"
+                + "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
+        database = databaseRepository.findByName("testDatabase4").get(0);
     }
 
     private Task randomTask() {
         Task task = new Task();
         task.setName(RandomStringUtils.randomAlphanumeric(10));
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
+        task.setDatabase(database);
         return task;
     }
 
@@ -91,13 +95,12 @@ public class TaskControllerTest {
 
     @Test
     public void createTask() throws Exception {
-        databaseService.createDatabase("Huee", "CREATE TABLE Foo(id integer); INSERT INTO Foo (id) VALUES (7);");
-        Database database = databaseRepository.findByName("Huee").get(0);
-
         String taskName = "testTask";
+        Long databaseId = database.getId();
         mockMvc.perform(post(API_URI).param("name", taskName)
                                         .param("description", "To test creation of a task with a database")
-                                        .param("databaseId", database.getId().toString()))
+                                        .param("solution", "select * from persons;")
+                                        .param("databaseId", databaseId.toString()))
                         .andExpect(status().is3xxRedirection())
                         .andReturn();
 
@@ -105,37 +108,28 @@ public class TaskControllerTest {
 
         assertTrue(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
     }
-    
-    @Test
-    public void cannotSendIncorrectQuery() throws Exception {
-        Task task = randomTask();
-        task = taskRepository.save(task);
 
-        String query ="select firstname, lastname form testdb";   
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id",""+ task.getId()))
+    @Test
+    public void querysTableIsSeen() throws Exception {
+        Task testTask = randomTask();
+        testTask = taskRepository.save(testTask);
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/tasks/{id}"))
-                .andExpect(flash().attributeExists("messages"))
-                .andExpect(flash().attribute("messages", "Not a valid query."))
+                .andExpect(flash().attributeExists("queryResults"))
                 .andReturn();
     }
-    
-//    @Test
-//    public void selectQueryResultsCorrectTables() throws Exception {
-//        Task task = randomTask();
-//        Database database = databaseRepository.findByName("testdb").get(0);
-//        task.setDatabase(database);
-//        task = taskRepository.save(task);
-//        
-//        String query ="select personid, firstname, lastname from testdb";
-//        Table table = databaseService.performSelectQuery(database.getId(), query);
-//        
-//        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query))
-////                .andExpect(model().attributeExists("queryResults"))
-//                .andExpect(status().is3xxRedirection())
-//                .andReturn();
-////        assertEquals(3,table.getColumns().size());
-////        assertEquals(3,table.getRows().size());
-//    }
-            
+
+    @Test
+    public void correctQueryIsAnnounced() throws Exception {
+        Task testTask = randomTask();
+        String solution = "SELECT firstname FROM persons;";
+        testTask.setSolution(solution);
+        testTask = taskRepository.save(testTask);
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", solution))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Your answer is correct!"))
+                .andReturn();
+    }
 }
