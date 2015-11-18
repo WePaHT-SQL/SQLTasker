@@ -65,6 +65,7 @@ public class DatabaseControllerTest {
         assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
     }
     
+// had difficulties getting databaseTables, free to complete
     @Test
     public void databaseViewHasCorrectTables() throws Exception{
         String dbSchema = "CREATE TABLE Persons(PersonID int, LastName varchar(255), FirstName varchar(255));"
@@ -77,9 +78,6 @@ public class DatabaseControllerTest {
                 .andReturn();
         
         Database testDb = dbRepository.findByName("testDb").get(0);
-        
-        mockMvc.perform(get(API_URI+testDb.getId()))
-                .andReturn();
         
 //        Assert.assertEquals("3", databaseTables.getRows.size());
 //        Assert.assertEquals("2", databaseTables.getColumns.size());

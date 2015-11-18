@@ -53,7 +53,7 @@ public class DatabaseService {
                 "USERS",
                 "VIEWS"));
     }
-
+    
     public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();
@@ -154,7 +154,7 @@ public class DatabaseService {
             queryResult.setColumns(listQueryColumns(resultSet));
             queryResult.setRows(listQueryRows(resultSet, queryResult.getColumns()));
         } catch (Exception e) {
-            queryResult.setName("ERROR");
+            queryResult.setName(e.toString());
         } finally {
             if (connection != null) {
                 try {
