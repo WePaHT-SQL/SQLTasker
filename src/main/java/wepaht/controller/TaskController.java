@@ -77,7 +77,7 @@ public class TaskController {
         Task task = taskRepository.findOne(id);
 
         if (queries.containsKey(id)) {
-            model.addAttribute("queryResults", databaseService.performSelectQuery(id, queries.get(id)));
+            model.addAttribute("queryResults", databaseService.performSelectQuery(task.getDatabase().getId(), queries.get(id)));
             if (taskResultService.evaluateSubmittedQuery(task, queries.get(id))) {
                 task.setStatus("complete");
             }
