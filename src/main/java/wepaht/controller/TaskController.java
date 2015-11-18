@@ -27,6 +27,7 @@ import wepaht.service.TaskResultService;
 public class TaskController {
 
     private Map<Long, String> queries;
+    private String selectRegex = "select ([a-zA-Z0-9_]+){1}(, [a-zA-Z0-9_]+)* from [a-zA-Z0-9_]+( where [a-zA-Z0-9_]+='[a-zA-Z0-9_]+')?";
 
     @Autowired
     TaskRepository taskRepository;
@@ -93,7 +94,7 @@ public class TaskController {
     public String sendQuery(Model model, RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
 
         // checks if the query string has the following structure: select col1(, col2, col3) from table (where col1='xyz')
-        if (query.matches("select ([a-zA-Z0-9_]+){1}(, [a-zA-Z0-9_]+)* from [a-zA-Z0-9_]+( where [a-zA-Z0-9_]+='[a-zA-Z0-9_]+')?")) {
+        if (query.matches(selectRegex)) {
             queries.put(id, query);
 
             redirectAttributes.addAttribute("id", id);
