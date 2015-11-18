@@ -34,12 +34,12 @@ public class TaskResultService {
         Table queryResult = databaseService.performSelectQuery(database.getId(), query);
         Table correctResult = databaseService.performSelectQuery(database.getId(), task.getSolution());        
     
-        if(queryResult.getColumns().size()!=correctResult.getColumns().size()){
+        if(queryResult.getColumns().size()!=correctResult.getColumns().size() ){
             return false;
         }
-        else if(queryResult.getRows().size()!=correctResult.getRows().size()){
+        if(queryResult.getRows().size()!=correctResult.getRows().size()){
             return false;
-        }        
+        }
 //  compare the contents of the columns...
         return true;
     }

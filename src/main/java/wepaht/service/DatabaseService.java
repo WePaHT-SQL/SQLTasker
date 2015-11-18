@@ -74,23 +74,6 @@ public class DatabaseService {
         return false;
     }
 
-    public List<String> listDatabaseObjects(Long id) throws Exception {
-        Database db = databaseRepository.findOne(id);
-        List<String> objects = new ArrayList<String>();
-
-        Connection conn = createConnectionToDatabase(db.getName(), db.getDatabaseSchema());
-
-        DatabaseMetaData metaData = conn.getMetaData();
-        ResultSet resultSet = metaData.getTables(null, null, "%", null);
-
-        while (resultSet.next()) {
-            objects.add(resultSet.getString(3));
-        }
-
-        conn.close();
-        return objects;
-    }
-
     /**
      * Lists tables of a single Database-entity. Example of use found in database.html-resource file and
      * DatabaseController.

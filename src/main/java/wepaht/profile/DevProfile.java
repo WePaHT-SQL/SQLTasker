@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package profile;
+package wepaht.profile;
 
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.RandomStringUtils;

@@ -12,16 +12,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
 import wepaht.domain.Database;
+import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
+import wepaht.service.DatabaseService;
 
+import java.util.HashMap;
 import java.util.List;
-import junit.framework.Assert;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -37,17 +41,31 @@ public class DatabaseControllerTest {
     @Autowired
     private DatabaseRepository dbRepository;
 
+    @Autowired
+    private DatabaseService dbService;
+
     private MockMvc mockMvc;
+    private Database testdatabase = null;
 
     @Before
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
+
+        dbService.createDatabase("testDatabase4", "CREATE TABLE Persons"
+                + "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (2, 'Raty', 'Matti', 'Rautalammintie', 'Helsinki');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
+                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
+                + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
+        testdatabase = dbRepository.findByName("testDatabase4").get(0);
     }
 
     @Test
     public void statusIsOkTest() throws Exception{
         mockMvc.perform(get(API_URI))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()).andReturn();
     }
 
     @Test
@@ -58,28 +76,21 @@ public class DatabaseControllerTest {
 
         mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attributeExists("messages"));
+                .andExpect(flash().attributeExists("messages"))
+                .andReturn();
 
         List<Database> databases = dbRepository.findByName(dbName);
 
         assertTrue(databases.stream().filter(db -> db.getDatabaseSchema().equals(dbSchema)).findFirst().isPresent());
     }
-    
-// had difficulties getting databaseTables, free to complete
+
     @Test
-    public void databaseViewHasCorrectTables() throws Exception{
-        String dbSchema = "CREATE TABLE Persons(PersonID int, LastName varchar(255), FirstName varchar(255));"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME)"
-                + "VALUES (2, 'Raty', 'Matti');"
-                + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME)"
-                + "VALUES (1, 'Jaaskelainen', 'Timo');";
-        
-        mockMvc.perform(post(API_URI).param("name", "testDb").param("databaseSchema", dbSchema))
+    public void viewDatabaseContainsTables() throws Exception {
+        mockMvc.perform(get(API_URI + "/" + testdatabase.getId()))
+                .andExpect(model().attributeExists("tables"))
+                .andExpect(status().isOk())
                 .andReturn();
-        
-        Database testDb = dbRepository.findByName("testDb").get(0);
-        
-//        Assert.assertEquals("3", databaseTables.getRows.size());
-//        Assert.assertEquals("2", databaseTables.getColumns.size());
     }
+
+
 }
