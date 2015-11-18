@@ -149,6 +149,28 @@ public class DatabaseService {
         return queryResult;
     }
 
+    public boolean isValidSelectQuery(Database database, String sqlQuery) {
+        Statement statement = null;
+        Connection connection = null;
+        Boolean isValid = true;
+
+        try {
+            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+            statement = connection.createStatement();
+            statement.executeQuery(sqlQuery);
+        } catch (Exception e) {
+            isValid = false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {}
+            }
+        }
+
+        return isValid;
+    }
+
     private List<List<String>> listQueryRows(ResultSet resultSet, List<String> columns) throws Exception {
         List<List<String>> rows = new ArrayList<>();
 

@@ -22,10 +22,13 @@ and open the template in the editor.
                 <input type="text" name="name"/>
 
                 <br/>
-                <textarea name="description">description</textarea>
-                <textarea name="solution">solution</textarea>
-
-                <input type="hidden" name="status" value="incomplete"/>
+                <label>Description</label>
+                <br/>
+                <textarea name="description"></textarea>
+                <br/>
+                <label>Solution</label>
+                <br/>
+                <textarea name="solution"></textarea>
 
                 <br/>
                 <div th:each="db : ${databases}">

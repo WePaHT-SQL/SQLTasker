@@ -67,7 +67,6 @@ public class TaskControllerTest {
         Task task = new Task();
         task.setName(RandomStringUtils.randomAlphanumeric(10));
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
-        task.setStatus("Uncomplete");
         return task;
     }
 

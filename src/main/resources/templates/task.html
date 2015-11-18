@@ -15,9 +15,11 @@ and open the template in the editor.
 
         <div>
             <h2 th:text="${task.name}">Task name</h2>
-            <a th:text="${task.status}"/>
-            <h3>Description</h3>
+            <h3 th:if="${task.description}">Description</h3>
             <p th:text="${task.description}">Task description</p>
+
+            <h3 th:if="${task.solution}">Suggested Solution</h3>
+            <p th:text="${task.solution}">Task solution</p>
 
             <h3>Database</h3>
             <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>

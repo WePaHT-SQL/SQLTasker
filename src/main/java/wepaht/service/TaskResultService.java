@@ -29,18 +29,35 @@ public class TaskResultService {
     @Autowired
     private DatabaseService databaseService;
     
-    public boolean evaluateSubmittedQuery(Task task, String query){
+    public boolean evaluateSubmittedQueryStrictly(Task task, String query){
         Database database = task.getDatabase();
         Table queryResult = databaseService.performSelectQuery(database.getId(), query);
         Table correctResult = databaseService.performSelectQuery(database.getId(), task.getSolution());        
     
-        if(queryResult.getColumns().size()!=correctResult.getColumns().size() ){
-            return false;
+
+        return compareColumns(queryResult.getColumns(), correctResult.getColumns()) &&
+                compareRows(queryResult.getRows(), correctResult.getRows());
+    }
+
+    private boolean compareColumns(List<String> query, List<String> answer) {
+        if (query.size()!=answer.size()) return false;
+
+        for (String column : answer) {
+            if (!query.contains(column)) return false;
         }
-        if(queryResult.getRows().size()!=correctResult.getRows().size()){
-            return false;
+
+        return true;
+    }
+
+    private boolean compareRows(List<List<String>> query, List<List<String>> answer) {
+        if (query.size() != answer.size() || query.get(0).size() != answer.get(0).size()) return false;
+
+        for (int i = 0; i < answer.size(); i++) {
+            for (String cell : answer.get(i)) {
+                if (!query.get(i).contains(cell)) return false;
+            }
         }
-//  compare the contents of the columns...
+
         return true;
     }
 }

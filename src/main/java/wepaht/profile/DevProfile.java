@@ -54,7 +54,6 @@ public class DevProfile {
         Task task = new Task();
         task.setName(RandomStringUtils.randomAlphanumeric(10));
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
-        task.setStatus("Uncomplete");
         task.setDatabase(databaseRepository.findAll().get(0));
         return task;
     }

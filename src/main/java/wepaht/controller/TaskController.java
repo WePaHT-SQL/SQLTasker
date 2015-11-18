@@ -6,10 +6,10 @@
 package wepaht.controller;
 
 import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Database;
@@ -18,6 +18,7 @@ import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
 import javax.annotation.PostConstruct;
+
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
 import wepaht.service.TaskResultService;
@@ -57,8 +58,8 @@ public class TaskController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
-            @ModelAttribute Task task,
-            @RequestParam Long databaseId) {
+                             @ModelAttribute Task task,
+                             @RequestParam Long databaseId) {
         if (task == null) {
             redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
             return "redirect:/tasks";
@@ -66,8 +67,16 @@ public class TaskController {
 
         Database db = databaseRepository.findOne(databaseId);
         task.setDatabase(db);
+
+        if (task.getSolution() != null) {
+            if (!databaseService.isValidSelectQuery(db, task.getSolution())) {
+                redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
+                return "redirect:/tasks";
+            }
+        }
+
         taskRepository.save(task);
-        redirectAttributes.addAttribute("messages", "Task has been created");
+        redirectAttributes.addFlashAttribute("messages", "Task has been created");
 
         return "redirect:/tasks";
     }
@@ -77,10 +86,8 @@ public class TaskController {
         Task task = taskRepository.findOne(id);
 
         if (queries.containsKey(id)) {
-            model.addAttribute("queryResults", databaseService.performSelectQuery(task.getDatabase().getId(), queries.get(id)));
-            if (taskResultService.evaluateSubmittedQuery(task, queries.get(id))) {
-                task.setStatus("complete");
-            }
+//          model.addAttribute("queryResults", databaseService.performSelectQuery(task.getDatabase().getId(), queries.get(id)));
+
         } else {
             model.addAttribute("queryResults", new Table("dummy"));
         }
@@ -91,18 +98,22 @@ public class TaskController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
-    public String sendQuery(Model model, RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
+    public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
+        Task task = taskRepository.findOne(id);
+        List<String> messages = new ArrayList<>();
 
-        // checks if the query string has the following structure: select col1(, col2, col3) from table (where col1='xyz')
-        if (query.matches(selectRegex)) {
-            queries.put(id, query);
+        queries.put(id, query);
+        messages.add("Query sent.");
 
-            redirectAttributes.addAttribute("id", id);
-            redirectAttributes.addFlashAttribute("messages", "Query sent.");
-            return "redirect:/tasks/{id}";
+        if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
+            messages.add("Your answer is correct!");
         }
+
+        Table queryResult = databaseService.performSelectQuery(task.getDatabase().getId(), query);
+
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", "Not a valid query.");
+        redirectAttributes.addFlashAttribute("messages", messages);
+        redirectAttributes.addFlashAttribute("queryResults", queryResult);
         return "redirect:/tasks/{id}";
     }
 }
