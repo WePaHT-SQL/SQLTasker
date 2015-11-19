@@ -15,7 +15,10 @@ and open the template in the editor.
 
         <div>
             <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
-                <input type="submit" value="Delete task"/>
+                <button type="submit" value="delete">Delete task</button>
+            </form>
+            <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
+                <button type="submit" value="edit">Edit task</button>
             </form>
             
             <h2 th:text="${task.name}">Task name</h2>
