@@ -96,6 +96,21 @@ public class TaskController {
 
         return "task";
     }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public String removeTask(@PathVariable Long id) throws Exception {
+        taskRepository.delete(id);
+        // remove all connections here
+        return "redirect:/tasks";
+    }
+    
+//    @RequestMapping(value ="/{id}", method = RequestMethod.PUT)
+//    public String updateTask(@PathVariable Long id, @ModelAttribute Task task){
+//    
+//        redirectAttributes.
+//        return "redirect:/tasks/{id}";
+//    }
+    
 
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
     public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {

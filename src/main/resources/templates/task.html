@@ -14,6 +14,10 @@ and open the template in the editor.
         <div th:include="fragments/messages_template :: messages"></div>
 
         <div>
+            <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
+                <input type="submit" value="Delete task"/>
+            </form>
+            
             <h2 th:text="${task.name}">Task name</h2>
             <h3 th:if="${task.description}">Description</h3>
             <p th:text="${task.description}">Task description</p>
@@ -45,7 +49,7 @@ and open the template in the editor.
                 </table>
             </div>            
         </div>
-        
+
         <form th:method="POST" th:action="@{/tasks/{id}/query (id=${task.id})}">
             <textarea name="query"/>
             <input type="hidden" name="id" th:value="${task.id}"/>
