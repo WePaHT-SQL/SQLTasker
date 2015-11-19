@@ -15,7 +15,7 @@ and open the template in the editor.
 
         <div>
             <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
-                <input type="submit" value="Delete task"/>
+                <button type="submit" value="Delete task"  Onclick="return Confirm();">Delete</button>
             </form>
             
             <h2 th:text="${task.name}">Task name</h2>
@@ -58,5 +58,7 @@ and open the template in the editor.
         <a th:href="@{/tasks}">Back to listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/scripts :: confirmScript"></div>
     </body>
+
 </html>

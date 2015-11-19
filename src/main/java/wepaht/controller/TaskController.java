@@ -98,9 +98,10 @@ public class TaskController {
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public String removeTask(@PathVariable Long id) throws Exception {
+    public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
         taskRepository.delete(id);
         // remove all connections here
+        redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";
     }
     
