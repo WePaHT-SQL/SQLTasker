@@ -143,6 +143,8 @@ public class TaskControllerTest {
     public void deleteTask() throws Exception {
         Task testTask = randomTask();
         taskRepository.save(testTask);
+        assertNotNull(taskRepository.findOne(testTask.getId()));
+
         mockMvc.perform(delete(API_URI + "/" + testTask.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Task deleted!"))
