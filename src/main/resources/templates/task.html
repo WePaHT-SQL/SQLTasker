@@ -5,60 +5,68 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title th:text="${task.name}">TODO supply a title</title>
-    </head>
-    <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+<head>
+    <title th:text="${task.name}">TODO supply a title</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+<div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
-            <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
-                <button type="submit" value="Delete task"  Onclick="return Confirm();">Delete</button>
-            </form>
-            
-            <h2 th:text="${task.name}">Task name</h2>
-            <h3 th:if="${task.description}">Description</h3>
-            <p th:text="${task.description}">Task description</p>
+<div>
 
-            <h3 th:if="${task.solution}">Suggested Solution</h3>
-            <p th:text="${task.solution}">Task solution</p>
+    <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
+        <button type="submit" value="delete" Onclick="return Confirm();">Delete task</button>
+    </form>
 
-            <h3>Database</h3>
-            <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>
+    <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
+        <button type="submit" value="edit" Onclick="return Confirm();">Edit task</button>
+    </form>
 
-            <h3 th:if="${query}">Queries</h3>
+    <h2 th:text="${task.name}">Task name</h2>
 
-            <!-- SELECT query to a database results -->
-            <div th:if="${queryResults}">
-                <h3 th:text="${queryResults.name}">Testing</h3>
+    <h3 th:if="${task.description}">Description</h3>
 
-                <table>
-                    <tr>
-                        <div th:each="column : ${queryResults.columns}">
-                            <th th:text="${column}">Column name</th>
-                        </div>
-                    </tr>
+    <p th:text="${task.description}">Task description</p>
 
-                    <tr th:each="row : ${queryResults.rows}">
-                        <div th:each="cell : ${row}">
-                            <td th:text="${cell}">Cell value</td>
-                        </div>
-                    </tr>
-                </table>
-            </div>            
-        </div>
+    <h3 th:if="${task.solution}">Suggested Solution</h3>
 
-        <form th:method="POST" th:action="@{/tasks/{id}/query (id=${task.id})}">
-            <textarea name="query"/>
-            <input type="hidden" name="id" th:value="${task.id}"/>
-            <input type="submit" value="Submit query"/>
-        </form>
-        <a th:href="@{/tasks}">Back to listing</a>
+    <p th:text="${task.solution}">Task solution</p>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>
-    </body>
+    <h3>Database</h3>
+    <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>
+
+    <h3 th:if="${query}">Queries</h3>
+
+    <!-- SELECT query to a database results -->
+    <div th:if="${queryResults}">
+        <h3 th:text="${queryResults.name}">Testing</h3>
+
+        <table>
+            <tr>
+                <div th:each="column : ${queryResults.columns}">
+                    <th th:text="${column}">Column name</th>
+                </div>
+            </tr>
+
+            <tr th:each="row : ${queryResults.rows}">
+                <div th:each="cell : ${row}">
+                    <td th:text="${cell}">Cell value</td>
+                </div>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<form th:method="POST" th:action="@{/tasks/{id}/query (id=${task.id})}">
+    <textarea name="query"/>
+    <input type="hidden" name="id" th:value="${task.id}"/>
+    <input type="submit" value="Submit query"/>
+</form>
+<a th:href="@{/tasks}">Back to listing</a>
+
+<div th:include="fragments/footer_template :: footer"></div>
+<div th:include="fragments/scripts :: confirmScript"></div>
+</body>
 
 </html>

@@ -18,6 +18,7 @@ import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
@@ -97,6 +98,14 @@ public class TaskController {
         return "task";
     }
     
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String getTaskEditor(@PathVariable Long id, Model model) {
+        model.addAttribute("task", taskRepository.findOne(id));
+        model.addAttribute("databases", databaseRepository.findAll());
+        
+        return "editTask";
+    }
+    
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
         taskRepository.delete(id);
@@ -105,12 +114,23 @@ public class TaskController {
         return "redirect:/tasks";
     }
     
-//    @RequestMapping(value ="/{id}", method = RequestMethod.PUT)
-//    public String updateTask(@PathVariable Long id, @ModelAttribute Task task){
-//    
-//        redirectAttributes.
-//        return "redirect:/tasks/{id}";
-//    }
+    @Transactional
+    @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
+    public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
+            @RequestParam Long databaseId,
+            @RequestParam String name,
+            @RequestParam String solution,
+            @RequestParam String description){
+            
+        Task oldtask = taskRepository.getOne(id);
+        oldtask.setDatabase(databaseRepository.findOne(databaseId));
+        oldtask.setDescription(description);
+        oldtask.setName(name);
+        oldtask.setSolution(solution);
+        
+        redirectAttributes.addAttribute("id", id);
+        return "redirect:/tasks/{id}";
+    }
     
 
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
