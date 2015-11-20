@@ -2,16 +2,12 @@
 <actions>
         <action>
             <actionName>run</actionName>
-            <packagings>
-                <packaging>jar</packaging>
-            </packagings>
             <goals>
-                <goal>process-classes</goal>
-                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+                <goal>package</goal>
+                <goal>spring-boot:run</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath wepaht.Application</exec.args>
-                <exec.executable>java</exec.executable>
+                <skipTests>true</skipTests>
             </properties>
         </action>
     </actions>
