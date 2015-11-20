@@ -1,6 +1,7 @@
 package wepaht.controller;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.jdbc.Expectation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -151,5 +152,25 @@ public class TaskControllerTest {
                 .andReturn();
 
         assertNull(taskRepository.findOne(testTask.getId()));
+    }
+
+    @Test
+    public void editTask() throws Exception {
+
+        Task testTask = randomTask();
+        taskRepository.save(testTask);
+        assertNotNull(taskRepository.findOne(testTask.getId()));
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
+                    .param("name","Test")
+                    .param("description","It works")
+                    .param("solution",testTask.getSolution())
+                    .param("databaseId", database.getId().toString()))
+
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Task modified!"))
+                .andReturn();
+
+        assertEquals("Test", testTask.getName());
     }
 }
