@@ -164,7 +164,7 @@ public class TaskControllerTest {
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
                     .param("name","Test")
                     .param("description","It works")
-                    .param("solution",""+testTask.getSolution())
+                    .param("solution","SELECT * FROM persons;")
                     .param("databaseId",""+database.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Task modified!"))
