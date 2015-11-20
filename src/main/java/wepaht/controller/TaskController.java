@@ -121,7 +121,12 @@ public class TaskController {
             @RequestParam String name,
             @RequestParam String solution,
             @RequestParam String description){
-            
+        if (solution != null || !solution.isEmpty()) {
+            if (!databaseService.isValidSelectQuery(databaseRepository.findOne(databaseId), solution)) {
+                redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
+                return "redirect:/tasks";
+            }
+        }
         Task oldtask = taskRepository.getOne(id);
         oldtask.setDatabase(databaseRepository.findOne(databaseId));
         oldtask.setDescription(description);
