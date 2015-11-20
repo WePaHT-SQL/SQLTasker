@@ -35,7 +35,7 @@ public class DatabaseController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewDatabase(Model model, @PathVariable Long id) throws Exception {
         Database database = databaseRepository.findOne(id);
-        Map<String, Table> databaseTables = databaseService.listDatabase(id);
+        Map<String, Table> databaseTables = databaseService.listDatabase(id, null);
 
         model.addAttribute("database", database);
         model.addAttribute("tables", databaseTables);

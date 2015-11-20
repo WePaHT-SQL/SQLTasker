@@ -76,14 +76,14 @@ public class DatabaseServiceTest {
         dbService.createDatabase(testDbName, testDbCreateTable);
         Database testDb = dbRepository.findByName(testDbName).get(0);
 
-        Map<String, Table> table = dbService.listDatabase(testDb.getId());
+        Map<String, Table> table = dbService.listDatabase(testDb.getId(), null);
 
         assertTrue(table.keySet().contains(tableName.toUpperCase()));
     }
 
     @Test
     public void listedDatabaseContainsCreatedTables() throws Exception {
-        Map<String, Table> tables = dbService.listDatabase(biggerDatabase.getId());
+        Map<String, Table> tables = dbService.listDatabase(biggerDatabase.getId(), null);
         List<String> tableNames = new ArrayList<>(tables.keySet());
         Table theTable = tables.get(tableNames.get(0));
 

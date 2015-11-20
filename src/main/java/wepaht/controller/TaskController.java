@@ -150,10 +150,10 @@ public class TaskController {
             redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
         }
 
-        Table queryResult = databaseService.performSelectQuery(task.getDatabase().getId(), query);
+        Map<String, Table> queryResult = databaseService.performSelectQuery(task.getDatabase().getId(), query);
 
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("queryResults", queryResult);
+        redirectAttributes.addFlashAttribute("tables", queryResult);
         return "redirect:/tasks/{id}";
     }
 }

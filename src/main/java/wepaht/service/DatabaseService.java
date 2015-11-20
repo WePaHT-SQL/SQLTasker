@@ -81,13 +81,16 @@ public class DatabaseService {
      * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
      * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
      */
-    public Map<String, Table> listDatabase(Long databaseId) {
+    public Map<String, Table> listDatabase(Long databaseId, String updateQuery) {
         HashMap<String, Table> listedDatabase = new HashMap<>();
         Database database = databaseRepository.findOne(databaseId);
         Connection connection = null;
+        String query = database.getDatabaseSchema();
+
+        if(updateQuery!= null) query += updateQuery;
 
         try {
-            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+            connection = createConnectionToDatabase(database.getName(), query);
 
             List<String> tables = listDatabaseTables(connection);
 
@@ -123,8 +126,14 @@ public class DatabaseService {
      * @return a table-object, which contains separately its' columns and rows. In case of syntax error, table-object's
      * will be named "ERROR".
      */
-    public Table performSelectQuery(Long databaseId, String sqlQuery) {
-        Table queryResult = new Table("query");
+    public Map<String, Table> performSelectQuery(Long databaseId, String sqlQuery) {
+
+        if (isUpdateQuery(sqlQuery)) {
+            return listDatabase(databaseId, sqlQuery);
+        }
+
+        Map<String, Table> queryResult = new HashMap<>();
+        Table table = new Table("query");
         Database database = databaseRepository.findOne(databaseId);
         Statement statement = null;
         Connection connection = null;
@@ -134,10 +143,11 @@ public class DatabaseService {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sqlQuery);
 
-            queryResult.setColumns(listQueryColumns(resultSet));
-            queryResult.setRows(listQueryRows(resultSet, queryResult.getColumns()));
+            table.setColumns(listQueryColumns(resultSet));
+            table.setRows(listQueryRows(resultSet, table.getColumns()));
+            queryResult.put("Query", table);
         } catch (Exception e) {
-            queryResult.setName(e.toString());
+            queryResult.put(e.toString(), null);
         } finally {
             if (connection != null) {
                 try {
@@ -157,7 +167,7 @@ public class DatabaseService {
         try {
             connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
             statement = connection.createStatement();
-            statement.executeQuery(sqlQuery);
+            statement.executeUpdate(sqlQuery);
         } catch (Exception e) {
             isValid = false;
         } finally {
@@ -169,6 +179,15 @@ public class DatabaseService {
         }
 
         return isValid;
+    }
+
+    private boolean isUpdateQuery(String sql) {
+        sql = sql.toUpperCase();
+        if (sql.contains("INSERT") || sql.contains("CREATE") || sql.contains("DROP")) {
+            return true;
+        }
+
+        return false;
     }
 
     private List<List<String>> listQueryRows(ResultSet resultSet, List<String> columns) throws Exception {

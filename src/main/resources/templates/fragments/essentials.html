@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+
+        <title>essentials</title>
+    </head>
+
+    <body>
+
+    <div th:fragment="tableListing (tables)">
+        <div th:if="${tables}">
+            <div th:each="table : ${tables}">
+                <div th:if="${table.key}">
+                    <h2 th:text="${table.key}">Table name</h2>
+                </div>
+                <table th:if="${table.value}">
+                    <tr>
+                        <div th:each="column : ${table.value.columns}">
+                            <th th:text="${column}">Column name</th>
+                        </div>
+                    </tr>
+
+                    <tr th:each="row : ${table.value.rows}">
+                        <div th:each="cell : ${row}">
+                            <td th:text="${cell}">Cell value</td>
+                        </div>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+</html>
