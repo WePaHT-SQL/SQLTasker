@@ -129,7 +129,7 @@ public class TaskController {
         oldtask.setSolution(solution);
         
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("messages", "Task updated!");
+        redirectAttributes.addFlashAttribute("messages", "Task modified!");
         return "redirect:/tasks/{id}";
     }
     

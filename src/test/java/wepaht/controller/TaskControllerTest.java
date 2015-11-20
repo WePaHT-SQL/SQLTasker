@@ -164,13 +164,12 @@ public class TaskControllerTest {
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
                     .param("name","Test")
                     .param("description","It works")
-                    .param("solution",testTask.getSolution())
-                    .param("databaseId", database.getId().toString()))
-
+                    .param("solution",""+testTask.getSolution())
+                    .param("databaseId",""+database.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Task modified!"))
                 .andReturn();
-
+        testTask=taskRepository.findOne(testTask.getId());
         assertEquals("Test", testTask.getName());
     }
 }
