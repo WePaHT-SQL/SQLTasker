@@ -6,24 +6,26 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Database;
+import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 import wepaht.service.DatabaseService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("databases")
 public class DatabaseController {
 
     @Autowired
-    DatabaseService dbService;
+    DatabaseService databaseService;
 
     @Autowired
-    DatabaseRepository dbRepository;
+    DatabaseRepository databaseRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     public String listDatabases(Model model) {
-        List<Database> databases = dbRepository.findAll();
+        List<Database> databases = databaseRepository.findAll();
 
         model.addAttribute("databases", databases);
 
@@ -32,18 +34,22 @@ public class DatabaseController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewDatabase(Model model, @PathVariable Long id) throws Exception {
-        Database database = dbRepository.findOne(id);
-        List<String> objects = dbService.listDatabaseObjects(id);
+        Database database = databaseRepository.findOne(id);
+        Map<String, Table> databaseTables = databaseService.listDatabase(id);
 
         model.addAttribute("database", database);
-        model.addAttribute("objects", objects);
+        model.addAttribute("tables", databaseTables);
+
+        //for testing and example
+//        String testQuery = "SELECT FirstName, LastName FROM Persons;";
+//        model.addAttribute("query", databaseService.performSelectQuery(id, testQuery));
 
         return "database";
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String createDatabase(RedirectAttributes redirectAttributes, @ModelAttribute Database database) {
-        if (dbService.createDatabase(database.getName(), database.getDatabaseSchema())) {
+        if (databaseService.createDatabase(database.getName(), database.getDatabaseSchema())) {
             redirectAttributes.addFlashAttribute("messages", "Database created!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Database creation failed!");

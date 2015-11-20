@@ -15,7 +15,7 @@ public class Task extends AbstractPersistable<Long> {
     
     private String name;
     private String description;
-    private String status;
+    private String solution;
 
     @ManyToOne
     private Database database;
@@ -48,25 +48,25 @@ public class Task extends AbstractPersistable<Long> {
         this.description = description;
     }
 
-    /**
-     * @return the status
-     */
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public Database getDatabase() {
         return database;
     }
 
     public void setDatabase(Database database) {
         this.database = database;
+    }
+
+    /**
+     * @return the solution
+     */
+    public String getSolution() {
+        return solution;
+    }
+
+    /**
+     * @param solution the solution to set
+     */
+    public void setSolution(String solution) {
+        this.solution = solution;
     }
 }

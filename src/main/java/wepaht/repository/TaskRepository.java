@@ -8,10 +8,8 @@ package wepaht.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import wepaht.domain.Task;
 
-/**
- *
- * @author Kake
- */
+import java.util.List;
+
 public interface TaskRepository extends JpaRepository<Task,Long> {
-    
+    List<Task> findByName(String name);
 }
