@@ -5,18 +5,13 @@
  */
 package wepaht.service;
 
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.domain.Database;
 import wepaht.domain.Table;
-import wepaht.repository.DatabaseRepository;
 
-import javax.annotation.PostConstruct;
-import javax.xml.transform.Result;
-import java.sql.*;
 import java.util.*;
-import javax.persistence.Column;
+
 import wepaht.domain.Task;
 
 /**
@@ -31,8 +26,8 @@ public class TaskResultService {
     
     public boolean evaluateSubmittedQueryStrictly(Task task, String query){
         Database database = task.getDatabase();
-        Map<String, Table> queryResult = databaseService.performSelectQuery(database.getId(), query);
-        Map<String, Table> correctResult = databaseService.performSelectQuery(database.getId(), task.getSolution());
+        Map<String, Table> queryResult = databaseService.performQuery(database.getId(), query);
+        Map<String, Table> correctResult = databaseService.performQuery(database.getId(), task.getSolution());
     
         boolean isCorrectColumns = compareColumns(queryResult, correctResult);
         boolean isCorrectRows = compareRows(queryResult, correctResult);

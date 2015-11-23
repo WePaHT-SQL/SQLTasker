@@ -35,14 +35,10 @@ public class DatabaseController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewDatabase(Model model, @PathVariable Long id) throws Exception {
         Database database = databaseRepository.findOne(id);
-        Map<String, Table> databaseTables = databaseService.listDatabase(id, null);
+        Map<String, Table> databaseTables = databaseService.performUpdateQuery(id, null);
 
         model.addAttribute("database", database);
         model.addAttribute("tables", databaseTables);
-
-        //for testing and example
-//        String testQuery = "SELECT FirstName, LastName FROM Persons;";
-//        model.addAttribute("query", databaseService.performSelectQuery(id, testQuery));
 
         return "database";
     }

@@ -123,7 +123,7 @@ public class TaskControllerTest {
 
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attributeExists("queryResults"))
+                .andExpect(flash().attributeExists("tables"))
                 .andReturn();
     }
 
@@ -162,10 +162,10 @@ public class TaskControllerTest {
         assertNotNull(taskRepository.findOne(testTask.getId()));
 
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
+                    .param("databaseId", "" + database.getId())
                     .param("name","Test")
-                    .param("description","It works")
                     .param("solution","SELECT * FROM persons;")
-                    .param("databaseId",""+database.getId()))
+                    .param("description","It works"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Task modified!"))
                 .andReturn();

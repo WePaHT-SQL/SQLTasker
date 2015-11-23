@@ -1,6 +1,5 @@
 package wepaht.service;
 
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.domain.Database;
@@ -8,7 +7,6 @@ import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 
 import javax.annotation.PostConstruct;
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.*;
 
@@ -81,7 +79,7 @@ public class DatabaseService {
      * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
      * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
      */
-    public Map<String, Table> listDatabase(Long databaseId, String updateQuery) {
+    public Map<String, Table> performUpdateQuery(Long databaseId, String updateQuery) {
         HashMap<String, Table> listedDatabase = new HashMap<>();
         Database database = databaseRepository.findOne(databaseId);
         Connection connection = null;
@@ -119,17 +117,16 @@ public class DatabaseService {
     }
 
     /**
-     * Performs a SELECT-query in the selected database. Example of use found in database.html-resource file and
-     * DatabaseController.
+     * Performs a query in the selected database.
      * @param databaseId ID of the selected database
      * @param sqlQuery the query. Syntax must be correct in order this to work!
-     * @return a table-object, which contains separately its' columns and rows. In case of syntax error, table-object's
-     * will be named "ERROR".
+     * @return a table-object, which contains separately its' columns and rows. In case of sql error, returned table
+     * will be named as the exception.
      */
-    public Map<String, Table> performSelectQuery(Long databaseId, String sqlQuery) {
+    public Map<String, Table> performQuery(Long databaseId, String sqlQuery) {
 
         if (isUpdateQuery(sqlQuery)) {
-            return listDatabase(databaseId, sqlQuery);
+            return performUpdateQuery(databaseId, sqlQuery);
         }
 
         Map<String, Table> queryResult = new HashMap<>();
@@ -159,15 +156,19 @@ public class DatabaseService {
         return queryResult;
     }
 
-    public boolean isValidSelectQuery(Database database, String sqlQuery) {
+    public boolean isValidQuery(Database database, String sqlQuery) {
         Statement statement = null;
         Connection connection = null;
         Boolean isValid = true;
 
         try {
-            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
-            statement = connection.createStatement();
-            statement.executeUpdate(sqlQuery);
+            if (isUpdateQuery(sqlQuery)) {
+                connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema() + sqlQuery);
+            } else {
+                connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+                statement = connection.createStatement();
+                statement.executeQuery(sqlQuery);
+            }
         } catch (Exception e) {
             isValid = false;
         } finally {
@@ -183,7 +184,7 @@ public class DatabaseService {
 
     private boolean isUpdateQuery(String sql) {
         sql = sql.toUpperCase();
-        if (sql.contains("INSERT") || sql.contains("CREATE") || sql.contains("DROP")) {
+        if (sql.contains("INSERT") || sql.contains("CREATE") || sql.contains("DROP") || sql.contains("UPDATE")) {
             return true;
         }
 

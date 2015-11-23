@@ -76,17 +76,25 @@ public class DatabaseServiceTest {
         dbService.createDatabase(testDbName, testDbCreateTable);
         Database testDb = dbRepository.findByName(testDbName).get(0);
 
-        Map<String, Table> table = dbService.listDatabase(testDb.getId(), null);
+        Map<String, Table> table = dbService.performUpdateQuery(testDb.getId(), null);
 
         assertTrue(table.keySet().contains(tableName.toUpperCase()));
     }
 
     @Test
     public void listedDatabaseContainsCreatedTables() throws Exception {
-        Map<String, Table> tables = dbService.listDatabase(biggerDatabase.getId(), null);
+        Map<String, Table> tables = dbService.performUpdateQuery(biggerDatabase.getId(), null);
         List<String> tableNames = new ArrayList<>(tables.keySet());
         Table theTable = tables.get(tableNames.get(0));
 
         assertTrue(tables.keySet().size() == 1 && theTable.getColumns().size() == 5 && theTable.getRows().size() == 3);
+    }
+
+    public void insertQueryCanBePerformed() throws Exception {
+        int personId = 10;
+        String lastName = "Testila";
+        String firstName = "Teemu";
+        String address = "Testaajankatu";
+        String city = "Tapanila";
     }
 }

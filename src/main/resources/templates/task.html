@@ -37,17 +37,13 @@ and open the template in the editor.
     <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>
 </div>
 
-<!-- SELECT query to a database results -->
-<div th:if="${tables}">
-    <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
-</div>
-
 <form th:method="POST" th:action="@{/tasks/{id}/query (id=${task.id})}">
     <textarea name="query"/>
     <input type="hidden" name="id" th:value="${task.id}"/>
     <input type="submit" value="Submit query"/>
 </form>
 
+<!-- SELECT query to a database results -->
 <div th:if="${tables}">
     <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 </div>
