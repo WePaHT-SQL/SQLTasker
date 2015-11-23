@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Past queries listing.</title>
+</head>
+<body>
+<div>
+    <form th:method="POST" th:action="@{/queries }">
+        <a>Task Id</a>
+        <select th:name="taskId">
+            <option th:value="null" th:text="ANY"></option>
+            <option th:each="query : ${queries}"
+            th:value="${query.getId()}"
+            th:text="${query.getName()}"></option>
+        </select>
+        <input type="submit" value="Submit"/>
+    </form>
+
+</div>
+</body>
+</html>

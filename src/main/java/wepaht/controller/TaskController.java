@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
+import wepaht.service.PastQueryService;
 import wepaht.service.TaskResultService;
 
 @Controller
@@ -41,6 +42,9 @@ public class TaskController {
 
     @Autowired
     TaskResultService taskResultService;
+
+    @Autowired
+    PastQueryService pastQueryService;
 
     @PostConstruct
     public void init() {
@@ -105,7 +109,10 @@ public class TaskController {
         redirectAttributes.addFlashAttribute("messages", "Query sent.");
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
-            redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
+            RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
+            pastQueryService.saveNewPastQuery("MUISTA", task.getId(),query,true);
+        }else{
+            pastQueryService.saveNewPastQuery("MUISTA", task.getId(),query,false);
         }
 
         Table queryResult = databaseService.performSelectQuery(task.getDatabase().getId(), query);
