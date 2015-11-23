@@ -88,7 +88,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void createQuery() throws Exception {
+    public void createSelectQuery() throws Exception {
         Task task = randomTask();
         task = taskRepository.save(task);
 
@@ -171,5 +171,19 @@ public class TaskControllerTest {
                 .andReturn();
         testTask=taskRepository.findOne(testTask.getId());
         assertEquals("Test", testTask.getName());
+    }
+
+    //Update-, delete-, drop-, insert- and create-queries use the same method
+    @Test
+    public void updateTypeQuery() throws Exception {
+        Task testTask = randomTask();
+        taskRepository.save(testTask);
+        String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query")
+                .param("query", sql))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Query sent."))
+                .andReturn();
     }
 }

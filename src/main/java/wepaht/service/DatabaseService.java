@@ -184,7 +184,7 @@ public class DatabaseService {
 
     private boolean isUpdateQuery(String sql) {
         sql = sql.toUpperCase();
-        if (sql.contains("INSERT") || sql.contains("CREATE") || sql.contains("DROP") || sql.contains("UPDATE")) {
+        if (sql.contains("INSERT") || sql.contains("CREATE") || sql.contains("DROP") || sql.contains("UPDATE") || sql.contains("DELETE")) {
             return true;
         }
 
