@@ -7,17 +7,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import wepaht.authentication.JpaAuthenticationProvider;
 
 @Configuration
-@EnableWebMvc
+@EnableWebMvcSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login", "/").permitAll()
+                .antMatchers("/login", "/", "/register").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin()
@@ -27,7 +27,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/").permitAll()
+                .logoutSuccessUrl("/")
+                .permitAll()
                 .invalidateHttpSession(true);
     }
 
