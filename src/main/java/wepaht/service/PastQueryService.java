@@ -20,20 +20,20 @@ public class PastQueryService {
         pastQueryRepository.save(pastQuery);
 
     }
+    public List returnQuery(String username, Long taskId, Boolean isCorrect){
+            if(!taskId.equals("null")){
+                return pastQueryRepository.findByTaskId(taskId);
+            }
 
-    public List returnAllPastQuery(){
+                if(isCorrect=true){
+                 return   pastQueryRepository.findByWasCorrect(isCorrect);
+                }else if(isCorrect=false){
+                    return pastQueryRepository.findByWasCorrect(isCorrect);
+                }
+
+
+
         return pastQueryRepository.findAll();
     }
 
-
-    public List returnPastQueriesByTaskId(Long taskId){
-        return pastQueryRepository.findByTaskId(taskId);
-    }
-    public List returnPastQueriesByUserName(String username){
-        return pastQueryRepository.findByUsername(username);
-    }
-
-    public List returnAllIncorrectQueries(boolean wasCorrect){
-        return pastQueryRepository.findByWasCorrect(wasCorrect);
-    }
 }
