@@ -14,7 +14,7 @@ import wepaht.service.UserService;
 @Controller
 public class UserController {
 
-    private String[] roles = {"STUDENT","TEACHER","ADMIN"};
+    private String[] roles = {"STUDENT", "TEACHER", "ADMIN"};
 
     @Autowired
     UserRepository userRepository;
@@ -23,7 +23,7 @@ public class UserController {
     UserService userService;
 
     @Secured("ROLE_ADMIN")
-    @RequestMapping(value="users", method = RequestMethod.GET)
+    @RequestMapping(value = "users", method = RequestMethod.GET)
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("roles", roles);
@@ -31,53 +31,71 @@ public class UserController {
         return "users";
     }
 
-    @Secured("ROLE_ADMIN")
-    @RequestMapping(value="users/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
     public String getUser(Model model, @PathVariable Long id) {
-        model.addAttribute("user", userRepository.findOne(id));
+        User user = userService.getAuthenticatedUser();
+        if (user.getId() != id && !user.getRole().equals("ADMIN")) {
+            return "redirect:/index";
+        }
+
+        model.addAttribute("editedUser", userRepository.findOne(id));
         model.addAttribute("roles", roles);
         model.addAttribute("user", userService.getAuthenticatedUser());
         return "user";
     }
 
-    @Secured("ROLE_ADMIN")
-    @RequestMapping(value="users", method = RequestMethod.POST)
-    public String create(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
-        userRepository.save(user);
+    @RequestMapping(value = "users", method = RequestMethod.POST)
+    public String create(@ModelAttribute User newUser, RedirectAttributes redirectAttributes) {
+        userRepository.save(newUser);
         redirectAttributes.addFlashAttribute("messages", "User created succesfully.");
-        return "redirect:/";
+        if (userService.getAuthenticatedUser().getRole().equals("ADMIN")) {
+            return "redirect:/users";
+        }
+        return "redirect:/index";
     }
 
     @Secured("ROLE_ADMIN")
-    @RequestMapping(value="users/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "users/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        User user = userService.getAuthenticatedUser();
+        if (user.getId() == id) {
+            redirectAttributes.addFlashAttribute("messages", "Admin users cannot delete themselves.");
+            return "redirect:/users";
+        }
         userRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "User deleted.");
 
         return "redirect:/users";
     }
 
-    @Secured("ROLE_ADMIN")
     @Transactional
-    @RequestMapping(value ="users/{id}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
     public String update(@PathVariable Long id, RedirectAttributes redirectAttributes,
-                         @RequestParam(required = false) String username,
-                         @RequestParam(required = false) String role,
-                         @RequestParam(required = false) String password,
-                         @RequestParam(required = false) String repassword){
-
-        if(!password.equals(repassword)){
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String password,
+            @RequestParam(required = false) String repassword) {
+        
+        if (!password.equals(repassword)) {
             redirectAttributes.addFlashAttribute("messages", "Passwords didn't match");
             return "redirect:/users/{id}";
         }
 
+        User user = userService.getAuthenticatedUser();
         User olduser = userRepository.getOne(id);
-        olduser.setUsername(username);
+        
+        if(user.getRole().equals("ADMIN")&&user.getId().equals(olduser.getId())&!user.getRole().equals(role)){
+            redirectAttributes.addFlashAttribute("messages", "Admins cannot demote themselves");
+        }
         olduser.setRole(role);
         olduser.setPassword(password);
 
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("messages", "User modified!");
+        if (!username.equals(olduser.getUsername())) {
+            olduser.setUsername(username);
+            return "redirect:/logout";
+        }
         return "redirect:/users/{id}";
     }
 

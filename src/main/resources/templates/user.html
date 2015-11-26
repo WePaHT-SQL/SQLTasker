@@ -5,54 +5,71 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>TODO supply a title</title>
-</head>
-<body>
-<div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
+    <head>
+        <title th:value="${editedUser.username}">TODO supply a title</title>
+    </head>
+    <body>
+        <div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
 
-<div th:include="fragments/messages_template :: messages"></div>
+        <div th:include="fragments/messages_template :: messages"></div>
 
-<div>
+        <div>
 
-    <form th:method="DELETE" th:action="@{/users/{id} (id=${user.id})}">
-        <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
-    </form>
+            <div  sec:authorize="hasRole('ROLE_ADMIN')">
+                <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+                    <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
+                </form>
+            </div>
 
-    <div>
-        <h2>Edit user</h2>
-        <form method="POST" th:action="@{/users/{id}/edit (id=${user.id})}">
-            <label>Username:</label>
-            <br/>
-            <input type="text" name="username" th:value="${user.username}"/>
+            <div>
+                <h2>Edit user</h2>
+                <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
+                    <div th:not="${editedUser.id.equals(user.id)}">
+                    <label>Username:</label>
+                    <br/>
+                    <input type="text" name="username" th:value="${editedUser.username}"/>
+                    </div>
+                    
+                    <div  sec:authorize="hasRole('ROLE_ADMIN')">
+                        <br/>
+                        <label>Role:</label>            
+                        <br/>
+                        <input type="radio" th:value="${editedUser.role}" name ="role" th:text="${editedUser.role}" checked="checked"/>
+                        <input type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
+                    </div>
 
-            <br/>
-            <label>Role:</label>
+                    <br/>
 
-            <br/>
-            <input type="radio" th:value="${user.role}" name ="role" th:text="${user.role}" checked="checked"/>
-            <input type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
-            <br/>
-            <label>Password:</label>
-            <br/>
-            <input type="text" name="password"></input>
-            <br/>
-            <label>Retype password:</label>
-            <br/>
-            <input type="text" name="repassword"></input>
-            <br/>
-            <input type="submit" value="Save edits"/>
-        </form>
+                    <div th:if="${editedUser.id.equals(user.id)}">
+                        <label>New password:</label>
+                        <br/>
+                        <input type="text" name="password"></input>
+                        <br/>
+                        <label>Retype new password:</label>
+                        <br/>
+                        <input type="text" name="repassword"></input>
+                        <br/>            
+                    </div>
 
-        <br/>
-        <hr/>
-    </div>
-</div>
+                    <input type="submit" value="Save edits"/>
+                </form>
 
-<a th:href="@{/users}">Back to listing</a>
+                <br/>
+                <hr/>
+            </div>
 
-<div th:include="fragments/footer_template :: footer"></div>
-<div th:include="fragments/scripts :: confirmScript"></div>
-</body>
+            <div>
+                <h2>User points</h2>
+            </div>
+
+        </div>
+
+        <div  sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/users}">Back to user listing</a>
+        </div>
+
+        <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/scripts :: confirmScript"></div>
+    </body>
 
 </html>
