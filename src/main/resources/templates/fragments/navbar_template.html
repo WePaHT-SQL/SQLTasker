@@ -12,25 +12,25 @@ and open the template in the editor.
 
     <body>
 
-        <div th:fragment="navbar (user)">
+        <div th:fragment="navbar">
             <h1>SQL-tasker</h1>
 
             <br/>
 
             <a th:href="@{/tasks}">Task listing</a>
             <a th:href="@{/databases}">Database listing</a>
-            <div th:switch="${user}">
-<!--            if logged in-->
+<!--            <div th:switch="${user}">
+            if logged in
                 <div th:case="${true}"
                 <a th:href="@{/users/{id}/profile (id=${user.id})}">User profile</a>
                 <a th:href="@{/logout}">User profile</a>
                 </div>
-<!--            if not logged in-->
+            if not logged in
                 <div th:case="${false}">
                 <a th:href="@{/login}">Login</a>
                 <a th:href="@{/register}">Register</a>
                 </div>
-            </div>
+            </div>-->
             <hr/>
             <br/>
         </div>
