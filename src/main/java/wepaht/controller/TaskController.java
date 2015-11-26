@@ -18,6 +18,7 @@ import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
@@ -100,6 +101,47 @@ public class TaskController {
 
         return "task";
     }
+    
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String getTaskEditor(@PathVariable Long id, Model model) {
+        model.addAttribute("task", taskRepository.findOne(id));
+        model.addAttribute("databases", databaseRepository.findAll());
+        
+        return "editTask";
+    }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
+        taskRepository.delete(id);
+        // remove all connections here
+        redirectAttributes.addFlashAttribute("messages", "Task deleted!");
+        return "redirect:/tasks";
+    }
+    
+    @Transactional
+    @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
+    public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
+            @RequestParam Long databaseId,
+            @RequestParam String name,
+            @RequestParam String solution,
+            @RequestParam String description){
+        if (solution != null || !solution.isEmpty()) {
+            if (!databaseService.isValidSelectQuery(databaseRepository.findOne(databaseId), solution)) {
+                redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
+                return "redirect:/tasks";
+            }
+        }
+        Task oldtask = taskRepository.getOne(id);
+        oldtask.setDatabase(databaseRepository.findOne(databaseId));
+        oldtask.setDescription(description);
+        oldtask.setName(name);
+        oldtask.setSolution(solution);
+        
+        redirectAttributes.addAttribute("id", id);
+        redirectAttributes.addFlashAttribute("messages", "Task modified!");
+        return "redirect:/tasks/{id}";
+    }
+    
 
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
     public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {

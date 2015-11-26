@@ -1,6 +1,7 @@
 package wepaht.controller;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.jdbc.Expectation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,20 +12,26 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import wepaht.Application;
 import wepaht.domain.Database;
 import wepaht.domain.Task;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
+
 import java.util.List;
 
 import static org.junit.Assert.*;
+
 import org.springframework.test.web.servlet.MvcResult;
 import wepaht.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import wepaht.domain.Table;
 
 
@@ -48,7 +55,7 @@ public class TaskControllerTest {
     private DatabaseRepository databaseRepository;
 
     private MockMvc mockMvc = null;
-    
+
     private Database database = null;
 
     @Before
@@ -85,8 +92,8 @@ public class TaskControllerTest {
         Task task = randomTask();
         task = taskRepository.save(task);
 
-        String query ="select firstname, lastname from testdb";          
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id",""+ task.getId()))
+        String query = "select firstname, lastname from testdb";
+        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/tasks/{id}"))
                 .andExpect(flash().attribute("messages", "Query sent."))
@@ -98,11 +105,11 @@ public class TaskControllerTest {
         String taskName = "testTask";
         Long databaseId = database.getId();
         mockMvc.perform(post(API_URI).param("name", taskName)
-                                        .param("description", "To test creation of a task with a database")
-                                        .param("solution", "select * from persons;")
-                                        .param("databaseId", databaseId.toString()))
-                        .andExpect(status().is3xxRedirection())
-                        .andReturn();
+                .param("description", "To test creation of a task with a database")
+                .param("solution", "select * from persons;")
+                .param("databaseId", databaseId.toString()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
 
         List<Task> tasks = taskRepository.findAll();
 
@@ -131,5 +138,38 @@ public class TaskControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Your answer is correct!"))
                 .andReturn();
+    }
+
+    @Test
+    public void deleteTask() throws Exception {
+        Task testTask = randomTask();
+        taskRepository.save(testTask);
+        assertNotNull(taskRepository.findOne(testTask.getId()));
+
+        mockMvc.perform(delete(API_URI + "/" + testTask.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Task deleted!"))
+                .andReturn();
+
+        assertNull(taskRepository.findOne(testTask.getId()));
+    }
+
+    @Test
+    public void editTask() throws Exception {
+
+        Task testTask = randomTask();
+        taskRepository.save(testTask);
+        assertNotNull(taskRepository.findOne(testTask.getId()));
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
+                    .param("name","Test")
+                    .param("description","It works")
+                    .param("solution","SELECT * FROM persons;")
+                    .param("databaseId",""+database.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Task modified!"))
+                .andReturn();
+        testTask=taskRepository.findOne(testTask.getId());
+        assertEquals("Test", testTask.getName());
     }
 }
