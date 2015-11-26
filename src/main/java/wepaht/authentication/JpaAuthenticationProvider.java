@@ -33,13 +33,8 @@ public class JpaAuthenticationProvider implements AuthenticationProvider{
         }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-<<<<<<< HEAD
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_STUDENT"));
         if (!user.getRole().toUpperCase().equals("STUDENT")) grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+user.getRole()));
-=======
-        grantedAuthorities.add(new SimpleGrantedAuthority("STUDENT"));
-        if (user.getRole().toUpperCase() != "STUDENT") grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole()));
->>>>>>> 80b137aa739ebfa3b8ebbffc83c3176e631c3f2c
 
         return new UsernamePasswordAuthenticationToken(user.getUsername(), password, grantedAuthorities);
     }
