@@ -88,7 +88,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void createQuery() throws Exception {
+    public void createSelectQuery() throws Exception {
         Task task = randomTask();
         task = taskRepository.save(task);
 
@@ -123,7 +123,7 @@ public class TaskControllerTest {
 
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attributeExists("queryResults"))
+                .andExpect(flash().attributeExists("tables"))
                 .andReturn();
     }
 
@@ -162,14 +162,28 @@ public class TaskControllerTest {
         assertNotNull(taskRepository.findOne(testTask.getId()));
 
         mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/edit")
+                    .param("databaseId", "" + database.getId())
                     .param("name","Test")
-                    .param("description","It works")
                     .param("solution","SELECT * FROM persons;")
-                    .param("databaseId",""+database.getId()))
+                    .param("description","It works"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Task modified!"))
                 .andReturn();
         testTask=taskRepository.findOne(testTask.getId());
         assertEquals("Test", testTask.getName());
+    }
+
+    //Update-, delete-, drop-, insert- and create-queries use the same method
+    @Test
+    public void updateTypeQuery() throws Exception {
+        Task testTask = randomTask();
+        taskRepository.save(testTask);
+        String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query")
+                .param("query", sql))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Query sent."))
+                .andReturn();
     }
 }

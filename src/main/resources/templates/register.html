@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registeration</title>
+</head>
+<body>
+<div th:include="fragments/messages_template :: messages"></div>
+
+<h2>Register for SQL-tasker</h2>
+<form method="POST" th:action="@{/users}">
+    <label>Username:</label>
+    <input type="text" name="username"/>
+    <label>Password:</label>
+    <input type="text" name="password"/>
+    <input type="hidden" name="role" value="STUDENT"/>
+    <input type="submit" value="Register"/>
+</form>
+
+<div th:include="fragments/footer_template :: footer"></div>
+<div th:include="fragments/scripts :: confirmScript"></div>
+</body>
+
+</html>

@@ -14,26 +14,8 @@ and open the template in the editor.
         <div th:include="fragments/messages_template :: messages"></div>
 
         <!-- Example usage of listing database's tables -->
-        <div>
-            <h1 th:text="${database.name}">Database name</h1>
-
-            <div th:each="table : ${tables}">
-                <h2 th:text="${table.key}">Table name</h2>
-                <table th:if="${table.value}">
-                    <tr>
-                        <div th:each="column : ${table.value.columns}">
-                            <th th:text="${column}">Column name</th>
-                        </div>
-                    </tr>
-
-                    <tr th:each="row : ${table.value.rows}">
-                        <div th:each="cell : ${row}">
-                            <td th:text="${cell}">Cell value</td>
-                        </div>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <h1 th:text="${database.name}">Database name</h1>
+        <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 
         <br/>
 

@@ -5,18 +5,13 @@
  */
 package wepaht.service;
 
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.domain.Database;
 import wepaht.domain.Table;
-import wepaht.repository.DatabaseRepository;
 
-import javax.annotation.PostConstruct;
-import javax.xml.transform.Result;
-import java.sql.*;
 import java.util.*;
-import javax.persistence.Column;
+
 import wepaht.domain.Task;
 
 /**
@@ -31,30 +26,51 @@ public class TaskResultService {
     
     public boolean evaluateSubmittedQueryStrictly(Task task, String query){
         Database database = task.getDatabase();
-        Table queryResult = databaseService.performSelectQuery(database.getId(), query);
-        Table correctResult = databaseService.performSelectQuery(database.getId(), task.getSolution());        
+        Map<String, Table> queryResult = databaseService.performQuery(database.getId(), query);
+        Map<String, Table> correctResult = databaseService.performQuery(database.getId(), task.getSolution());
     
+        boolean isCorrectColumns = compareColumns(queryResult, correctResult);
+        boolean isCorrectRows = compareRows(queryResult, correctResult);
 
-        return compareColumns(queryResult.getColumns(), correctResult.getColumns()) &&
-                compareRows(queryResult.getRows(), correctResult.getRows());
+        return isCorrectColumns && isCorrectRows;
     }
 
-    private boolean compareColumns(List<String> query, List<String> answer) {
-        if (query.size()!=answer.size()) return false;
+    private boolean compareColumns(Map<String, Table> query, Map<String, Table> correctAnswer) {
+        Set<String> correctTables = correctAnswer.keySet();
 
-        for (String column : answer) {
-            if (!query.contains(column)) return false;
+        if (query.size() != correctAnswer.size()) return false;
+
+        for (String table: correctTables) {
+            if (!query.keySet().contains(table)) return false;
+            List<String> correctColumns = correctAnswer.get(table).getColumns();
+            List<String> queryColumns = query.get(table).getColumns();
+
+            if (correctColumns.size() != queryColumns.size()) return false;
+
+            for (String column: correctColumns) {
+                if (!queryColumns.contains(column)) return false;
+            }
         }
 
         return true;
     }
 
-    private boolean compareRows(List<List<String>> query, List<List<String>> answer) {
-        if (query.size() != answer.size() || query.get(0).size() != answer.get(0).size()) return false;
+    private boolean compareRows(Map<String, Table> query, Map<String, Table> correctAnswer) {
+        Set<String> correctTables = correctAnswer.keySet();
 
-        for (int i = 0; i < answer.size(); i++) {
-            for (String cell : answer.get(i)) {
-                if (!query.get(i).contains(cell)) return false;
+        if (query.size() != correctAnswer.size()) return false;
+
+        for (String table: correctTables) {
+            if (!query.keySet().contains(table)) return false;
+            List<List<String>> correctRows = correctAnswer.get(table).getRows();
+            List<List<String>> queryRows = query.get(table).getRows();
+
+            if(queryRows.size() != correctRows.size()) return false;
+
+            for (int i = 0; i < correctRows.size(); i++) {
+                for (String cell: correctRows.get(i)) {
+                    if (!queryRows.get(i).contains(cell)) return false;
+                }
             }
         }
 

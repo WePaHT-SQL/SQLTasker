@@ -74,7 +74,7 @@ public class TaskController {
         task.setDatabase(db);
 
         if (task.getSolution() != null || !task.getSolution().isEmpty()) {
-            if (!databaseService.isValidSelectQuery(db, task.getSolution())) {
+            if (!databaseService.isValidQuery(db, task.getSolution())) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
                 return "redirect:/tasks";
             }
@@ -91,7 +91,6 @@ public class TaskController {
         Task task = taskRepository.findOne(id);
 
         if (queries.containsKey(id)) {
-//          model.addAttribute("queryResults", databaseService.performSelectQuery(task.getDatabase().getId(), queries.get(id)));
 
         } else {
             model.addAttribute("queryResults", new Table("dummy"));
@@ -126,7 +125,7 @@ public class TaskController {
             @RequestParam String solution,
             @RequestParam String description){
         if (solution != null || !solution.isEmpty()) {
-            if (!databaseService.isValidSelectQuery(databaseRepository.findOne(databaseId), solution)) {
+            if (!databaseService.isValidQuery(databaseRepository.findOne(databaseId), solution)) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
                 return "redirect:/tasks";
             }
@@ -157,10 +156,10 @@ public class TaskController {
             pastQueryService.saveNewPastQuery("MUISTA", task.getId(),query,false);
         }
 
-        Table queryResult = databaseService.performSelectQuery(task.getDatabase().getId(), query);
+        Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);
 
         redirectAttributes.addAttribute("id", id);
-        redirectAttributes.addFlashAttribute("queryResults", queryResult);
+        redirectAttributes.addFlashAttribute("tables", queryResult);
         return "redirect:/tasks/{id}";
     }
 }
