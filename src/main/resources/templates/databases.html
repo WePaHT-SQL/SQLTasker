@@ -10,7 +10,7 @@ and open the template in the editor.
     </head>
     <body>
 
-        <div th:include="fragments/navbar_template :: navbar"></div>
+    <div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 

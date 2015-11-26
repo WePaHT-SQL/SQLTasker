@@ -4,6 +4,7 @@
     <title>Registeration</title>
 </head>
 <body>
+<div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
 <div th:include="fragments/messages_template :: messages"></div>
 
 <h2>Register for SQL-tasker</h2>

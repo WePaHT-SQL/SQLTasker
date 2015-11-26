@@ -4,7 +4,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
     <head>
     
       <title>navbar_template</title>
@@ -12,25 +12,23 @@ and open the template in the editor.
 
     <body>
 
-        <div th:fragment="navbar">
+        <div th:fragment="navbar (user)">
             <h1>SQL-tasker</h1>
 
             <br/>
 
             <a th:href="@{/tasks}">Task listing</a>
             <a th:href="@{/databases}">Database listing</a>
-<!--            <div th:switch="${user}">
-            if logged in
-                <div th:case="${true}"
-                <a th:href="@{/users/{id}/profile (id=${user.id})}">User profile</a>
-                <a th:href="@{/logout}">User profile</a>
-                </div>
-            if not logged in
-                <div th:case="${false}">
+            <div  sec:authorize="hasRole('ROLE_STUDENT')">
+                <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/users}">Users</a>
+                <a sec:authentication="name" th:href="@{/users/{id} (id=${user.id})}">Username</a>
+                <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form>
+            </div>
+
+            <div sec:authorize="isAnonymous()">
                 <a th:href="@{/login}">Login</a>
                 <a th:href="@{/register}">Register</a>
-                </div>
-            </div>-->
+            </div>
             <hr/>
             <br/>
         </div>

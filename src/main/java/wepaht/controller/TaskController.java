@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
 import wepaht.service.TaskResultService;
+import wepaht.service.UserService;
 
 @Controller
 @RequestMapping("tasks")
@@ -43,6 +44,9 @@ public class TaskController {
     @Autowired
     TaskResultService taskResultService;
 
+    @Autowired
+    UserService userService;
+
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
@@ -52,6 +56,7 @@ public class TaskController {
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("databases", databaseRepository.findAll());
+        model.addAttribute("user", userService.getAuthenticatedUser());
 
         // queries = new HashMap<Long,String>();
         return "tasks";
@@ -92,6 +97,7 @@ public class TaskController {
             model.addAttribute("queryResults", new Table("dummy"));
         }
 
+        model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("task", task);
 
         return "task";
@@ -101,6 +107,7 @@ public class TaskController {
     public String getTaskEditor(@PathVariable Long id, Model model) {
         model.addAttribute("task", taskRepository.findOne(id));
         model.addAttribute("databases", databaseRepository.findAll());
+        model.addAttribute("user", userService.getAuthenticatedUser());
         
         return "editTask";
     }

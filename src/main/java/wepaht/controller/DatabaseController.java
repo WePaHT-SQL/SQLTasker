@@ -9,6 +9,7 @@ import wepaht.domain.Database;
 import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 import wepaht.service.DatabaseService;
+import wepaht.service.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,15 @@ public class DatabaseController {
     @Autowired
     DatabaseRepository databaseRepository;
 
+    @Autowired
+    UserService userService;
+
     @RequestMapping(method = RequestMethod.GET)
     public String listDatabases(Model model) {
         List<Database> databases = databaseRepository.findAll();
-
+        model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("databases", databases);
+        model.addAttribute("user", userService.getAuthenticatedUser());
 
         return "databases";
     }
@@ -37,6 +42,7 @@ public class DatabaseController {
         Database database = databaseRepository.findOne(id);
         Map<String, Table> databaseTables = databaseService.performUpdateQuery(id, null);
 
+        model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("database", database);
         model.addAttribute("tables", databaseTables);
 

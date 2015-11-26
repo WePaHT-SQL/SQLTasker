@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.User;
 import wepaht.repository.UserRepository;
+import wepaht.service.UserService;
 
 @Controller
 public class UserController {
@@ -18,12 +19,15 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserService userService;
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value="users", method = RequestMethod.GET)
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("roles", roles);
+        model.addAttribute("user", userService.getAuthenticatedUser());
         return "users";
     }
 
@@ -32,6 +36,7 @@ public class UserController {
     public String getUser(Model model, @PathVariable Long id) {
         model.addAttribute("user", userRepository.findOne(id));
         model.addAttribute("roles", roles);
+        model.addAttribute("user", userService.getAuthenticatedUser());
         return "user";
     }
 
@@ -77,7 +82,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "register", method = RequestMethod.GET)
-    public String viewRegister() {
+    public String viewRegister(Model model) {
+        model.addAttribute("user", userService.getAuthenticatedUser());
         return "register";
     }
 }
