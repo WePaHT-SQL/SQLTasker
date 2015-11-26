@@ -21,13 +21,7 @@ public class PastQuery extends AbstractPersistable<Long> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    public PastQuery(String username, Long taskId , String pastQuery, boolean wasCorrect) {
-        this.username = username;
-        this.wasCorrect = wasCorrect;
-        this.pastQuery = pastQuery;
-        this.taskId = taskId;
-        this.date=new Date();
-    }
+
 
     private boolean wasCorrect;
 

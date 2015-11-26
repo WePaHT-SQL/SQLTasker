@@ -15,25 +15,28 @@ public class PastQueryService {
     @Autowired
     PastQueryRepository pastQueryRepository;
 
-    public void saveNewPastQuery(String username, Long taskId, String query, boolean isCorrect){
-        PastQuery pastQuery = new PastQuery(username,taskId,query,isCorrect);
+    public void saveNewPastQuery(String username, Long taskId, String query, boolean wasCorrect){
+        PastQuery pastQuery = new PastQuery();
+        pastQuery.setPastQuery(query);
+        pastQuery.setUsername(username);
+        pastQuery.setTaskId(taskId);
+        pastQuery.setWasCorrect(wasCorrect);
         pastQueryRepository.save(pastQuery);
 
     }
-    public List returnQuery(String username, Long taskId, Boolean isCorrect){
-            if(!taskId.equals("null")){
-                return pastQueryRepository.findByTaskId(taskId);
-            }
+    public List returnQuery(String username, Long taskId, String isCorrect) {
 
-                if(isCorrect=true){
-                 return   pastQueryRepository.findByWasCorrect(isCorrect);
-                }else if(isCorrect=false){
-                    return pastQueryRepository.findByWasCorrect(isCorrect);
-                }
-
-
-
+        if (taskId != null) {
+            return pastQueryRepository.findByTaskId(taskId);
+        }
+        if (isCorrect.equals("true")) {
+            return pastQueryRepository.findByWasCorrect(true);
+        } else if (isCorrect.equals("false")) {
+            return pastQueryRepository.findByWasCorrect(false);
+        }
+        if(!username.equals("allUsers")){
+           return pastQueryRepository.findByUsername(username);
+        }
         return pastQueryRepository.findAll();
     }
-
 }

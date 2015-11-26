@@ -35,11 +35,16 @@ public class PastQueryController {
     public String getPastQuery(RedirectAttributes redirectAttributes,
                                @RequestParam Long taskId,
                                @RequestParam String username,
-                               @RequestParam Boolean isCorrect){
+                               @RequestParam String isCorrect){
 
-         redirectAttributes.addFlashAttribute("messages", "Oboy!");
-          List pastQueries = pastQueryService.returnQuery(username, taskId, isCorrect);
-       redirectAttributes.addAttribute("pastQuery", pastQueries);
+
+        List pastQueries = pastQueryService.returnQuery(username, taskId, isCorrect);
+        if(pastQueries.isEmpty()){
+            redirectAttributes.addFlashAttribute("messages", "No queries!");
+        }else{
+            redirectAttributes.addFlashAttribute("messages", "Here are queries:");
+        }
+         redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
         return "redirect:/queries";
     }
 }

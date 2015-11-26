@@ -7,10 +7,10 @@
 <div>
     <div th:include="fragments/navbar_template :: navbar"></div>
 
-    <div th:include="fragments/messages_template :: messages"></div>
-    <form th:method="POST" th:action="@{/queries }">
 
-        <a>Task Id</a>
+    <form th:method="POST" th:action="@{/queries/}">
+
+        <a>Task Name</a>
         <select th:name="taskId">
             <option th:value="null" text="Any task">Any task</option>
             <option th:each="query : ${queries}"
@@ -20,26 +20,37 @@
 
         <a>Username</a>
         <select th:name="username">
-            <option th:value="null" text="All users">All users</option>
-            <option th:value="null" th:text="joo">joo</option>
+            <option th:value="allUsers" text="All users">All users</option>
+            <option th:value="MUISTA" th:text="joo">joo</option>
         </select>
 
         <a>Answer is correct?</a>
         <select th:name="isCorrect">
-            <option th:value="null" th:text="All"></option>
+            <option th:value="allUsers" th:text="All"></option>
             <option th:value="true" text="Only correct answers">Only correct answers</option>
             <option th:value="false" text="Only incorrect answers">Only incorrect answers</option>
         </select>
 
         <input type="submit" value="Submit"/>
 
-        <div th:each="qr : ${pastQuery}">
-            <a th:text ="${qr.username}"></a>
-            <a th:text = "${qr.taskId}"></a>
-            <a th:text = "${qr.pastQuery}"></a>
-            <a th:text = "${qr.wasCorrect}"></a>
-        </div>
+
     </form>
+    <div th:include="fragments/messages_template :: messages"></div>
+
+    <div th:each="qr : ${pastQueries}">
+            <table>
+                <tr>
+                    <div>
+                        <th th:text="${qr.taskId}">Column name</th>
+                        <th th:text="${qr.username}">Column name</th>
+                        <th th:text="${qr.pastQuery}">Column name</th>
+                        <th th:text="${qr.wasCorrect}">Column name</th>
+
+                    </div>
+                </tr>
+
+            </table>
+    </div>
 
 </div>
 </body>
