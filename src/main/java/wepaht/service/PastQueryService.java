@@ -15,7 +15,7 @@ public class PastQueryService {
     @Autowired
     PastQueryRepository pastQueryRepository;
 
-    public void saveNewPastQuery(String username, Long taskId, String query, boolean wasCorrect){
+    public void saveNewPastQuery(String username, Long taskId, String query, boolean wasCorrect) {
         PastQuery pastQuery = new PastQuery();
         pastQuery.setPastQuery(query);
         pastQuery.setUsername(username);
@@ -24,6 +24,7 @@ public class PastQueryService {
         pastQueryRepository.save(pastQuery);
 
     }
+
     public List returnQuery(String username, Long taskId, String isCorrect) {
 
         if (taskId != null) {
@@ -34,8 +35,8 @@ public class PastQueryService {
         } else if (isCorrect.equals("false")) {
             return pastQueryRepository.findByWasCorrect(false);
         }
-        if(!username.equals("allUsers")){
-           return pastQueryRepository.findByUsername(username);
+        if (!username.equals("allUsers")) {
+            return pastQueryRepository.findByUsername(username);
         }
         return pastQueryRepository.findAll();
     }
