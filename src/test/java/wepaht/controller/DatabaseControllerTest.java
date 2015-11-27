@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -70,7 +72,7 @@ public class DatabaseControllerTest {
 
     @Test
     public void statusIsOkTest() throws Exception{
-        mockMvc.perform(get(API_URI))
+        mockMvc.perform(get(API_URI).with(user("user")))
                 .andExpect(status().isOk()).andReturn();
     }
 
@@ -80,7 +82,7 @@ public class DatabaseControllerTest {
         String dbSchema = "CREATE TABLE WOW(id integer);" +
                             "INSERT INTO WOW (id) VALUES (7);";
 
-        mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema))
+        mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema).with(user("user").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
@@ -92,7 +94,7 @@ public class DatabaseControllerTest {
 
     @Test
     public void viewDatabaseContainsTables() throws Exception {
-        mockMvc.perform(get(API_URI + "/" + testdatabase.getId()))
+        mockMvc.perform(get(API_URI + "/" + testdatabase.getId()).with(user("user")))
                 .andExpect(model().attributeExists("tables"))
                 .andExpect(status().isOk())
                 .andReturn();
