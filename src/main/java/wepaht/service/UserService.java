@@ -14,7 +14,6 @@ public class UserService {
     private UserRepository userRepository;
 
     public User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByUsername(authentication.getName());
+        return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }

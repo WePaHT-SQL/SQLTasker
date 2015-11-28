@@ -37,7 +37,7 @@ public class JpaAuthenticationProvider implements AuthenticationProvider{
         if (!user.getRole().toUpperCase().equals("STUDENT") && user.getRole().equals("ADMIN")) grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_TEACHER"));
         if (!user.getRole().toUpperCase().equals("STUDENT")) grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+user.getRole()));
 
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), password, grantedAuthorities);
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
 
     @Override

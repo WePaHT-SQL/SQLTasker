@@ -50,6 +50,7 @@ public class UserController {
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
     public String create(@ModelAttribute User newUser, RedirectAttributes redirectAttributes) {
+        if (newUser.getRole() == null) newUser.setRole("STUDENT");
         userRepository.save(newUser);
         redirectAttributes.addFlashAttribute("messages", "User created succesfully, please log in.");
         if (userService.getAuthenticatedUser() != null && userService.getAuthenticatedUser().getRole().equals("ADMIN")) {
@@ -81,32 +82,33 @@ public class UserController {
             @RequestParam(required = false) String password,
             @RequestParam(required = false) String repassword) {
         
-        if (!password.equals(repassword)) {
+        if (password != null && !password.equals(repassword)) {
             redirectAttributes.addFlashAttribute("messages", "Passwords didn't match");
-            return "redirect:/users/{id}";
+            return "redirect:/";
         }
 
-        User user = userService.getAuthenticatedUser();
-        User olduser = userRepository.getOne(id);
+        User loggedUser = userService.getAuthenticatedUser();
+        User userToBeEdited = userRepository.getOne(id);
 
-        if (user.getId().equals(olduser.getId()) || user.getRole().equals("ADMIN") || user.getRole().equals("TEACHER")) {
-            if(user.getRole().equals("ADMIN") && user.getId().equals(olduser.getId()) && !user.getRole().equals(role)){
+        String loggedRole = loggedUser.getRole();
+
+        if (loggedRole.equals("ADMIN") || loggedUser.getId().equals(userToBeEdited.getId()) || loggedUser.getRole().equals("TEACHER")) {
+            if(loggedUser.getRole().equals("ADMIN") && loggedUser.getId().equals(userToBeEdited.getId()) && !loggedUser.getRole().equals(role)){
                 redirectAttributes.addFlashAttribute("messages", "Admins cannot demote themselves");
             }
 
-            if (olduser.getRole().equals("ADMIN")) {
-                olduser.setRole(role);
+            if (loggedUser.getRole().equals("ADMIN")) {
+                userToBeEdited.setRole(role);
             }
 
-            if (password != null || !password.isEmpty()) olduser.setPassword(password);
+            if (username != null || !username.isEmpty()) userToBeEdited.setUsername(username);
+            if (password != null || !password.isEmpty()) userToBeEdited.setPassword(password);
 
 
             redirectAttributes.addAttribute("id", id);
             redirectAttributes.addFlashAttribute("messages", "User modified!");
-            if (!username.equals(olduser.getUsername())) {
-                olduser.setUsername(username);
-                return "redirect:/logout";
-            }
+        } else {
+            redirectAttributes.addFlashAttribute("messages", "User modification failed!");
         }
         
 
