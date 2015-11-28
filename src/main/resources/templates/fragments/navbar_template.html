@@ -21,7 +21,7 @@ and open the template in the editor.
             <a th:href="@{/databases}">Database listing</a>
             <div  sec:authorize="hasRole('ROLE_STUDENT')">
                 <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/users}">Users</a>
-                <a sec:authentication="name" th:href="@{/users/{id} (id=${user.id})}">Username</a>
+                <a sec:authentication="name" th:href="@{/profile}">Username</a>
                 <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form>
             </div>
 

@@ -22,36 +22,40 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "users", method = RequestMethod.GET)
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("roles", roles);
-        model.addAttribute("user", userService.getAuthenticatedUser());
         return "users";
     }
 
+    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
     public String getUser(Model model, @PathVariable Long id) {
-        User user = userService.getAuthenticatedUser();
-        if (user.getId() != id && !user.getRole().equals("ADMIN")) {
-            return "redirect:/index";
-        }
-
         model.addAttribute("editedUser", userRepository.findOne(id));
         model.addAttribute("roles", roles);
-        model.addAttribute("user", userService.getAuthenticatedUser());
         return "user";
     }
 
-    @RequestMapping(value = "users", method = RequestMethod.POST)
+    @RequestMapping(value = "profile", method = RequestMethod.GET)
+    public String getProfile(Model model) {
+        User user = userService.getAuthenticatedUser();
+        model.addAttribute("editedUser", user);
+        model.addAttribute("roles", roles);
+        model.addAttribute("user", user);
+
+        return "user";
+    }
+
+    @RequestMapping(value = "register", method = RequestMethod.POST)
     public String create(@ModelAttribute User newUser, RedirectAttributes redirectAttributes) {
         userRepository.save(newUser);
-        redirectAttributes.addFlashAttribute("messages", "User created succesfully.");
-        if (userService.getAuthenticatedUser().getRole().equals("ADMIN")) {
+        redirectAttributes.addFlashAttribute("messages", "User created succesfully, please log in.");
+        if (userService.getAuthenticatedUser() != null && userService.getAuthenticatedUser().getRole().equals("ADMIN")) {
             return "redirect:/users";
         }
-        return "redirect:/index";
+        return "redirect:/";
     }
 
     @Secured("ROLE_ADMIN")
@@ -68,6 +72,7 @@ public class UserController {
         return "redirect:/users";
     }
 
+    @Secured("ROLE_ADMIN")
     @Transactional
     @RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
     public String update(@PathVariable Long id, RedirectAttributes redirectAttributes,
@@ -84,7 +89,7 @@ public class UserController {
         User user = userService.getAuthenticatedUser();
         User olduser = userRepository.getOne(id);
         
-        if(user.getRole().equals("ADMIN")&&user.getId().equals(olduser.getId())&!user.getRole().equals(role)){
+        if(user.getRole().equals("ADMIN") && user.getId().equals(olduser.getId()) && !user.getRole().equals(role)){
             redirectAttributes.addFlashAttribute("messages", "Admins cannot demote themselves");
         }
         olduser.setRole(role);
@@ -96,7 +101,7 @@ public class UserController {
             olduser.setUsername(username);
             return "redirect:/logout";
         }
-        return "redirect:/users/{id}";
+        return "redirect:/";
     }
 
     @RequestMapping(value = "register", method = RequestMethod.GET)
