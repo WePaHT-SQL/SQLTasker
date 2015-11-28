@@ -1,6 +1,7 @@
 package wepaht.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,7 @@ public class DatabaseController {
         return "database";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createDatabase(RedirectAttributes redirectAttributes, @ModelAttribute Database database) {
         if (databaseService.createDatabase(database.getName(), database.getDatabaseSchema())) {
