@@ -33,7 +33,6 @@ public class DatabaseController {
         List<Database> databases = databaseRepository.findAll();
         model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("databases", databases);
-        model.addAttribute("user", userService.getAuthenticatedUser());
 
         return "databases";
     }
@@ -43,7 +42,6 @@ public class DatabaseController {
         Database database = databaseRepository.findOne(id);
         Map<String, Table> databaseTables = databaseService.performUpdateQuery(id, null);
 
-        model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("database", database);
         model.addAttribute("tables", databaseTables);
 

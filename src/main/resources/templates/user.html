@@ -5,71 +5,70 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title th:value="${editedUser.username}">TODO supply a title</title>
-    </head>
-    <body>
-        <div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
+<head>
+    <title th:value="${editedUser.username}">Profile-page</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+<div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
+<h1 th:text="${editedUser.username}">User name</h1>
 
-            <div  sec:authorize="hasRole('ROLE_ADMIN')">
-                <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
-                    <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
-                </form>
-            </div>
+<div>
+    <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+        <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
+    </form>
 
-            <div>
-                <h2>Edit user</h2>
-                <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
-                    <div th:not="${editedUser.id.equals(user.id)}">
-                    <label>Username:</label>
-                    <br/>
-                    <input type="text" name="username" th:value="${editedUser.username}"/>
-                    </div>
-                    
-                    <div  sec:authorize="hasRole('ROLE_ADMIN')">
-                        <br/>
-                        <label>Role:</label>            
-                        <br/>
-                        <input type="radio" th:value="${editedUser.role}" name ="role" th:text="${editedUser.role}" checked="checked"/>
-                        <input type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
-                    </div>
+    <div>
+        <h2>Edit user</h2>
 
-                    <br/>
-
-                    <div th:if="${editedUser.id.equals(user.id)}">
-                        <label>New password:</label>
-                        <br/>
-                        <input type="text" name="password"></input>
-                        <br/>
-                        <label>Retype new password:</label>
-                        <br/>
-                        <input type="text" name="repassword"></input>
-                        <br/>            
-                    </div>
-
-                    <input type="submit" value="Save edits"/>
-                </form>
-
+        <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
+            <div th:not="${editedUser.id.equals(user.id)}">
+                <label>Username:</label>
                 <br/>
-                <hr/>
+                <input type="text" name="username" th:value="${editedUser.username}"/>
             </div>
+
+            <br/>
+            <label>Role:</label>
+            <br/>
+            <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
+                   checked="checked"/>
+            <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
+
+
+            <br/>
 
             <div>
-                <h2>User points</h2>
+                <label>New password:</label>
+                <br/>
+                <input type="password" name="password"></input>
+                <br/>
+                <label>Retype new password:</label>
+                <br/>
+                <input type="password" name="repassword"></input>
+                <br/>
             </div>
 
-        </div>
+            <input type="submit" value="Save edits"/>
+        </form>
+    </div>
 
-        <div  sec:authorize="hasRole('ROLE_ADMIN')">
-            <a th:href="@{/users}">Back to user listing</a>
-        </div>
+    <br/>
+    <hr/>
+</div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>
-    </body>
+<div>
+    <h2>User points</h2>
+</div>
+
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{/users}">Back to user listing</a>
+</div>
+
+<div th:include="fragments/footer_template :: footer"></div>
+<div th:include="fragments/scripts :: confirmScript"></div>
+</body>
 
 </html>

@@ -9,14 +9,14 @@ and open the template in the editor.
     <title>Tasks</title>
 </head>
 <body>
-<div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
 <div th:include="fragments/messages_template :: messages"></div>
 
-<div>
+<div sec:authorize="hasRole('ROLE_ADMIN')">
     <h2>Create new user</h2>
 
-    <form method="POST" th:action="@{/users}">
+    <form method="POST" th:action="@{/register}">
         <label>Username</label>
         <br/>
         <input type="text" name="username"/>
@@ -24,7 +24,7 @@ and open the template in the editor.
         <br/>
         <label>Password</label>
         <br/>
-        <input type="text" name="password"></input>
+        <input type="password" name="password"></input>
         <br/>
         <input type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
         <br/>
@@ -36,7 +36,7 @@ and open the template in the editor.
 </div>
 
 <div th:each="user : ${users}">
-    <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a></h3>
+    <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <a th:text="${user.role}">User Role</a></h3>
 </div>
 
 <div th:include="fragments/footer_template :: footer"></div>

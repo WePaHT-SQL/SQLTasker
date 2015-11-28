@@ -9,19 +9,21 @@ and open the template in the editor.
     <title th:text="${task.name}">TODO supply a title</title>
 </head>
 <body>
-<div th:include="fragments/navbar_template :: navbar (user = ${user})"></div>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
 <div th:include="fragments/messages_template :: messages"></div>
 
 <div>
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
+            <button type="submit" value="delete" Onclick="return Confirm();">Delete task</button>
+        </form>
 
-    <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
-        <button type="submit" value="delete" Onclick="return Confirm();">Delete task</button>
-    </form>
+        <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
+            <button type="submit" value="edit" Onclick="return Confirm();">Edit task</button>
+        </form>
+    </div>
 
-    <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
-        <button type="submit" value="edit" Onclick="return Confirm();">Edit task</button>
-    </form>
 
     <h2 th:text="${task.name}">Task name</h2>
 
