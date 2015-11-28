@@ -13,20 +13,25 @@ import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
 import wepaht.domain.Database;
 import wepaht.domain.Table;
+import wepaht.domain.User;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
+import wepaht.repository.UserRepository;
 import wepaht.service.DatabaseService;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -44,12 +49,15 @@ public class DatabaseControllerTest {
     @Autowired
     private DatabaseService dbService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private MockMvc mockMvc;
     private Database testdatabase = null;
 
     @Before
-    public void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
+    public void setUp() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         dbService.createDatabase("testDatabase4", "CREATE TABLE Persons"
                 + "(PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255));"
@@ -64,7 +72,7 @@ public class DatabaseControllerTest {
 
     @Test
     public void statusIsOkTest() throws Exception{
-        mockMvc.perform(get(API_URI))
+        mockMvc.perform(get(API_URI).with(user("user")))
                 .andExpect(status().isOk()).andReturn();
     }
 
@@ -74,7 +82,7 @@ public class DatabaseControllerTest {
         String dbSchema = "CREATE TABLE WOW(id integer);" +
                             "INSERT INTO WOW (id) VALUES (7);";
 
-        mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema))
+        mockMvc.perform(post(API_URI).param("name", dbName).param("databaseSchema", dbSchema).with(user("user").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("messages"))
                 .andReturn();
@@ -86,7 +94,7 @@ public class DatabaseControllerTest {
 
     @Test
     public void viewDatabaseContainsTables() throws Exception {
-        mockMvc.perform(get(API_URI + "/" + testdatabase.getId()))
+        mockMvc.perform(get(API_URI + "/" + testdatabase.getId()).with(user("user")))
                 .andExpect(model().attributeExists("tables"))
                 .andExpect(status().isOk())
                 .andReturn();

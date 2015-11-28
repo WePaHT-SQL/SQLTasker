@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tasks</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
+
+<div th:include="fragments/messages_template :: messages"></div>
+
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <h2>Create new user</h2>
+
+    <form method="POST" th:action="@{/register}">
+        <label>Username</label>
+        <br/>
+        <input type="text" name="username"/>
+
+        <br/>
+        <label>Password</label>
+        <br/>
+        <input type="password" name="password"></input>
+        <br/>
+        <input type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
+        <br/>
+        <input type="submit" value="Create user"/>
+    </form>
+
+    <br/>
+    <hr/>
+</div>
+
+<div th:each="user : ${users}">
+    <h3><a th:text="${user.username}" th:href="@{/users/{id}(id=${user.id})}">User name</a> | <a th:text="${user.role}">User Role</a></h3>
+</div>
+
+<div th:include="fragments/footer_template :: footer"></div>
+</body>
+</html>

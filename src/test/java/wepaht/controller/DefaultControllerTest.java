@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,7 +23,7 @@ import static org.junit.Assert.*;
 @WebAppConfiguration
 public class DefaultControllerTest {
 
-    private final String API_URI = "";
+    private final String API_URI = "/";
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -30,11 +32,11 @@ public class DefaultControllerTest {
 
     @Before
     public void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
     }
 
     @Test
-    public void statusIsRedirect() throws Exception{
+    public void statusIsOk() throws Exception{
         mockMvc.perform(get(API_URI)).andExpect(status().isOk());
     }
 }

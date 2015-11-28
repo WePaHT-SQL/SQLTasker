@@ -1,6 +1,7 @@
 package wepaht.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import wepaht.domain.Database;
 import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 import wepaht.service.DatabaseService;
+import wepaht.service.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -23,10 +25,13 @@ public class DatabaseController {
     @Autowired
     DatabaseRepository databaseRepository;
 
+    @Autowired
+    UserService userService;
+
     @RequestMapping(method = RequestMethod.GET)
     public String listDatabases(Model model) {
         List<Database> databases = databaseRepository.findAll();
-
+        model.addAttribute("user", userService.getAuthenticatedUser());
         model.addAttribute("databases", databases);
 
         return "databases";
@@ -43,6 +48,7 @@ public class DatabaseController {
         return "database";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createDatabase(RedirectAttributes redirectAttributes, @ModelAttribute Database database) {
         if (databaseService.createDatabase(database.getName(), database.getDatabaseSchema())) {
