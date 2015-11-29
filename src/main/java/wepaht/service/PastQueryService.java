@@ -27,6 +27,7 @@ public class PastQueryService {
 
     public List returnQuery(String username, Long taskId, String isCorrect) {
 
+
         if (taskId != null) {
             return pastQueryRepository.findByTaskId(taskId);
         }
@@ -39,5 +40,10 @@ public class PastQueryService {
             return pastQueryRepository.findByUsername(username);
         }
         return pastQueryRepository.findAll();
+    }
+
+
+    public List returnQueryOnlyByUsername(String username){
+        return pastQueryRepository.findByUsername(username);
     }
 }
