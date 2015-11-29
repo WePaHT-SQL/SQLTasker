@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.PastQuery;
 import wepaht.domain.User;
 import wepaht.repository.TaskRepository;
+import wepaht.repository.UserRepository;
 import wepaht.service.PastQueryService;
 import wepaht.service.UserService;
 
@@ -31,9 +32,13 @@ public class PastQueryController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserRepository userRepository;
+
     @RequestMapping(method = RequestMethod.GET)
     public String getPage(Model model) {
         model.addAttribute("queries", taskRepository.findAll());
+        model.addAttribute("users", userRepository.findAll());
         return "query";
     }
 

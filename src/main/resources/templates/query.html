@@ -21,7 +21,9 @@
             <a>Username</a>
             <select th:name="username">
                 <option th:value="allUsers" text="All users">All users</option>
-                <option th:value="MUISTA" th:text="joo">joo</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.getUsername()}"
+                        th:text="${user.getUsername()}"></option>
             </select>
 
             <a>Answer is correct?</a>
@@ -35,7 +37,7 @@
         </form>
     </div>
 
-    <div sec:authorize="hasRole('ROLE_STUDENT')">
+    <div sec:authorize="!hasRole('ROLE_TEACHER')">
         <form th:method="POST" th:action="@{/queries/student}">
             <button type="submit" name="My queries" th:value="Queries">My Queries</button>
         </form>
