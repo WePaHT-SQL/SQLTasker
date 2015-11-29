@@ -22,8 +22,7 @@ public class PastQuery extends AbstractPersistable<Long> {
     private Date date;
 
 
-
-    private boolean wasCorrect;
+    private boolean correctness;
 
     public String getUsername() {
         return username;
@@ -32,7 +31,6 @@ public class PastQuery extends AbstractPersistable<Long> {
     public void setUsername(String username) {
         this.username = username;
     }
-
 
 
     public Long getTaskId() {
@@ -51,11 +49,17 @@ public class PastQuery extends AbstractPersistable<Long> {
         this.pastQuery = pastQuery;
     }
 
-    public boolean isWasCorrect() {
-        return wasCorrect;
+    public boolean getCorrectness() {
+        return correctness;
     }
 
-    public void setWasCorrect(boolean wasCorrect) {
-        this.wasCorrect = wasCorrect;
+    public void setCorrectness(boolean correctness) {
+        this.correctness = correctness;
+    }
+    public void setDate(Date date){
+        this.date=date;
+    }
+    public Date getDate(){
+        return date;
     }
 }

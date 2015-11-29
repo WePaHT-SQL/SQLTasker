@@ -28,7 +28,7 @@
 
             <a>Answer is correct?</a>
             <select th:name="isCorrect">
-                <option th:value="allUsers" th:text="All"></option>
+                <option th:value="allAnswers" th:text="All"></option>
                 <option th:value="true" text="Only correct answers">Only correct answers</option>
                 <option th:value="false" text="Only incorrect answers">Only incorrect answers</option>
             </select>
@@ -52,7 +52,8 @@
                     <th th:text="${qr.taskId}">Column name</th>
                     <th th:text="${qr.username}">Column name</th>
                     <th th:text="${qr.pastQuery}">Column name</th>
-                    <th th:text="${qr.wasCorrect}">Column name</th>
+                    <th th:text="${qr.correctness}">Column name</th>
+                    <th th:text="${qr.date}">Column name</th>
                 </div>
             </tr>
         </table>

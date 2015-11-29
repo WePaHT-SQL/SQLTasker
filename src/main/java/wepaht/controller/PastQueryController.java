@@ -64,11 +64,13 @@ public class PastQueryController {
     public String getPastQueryByUsername(RedirectAttributes redirectAttributes) {
         String loggedUsername = userService.getAuthenticatedUser().getUsername();
         List pastQueries = pastQueryService.returnQueryOnlyByUsername(loggedUsername);
+
         if (pastQueries.isEmpty()) {
             redirectAttributes.addFlashAttribute("messages", "You have no past queries!");
         } else {
             redirectAttributes.addFlashAttribute("messages", "Here are your queries:");
         }
+
         redirectAttributes.addFlashAttribute("pastQueries", pastQueries);
         return "redirect:/queries";
     }
