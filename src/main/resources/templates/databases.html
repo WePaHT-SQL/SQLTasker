@@ -10,12 +10,12 @@ and open the template in the editor.
     </head>
     <body>
 
-        <div th:include="fragments/navbar_template :: navbar"></div>
+    <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
-            <h2>Create new Database-Schema</h2>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <h2>Create new Database</h2>
             <form method="POST" th:action="@{/databases}">
                 <label>Database Name</label>
                 <br/>
@@ -30,15 +30,14 @@ and open the template in the editor.
 
                 <br/>
 
-                <input type="submit" value="Submit New Schema"/>
+                <input type="submit" value="Submit New Database"/>
             </form>
             <hr/>
         </div>
 
-        <h2>Existing Schemas</h2>
+        <h2>Existing Databases</h2>
         <div th:each="database: ${databases}">
-            <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Task name</a></h3>
-            <a th:text="${database.databaseSchema}">Database schema</a>
+            <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Database name</a></h3>
             <br/>
         </div>
 

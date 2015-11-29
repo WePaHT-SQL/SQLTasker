@@ -8,6 +8,7 @@ package wepaht.controller;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
 import wepaht.service.PastQueryService;
 import wepaht.service.TaskResultService;
+import wepaht.service.UserService;
 
 @Controller
 @RequestMapping("tasks")
@@ -45,7 +47,11 @@ public class TaskController {
     TaskResultService taskResultService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     PastQueryService pastQueryService;
+
 
     @PostConstruct
     public void init() {
@@ -61,6 +67,7 @@ public class TaskController {
         return "tasks";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
                              @ModelAttribute Task task,
@@ -100,15 +107,18 @@ public class TaskController {
 
         return "task";
     }
-    
+
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getTaskEditor(@PathVariable Long id, Model model) {
         model.addAttribute("task", taskRepository.findOne(id));
         model.addAttribute("databases", databaseRepository.findAll());
+        model.addAttribute("user", userService.getAuthenticatedUser());
         
         return "editTask";
     }
-    
+
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
         taskRepository.delete(id);
@@ -116,7 +126,8 @@ public class TaskController {
         redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";
     }
-    
+
+    @Secured("ROLE_ADMIN")
     @Transactional
     @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
     public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,

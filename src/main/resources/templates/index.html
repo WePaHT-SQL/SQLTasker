@@ -9,11 +9,13 @@ and open the template in the editor.
         <title>SQL-tasker</title>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+    <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
+        <h2>Welcome to SQL-tasker!</h2>
+
+        <div sec:authorize="hasRole('STUDENT')">
             <h2><a th:href="@{/tasks}">To task listing</a></h2>
             <h2><a th:href="@{/databases}">To database listing</a></h2>
         </div>
