@@ -51,7 +51,7 @@ public class DatabaseService {
                 "USERS",
                 "VIEWS"));
     }
-    
+
     public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();
@@ -75,6 +75,7 @@ public class DatabaseService {
     /**
      * Lists tables of a single Database-entity. Example of use found in database.html-resource file and
      * DatabaseController.
+     *
      * @param databaseId ID of selected database
      * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
      * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
@@ -85,7 +86,7 @@ public class DatabaseService {
         Connection connection = null;
         String query = database.getDatabaseSchema();
 
-        if(updateQuery!= null) query += updateQuery;
+        if (updateQuery != null) query += updateQuery;
 
         try {
             connection = createConnectionToDatabase(database.getName(), query);
@@ -98,7 +99,8 @@ public class DatabaseService {
                 try {
                     table.setColumns(listTableColumns(tableName, finalConnection));
                     table.setRows(listTableRows(tableName, table.getColumns(), finalConnection));
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
                 listedDatabase.put(tableName, table);
             });
 
@@ -109,7 +111,8 @@ public class DatabaseService {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {}
+                } catch (SQLException e) {
+                }
             }
         }
 
@@ -118,8 +121,9 @@ public class DatabaseService {
 
     /**
      * Performs a query in the selected database.
+     *
      * @param databaseId ID of the selected database
-     * @param sqlQuery the query. Syntax must be correct in order this to work!
+     * @param sqlQuery   the query. Syntax must be correct in order this to work!
      * @return a table-object, which contains separately its' columns and rows. In case of sql error, returned table
      * will be named as the exception.
      */
@@ -149,7 +153,8 @@ public class DatabaseService {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {}
+                } catch (SQLException e) {
+                }
             }
         }
 
@@ -175,7 +180,8 @@ public class DatabaseService {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {}
+                } catch (SQLException e) {
+                }
             }
         }
 
@@ -236,7 +242,7 @@ public class DatabaseService {
         return tables;
     }
 
-    private List<String> listTableColumns(String tableName, Connection connection) throws Exception{
+    private List<String> listTableColumns(String tableName, Connection connection) throws Exception {
         ArrayList<String> columns = new ArrayList<>();
 
         DatabaseMetaData metaData = connection.getMetaData();

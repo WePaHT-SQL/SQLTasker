@@ -14,10 +14,7 @@ import java.util.*;
 
 import wepaht.domain.Task;
 
-/**
- *
- * @author Kake
- */
+
 @Service
 public class TaskResultService {
     

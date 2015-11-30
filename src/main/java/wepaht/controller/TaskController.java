@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 
 import wepaht.domain.Table;
 import wepaht.service.DatabaseService;
+import wepaht.service.PastQueryService;
 import wepaht.service.TaskResultService;
 import wepaht.service.UserService;
 
@@ -31,7 +32,7 @@ import wepaht.service.UserService;
 public class TaskController {
 
     private Map<Long, String> queries;
-    private String selectRegex = "select ([a-zA-Z0-9_]+){1}(, [a-zA-Z0-9_]+)* from [a-zA-Z0-9_]+( where [a-zA-Z0-9_]+='[a-zA-Z0-9_]+')?";
+    private String selectRegex = "select ([a-zA-Z0-9*_]+){1}(, [[a-zA-Z0-9*_]+)* from [[a-zA-Z0-9*_]+( where [[a-zA-Z0-9*_]+='[[a-zA-Z0-9*_]+')?";
 
     @Autowired
     TaskRepository taskRepository;
@@ -48,6 +49,10 @@ public class TaskController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    PastQueryService pastQueryService;
+
+
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
@@ -62,7 +67,7 @@ public class TaskController {
         return "tasks";
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ADMIN, ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
                              @ModelAttribute Task task,
@@ -103,7 +108,7 @@ public class TaskController {
         return "task";
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ADMIN, ROLE_TEACHER")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getTaskEditor(@PathVariable Long id, Model model) {
         model.addAttribute("task", taskRepository.findOne(id));
@@ -113,7 +118,7 @@ public class TaskController {
         return "editTask";
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ADMIN, ROLE_TEACHER")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
         taskRepository.delete(id);
@@ -122,7 +127,7 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ADMIN, ROLE_TEACHER")
     @Transactional
     @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
     public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
@@ -156,7 +161,10 @@ public class TaskController {
         redirectAttributes.addFlashAttribute("messages", "Query sent.");
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
-            redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
+            RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(),query,true);
+        }else{
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(),query,false);
         }
 
         Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);

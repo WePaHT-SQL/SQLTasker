@@ -34,8 +34,10 @@ import wepaht.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaht.domain.PastQuery;
 
 import wepaht.domain.Table;
+import wepaht.service.PastQueryService;
 
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -56,6 +58,9 @@ public class TaskControllerTest {
 
     @Autowired
     private DatabaseRepository databaseRepository;
+    
+    @Autowired
+    private PastQueryService pastQueryService;
 
     private MockMvc mockMvc = null;
 
@@ -193,5 +198,19 @@ public class TaskControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
+    }
+    
+    @Test
+    public void pastQueryIsSaved() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+
+        String query = "select firstname, lastname from testdb";
+        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("student").roles("STUDENT")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Query sent."))
+                .andReturn();
+                
+                assertNotNull(pastQueryService.returnQuery(null, task.getId(), null).get(0));        
     }
 }
