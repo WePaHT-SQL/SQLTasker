@@ -92,7 +92,7 @@ public class UserController {
 
         String loggedRole = loggedUser.getRole();
 
-        if (loggedRole.equals("ADMIN") || loggedUser.getId().equals(userToBeEdited.getId()) || loggedUser.getRole().equals("TEACHER")) {
+        if (loggedRole.equals("ADMIN") || loggedUser.getId().equals(userToBeEdited.getId())) {
             if(loggedUser.getRole().equals("ADMIN") && loggedUser.getId().equals(userToBeEdited.getId()) && !loggedUser.getRole().equals(role)){
                 redirectAttributes.addFlashAttribute("messages", "Admins cannot demote themselves");
             }

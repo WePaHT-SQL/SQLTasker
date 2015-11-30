@@ -67,7 +67,7 @@ public class TaskController {
         return "tasks";
     }
 
-    @Secured("ROLE_ADMIN, ROLE_TEACHER")
+    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
                              @ModelAttribute Task task,
@@ -108,7 +108,7 @@ public class TaskController {
         return "task";
     }
 
-    @Secured("ROLE_ADMIN, ROLE_TEACHER")
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getTaskEditor(@PathVariable Long id, Model model) {
         model.addAttribute("task", taskRepository.findOne(id));
@@ -118,7 +118,7 @@ public class TaskController {
         return "editTask";
     }
 
-    @Secured("ROLE_ADMIN, ROLE_TEACHER")
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
         taskRepository.delete(id);
@@ -127,7 +127,7 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-    @Secured("ROLE_ADMIN, ROLE_TEACHER")
+    @Secured("ROLE_ADMIN")
     @Transactional
     @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
     public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
