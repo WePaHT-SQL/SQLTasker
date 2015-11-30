@@ -7,7 +7,7 @@
 <div>
     <div th:include="fragments/navbar_template :: navbar"></div>
 
-    <div sec:authorize="!hasRole('ROLE_STUDENT')">
+    <div sec:authorize="hasRole('ROLE_TEACHER')">
         <form th:method="POST" th:action="@{/queries/}">
 
             <a>Task Name</a>

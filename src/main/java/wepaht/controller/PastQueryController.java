@@ -42,12 +42,12 @@ public class PastQueryController {
         return "query";
     }
 
-    @Secured("ROLE_TEACHER, ROLE_ADMIN")
+    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.POST)
     public String getPastQuery(RedirectAttributes redirectAttributes,
-                               @RequestParam Long taskId,
-                               @RequestParam String username,
-                               @RequestParam String isCorrect) {
+                               @RequestParam(required = false) Long taskId,
+                               @RequestParam(required = false) String username,
+                               @RequestParam(required = false) String isCorrect) {
 
         List pastQueries = pastQueryService.returnQuery(username, taskId, isCorrect);
         if (pastQueries.isEmpty()) {

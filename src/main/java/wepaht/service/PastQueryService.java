@@ -49,7 +49,7 @@ public class PastQueryService {
             return pastQueryRepository.findByCorrectness(correctnessChecker(isCorrect));
         }
 
-        if (!username.equals("allAnswers")) {
+        if (!username.equals("allUsers")) {
             return pastQueryRepository.findByUsername(username);
         }
         if (taskId != null) {
