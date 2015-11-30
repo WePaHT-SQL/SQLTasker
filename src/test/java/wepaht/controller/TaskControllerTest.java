@@ -1,10 +1,13 @@
 package wepaht.controller;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hibernate.jdbc.Expectation;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,6 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -20,8 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import wepaht.Application;
-import wepaht.domain.Database;
-import wepaht.domain.Task;
+import wepaht.domain.*;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
@@ -29,15 +34,14 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-import org.springframework.test.web.servlet.MvcResult;
+import wepaht.repository.UserRepository;
 import wepaht.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import wepaht.domain.PastQuery;
 
-import wepaht.domain.Table;
 import wepaht.service.PastQueryService;
+import wepaht.service.UserService;
 
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -62,12 +66,23 @@ public class TaskControllerTest {
     @Autowired
     private PastQueryService pastQueryService;
 
-    private MockMvc mockMvc = null;
+    @Autowired
+    UserRepository userRepository;
 
+    @Mock
+    UserService userServiceMock;
+
+    @InjectMocks
+    TaskController taskController;
+
+    private MockMvc mockMvc = null;
     private Database database = null;
+    private User admin = null;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         databaseService.createDatabase("testDatabase4", "CREATE TABLE Persons"
@@ -79,6 +94,19 @@ public class TaskControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByName("testDatabase4").get(0);
+        admin = new User();
+        admin.setUsername("test");
+        admin.setPassword("test");
+        admin.setRole("ADMIN");
+        admin = userRepository.save(admin);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);
+    }
+
+    @After
+    public void tearDown() {
+        if (admin != null) {
+            userRepository.delete(admin);
+        }
     }
 
     private Task randomTask() {
@@ -95,18 +123,18 @@ public class TaskControllerTest {
                 .andExpect(status().isOk());
     }
 
-//    @Test
-//    public void createSelectQuery() throws Exception {
-//        Task task = randomTask();
-//        task = taskRepository.save(task);
-//
-//        String query = "select firstname, lastname from testdb";
-//        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("student").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(view().name("redirect:/tasks/{id}"))
-//                .andExpect(flash().attribute("messages", "Query sent."))
-//                .andReturn();
-//    }
+    @Test
+    public void createSelectQuery() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+
+        String query = "select firstname, lastname from testdb";
+
+        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Query sent."))
+                .andReturn();
+    }
 
     @Test
     public void createTask() throws Exception {
@@ -125,31 +153,30 @@ public class TaskControllerTest {
         assertTrue(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
     }
 
-    // uses current user
-//    @Test
-//    public void querysTableIsSeen() throws Exception {
-//        Task testTask = randomTask();
-//        testTask = taskRepository.save(testTask);
-//
-//        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("student").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(flash().attributeExists("tables"))
-//                .andReturn();
-//    }
 
-    //uses current user
-//    @Test
-//    public void correctQueryIsAnnounced() throws Exception {
-//        Task testTask = randomTask();
-//        String solution = "SELECT firstname FROM persons;";
-//        testTask.setSolution(solution);
-//        testTask = taskRepository.save(testTask);
-//
-//        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", solution).with(user("student").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(flash().attribute("messages", "Your answer is correct!"))
-//                .andReturn();
-//    }
+    @Test
+    public void querysTableIsSeen() throws Exception {
+        Task testTask = randomTask();
+        testTask = taskRepository.save(testTask);
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("tables"))
+                .andReturn();
+    }
+
+    @Test
+    public void correctQueryIsAnnounced() throws Exception {
+        Task testTask = randomTask();
+        String solution = "SELECT firstname FROM persons;";
+        testTask.setSolution(solution);
+        testTask = taskRepository.save(testTask);
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Your answer is correct!"))
+                .andReturn();
+    }
 
 
 
@@ -187,33 +214,33 @@ public class TaskControllerTest {
         assertEquals("Test", testTask.getName());
     }
 
-    //uses current user
+
     //Update-, delete-, drop-, insert- and create-queries use the same method
-//    @Test
-//    public void updateTypeQuery() throws Exception {
-//        Task testTask = randomTask();
-//        taskRepository.save(testTask);
-//        String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
-//
-//        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query")
-//                    .param("query", sql)
-//                    .with(user("student").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(flash().attribute("messages", "Query sent."))
-//                .andReturn();
-//    }
+    @Test
+    public void updateTypeQuery() throws Exception {
+        Task testTask = randomTask();
+        taskRepository.save(testTask);
+        String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
+
+        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query")
+                    .param("query", sql)
+                    .with(user("test")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Query sent."))
+                .andReturn();
+    }
     
-//    @Test
-//    public void pastQueryIsSaved() throws Exception {
-//        Task task = randomTask();
-//        task = taskRepository.save(task);
-//
-//        String query = "select firstname, lastname from testdb";
-//        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("student").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(flash().attribute("messages", "Query sent."))
-//                .andReturn();
-//
-//                assertNotNull(pastQueryService.returnQuery(null, task.getId(), null).get(0));
-//    }
+    @Test
+    public void pastQueryIsSaved() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+
+        String query = "select firstname, lastname from testdb";
+        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Query sent."))
+                .andReturn();
+
+        assertNotNull(pastQueryService.returnQuery("allUsers", task.getId(), "allAnswers").get(0));
+    }
 }

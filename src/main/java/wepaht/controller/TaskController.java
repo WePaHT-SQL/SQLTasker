@@ -52,7 +52,6 @@ public class TaskController {
     @Autowired
     PastQueryService pastQueryService;
 
-
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
