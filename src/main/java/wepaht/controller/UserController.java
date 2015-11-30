@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.User;
 import wepaht.repository.UserRepository;
+import wepaht.service.PointService;
 import wepaht.service.UserService;
 
 @Controller
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    
+    @Autowired
+    PointService pointService;
 
     @Secured("ROLE_TEACHER")
     @RequestMapping(value = "users", method = RequestMethod.GET)
@@ -33,8 +37,10 @@ public class UserController {
     @Secured("ROLE_TEACHER")
     @RequestMapping(value = "users/{id}", method = RequestMethod.GET)
     public String getUser(Model model, @PathVariable Long id) {
-        model.addAttribute("editedUser", userRepository.findOne(id));
+        User editedUser = userRepository.findOne(id);
+        model.addAttribute("editedUser", editedUser);
         model.addAttribute("roles", roles);
+        model.addAttribute("points", pointService.getPointsByUsername(editedUser.getUsername()));
         return "user";
     }
 
@@ -44,6 +50,7 @@ public class UserController {
         model.addAttribute("editedUser", user);
         model.addAttribute("roles", roles);
         model.addAttribute("user", user);
+        model.addAttribute("points", pointService.getPointsByUsername(user.getUsername()));
 
         return "user";
     }
