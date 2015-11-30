@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>category</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
+
+<div th:include="fragments/messages_template :: messages"></div>
+
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <form th:method="DELETE" th:action="@{/categories/{id} (id=${category.id})}">
+            <button type="submit" value="delete" Onclick="return Confirm();">Delete category</button>
+        </form>
+
+        <form th:method="GET" th:action="@{/categories/{id} (id=${category.id})}">
+            <button type="submit" value="edit" Onclick="return Confirm();">Edit category</button>
+        </form>
+    </div>
+<h2 th:text="${category.name}">Task name</h2>
+
+<h3 th:if="${category.description}">Description</h3>
+<p th:text="${category.description}">Description</p>
+
+<h3 th:if="${category.taskList}">Category task list</h3>
+    <p th:each="task : ${category.taskList}">
+        <a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a>
+    </p>
+
+</body>
+</html>

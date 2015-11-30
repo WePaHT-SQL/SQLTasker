@@ -19,7 +19,7 @@ and open the template in the editor.
             <button type="submit" value="delete" Onclick="return Confirm();">Delete task</button>
         </form>
 
-        <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
+        <form th:method="POST" th:action="@{/tasks/{id}/edit (id=${task.id})}">
             <button type="submit" value="edit" Onclick="return Confirm();">Edit task</button>
         </form>
     </div>

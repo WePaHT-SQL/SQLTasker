@@ -17,6 +17,7 @@ public class Task extends AbstractPersistable<Long> {
     private String description;
     private String solution;
 
+
     @ManyToOne
     private Database database;
 
