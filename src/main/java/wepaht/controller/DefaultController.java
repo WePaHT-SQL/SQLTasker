@@ -5,10 +5,13 @@
  */
 package wepaht.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import wepaht.service.UserService;
 
 /**
  *
@@ -16,9 +19,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class DefaultController {
+
+    @Autowired
+    UserService userService;
     
-    @RequestMapping(value="*", method=RequestMethod.GET)
-    public String hello(){
+    @RequestMapping(value="/", method=RequestMethod.GET)
+    public String hello(Model model){
+        model.addAttribute("user", userService.getAuthenticatedUser());
         return "index";
     }
 }

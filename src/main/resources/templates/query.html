@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Past queries listing.</title>
+</head>
+<body>
+<div>
+    <div th:include="fragments/navbar_template :: navbar"></div>
+
+    <div sec:authorize="hasRole('ROLE_TEACHER')">
+        <form th:method="POST" th:action="@{/queries/}">
+
+            <a>Task Name</a>
+            <select th:name="taskId">
+                <option th:value="null" text="Any task">Any task</option>
+                <option th:each="query : ${queries}"
+                        th:value="${query.getId()}"
+                        th:text="${query.getName()}"></option>
+            </select>
+
+            <a>Username</a>
+            <select th:name="username">
+                <option th:value="allUsers" text="All users">All users</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.getUsername()}"
+                        th:text="${user.getUsername()}"></option>
+            </select>
+
+            <a>Answer is correct?</a>
+            <select th:name="isCorrect">
+                <option th:value="allAnswers" th:text="All"></option>
+                <option th:value="true" text="Only correct answers">Only correct answers</option>
+                <option th:value="false" text="Only incorrect answers">Only incorrect answers</option>
+            </select>
+
+            <input type="submit" value="Submit"/>
+        </form>
+    </div>
+
+    <div sec:authorize="hasRole('ROLE_STUDENT')">
+        <form th:method="POST" th:action="@{/queries/student}">
+            <button type="submit" name="My queries" th:value="Queries">My Queries</button>
+        </form>
+    </div>
+
+    <div th:include="fragments/messages_template :: messages"></div>
+
+    <div th:each="qr : ${pastQueries}">
+        <table>
+            <tr>
+                <div>
+                    <th th:text="${qr.taskId}">Column name</th>
+                    <th th:text="${qr.username}">Column name</th>
+                    <th th:text="${qr.pastQuery}">Column name</th>
+                    <th th:text="${qr.correctness}">Column name</th>
+                    <th th:text="${qr.date}">Column name</th>
+                </div>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

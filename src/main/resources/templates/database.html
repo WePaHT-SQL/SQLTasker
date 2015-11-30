@@ -9,55 +9,17 @@ and open the template in the editor.
         <title th:text="${database.name}">Database name</title>
     </head>
     <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+    <div th:include="fragments/navbar_template :: navbar "></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
         <!-- Example usage of listing database's tables -->
-        <div>
-            <h1 th:text="${database.name}">Database name</h1>
-
-            <div th:each="table : ${tables}">
-                <h2 th:text="${table.key}">Table name</h2>
-                <table th:if="${table.value}">
-                    <tr>
-                        <div th:each="column : ${table.value.columns}">
-                            <th th:text="${column}">Column name</th>
-                        </div>
-                    </tr>
-
-                    <tr th:each="row : ${table.value.rows}">
-                        <div th:each="cell : ${row}">
-                            <td th:text="${cell}">Cell value</td>
-                        </div>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <h1 th:text="${database.name}">Database name</h1>
+        <p th:text="${database.databaseSchema}">Database create-tables</p>
+        <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 
         <br/>
-
-        <!-- Example usage of SELECT query to a database
-        <div>
-            <h1 th:text="${query.name}">Testing</h1>
-
-            <table>
-                <tr>
-                    <div th:each="column : ${query.columns}">
-                        <th th:text="${column}">Column name</th>
-                    </div>
-                </tr>
-
-                <tr th:each="row : ${query.rows}">
-                    <div th:each="cell : ${row}">
-                        <td th:text="${cell}">Cell value</td>
-                    </div>
-                </tr>
-            </table>
-        </div>
-        -->
-        <br/>
-        <a th:href="@{/databases}">Back to listing</a>
+        <a th:href="@{/databases}">Back to Database listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
     </body>

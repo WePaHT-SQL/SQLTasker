@@ -76,17 +76,74 @@ public class DatabaseServiceTest {
         dbService.createDatabase(testDbName, testDbCreateTable);
         Database testDb = dbRepository.findByName(testDbName).get(0);
 
-        Map<String, Table> table = dbService.listDatabase(testDb.getId());
+        Map<String, Table> table = dbService.performUpdateQuery(testDb.getId(), null);
 
         assertTrue(table.keySet().contains(tableName.toUpperCase()));
     }
 
     @Test
     public void listedDatabaseContainsCreatedTables() throws Exception {
-        Map<String, Table> tables = dbService.listDatabase(biggerDatabase.getId());
+        Map<String, Table> tables = dbService.performUpdateQuery(biggerDatabase.getId(), null);
         List<String> tableNames = new ArrayList<>(tables.keySet());
         Table theTable = tables.get(tableNames.get(0));
 
         assertTrue(tables.keySet().size() == 1 && theTable.getColumns().size() == 5 && theTable.getRows().size() == 3);
+    }
+
+    @Test
+    public void insertQueryCanBePerformed() throws Exception {
+        int personId = 10;
+        String lastName = "Testilä";
+        String firstName = "Teemu";
+        String address = "Testaajankatu";
+        String city = "Tapanila";
+
+        String sql = "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY) " +
+                "VALUES ('" + personId +"', '" + lastName + "', '" + firstName + "', '" + address + "', '" + city + "');";
+
+        Map<String, Table> tables = dbService.performQuery(biggerDatabase.getId(), sql);
+        Table personTable = tables.get(tables.keySet().toArray()[0]);
+
+        assertTrue(personTable.getRows().size() == 4);
+    }
+
+    @Test
+    public void deleteQueryCanBePerformed() throws Exception {
+        String sql = "DELETE FROM Persons WHERE PersonID=1;";
+
+        Map<String, Table> tables = dbService.performQuery(biggerDatabase.getId(), sql);
+        Table personTable = tables.get(tables.keySet().toArray()[0]);
+
+        assertTrue(personTable.getRows().size() == 2);
+    }
+
+    @Test
+    public void createQueryCanBePerformed() {
+        String sql = "CREATE TABLE Testing (ID int, Foo varchar(255));";
+
+        Map<String, Table> tables = dbService.performQuery(biggerDatabase.getId(), sql);
+
+        assertTrue(tables.keySet().size() == 2);
+    }
+
+    public void dropQueryCanBePerformed() {
+        String sql = "DROP TABLE persons;";
+
+        Map<String, Table> tables = dbService.performQuery(biggerDatabase.getId(), sql);
+
+        assertTrue(tables.keySet().size() == 0);
+    }
+
+    public void updateQueryCanBePerformed() {
+        String changedCell = "Helesinki";
+        String sql = "UPDATE persons SET city='" + changedCell + "' WHERE personid=3;";
+
+        Map<String, Table> tables = dbService.performQuery(biggerDatabase.getId(), sql);
+        Table personsTable = tables.get(tables.keySet().toArray()[0]);
+
+        Boolean isUpdated = false;
+        for (List<String> row : personsTable.getRows()) if (row.contains(changedCell)) isUpdated = true;
+
+        assertTrue(isUpdated);
     }
 }

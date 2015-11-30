@@ -1,6 +1,5 @@
 package wepaht.service;
 
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wepaht.domain.Database;
@@ -8,7 +7,6 @@ import wepaht.domain.Table;
 import wepaht.repository.DatabaseRepository;
 
 import javax.annotation.PostConstruct;
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.*;
 
@@ -53,7 +51,7 @@ public class DatabaseService {
                 "USERS",
                 "VIEWS"));
     }
-    
+
     public boolean createDatabase(String name, String createTable) {
         try {
             Database db = new Database();
@@ -77,17 +75,21 @@ public class DatabaseService {
     /**
      * Lists tables of a single Database-entity. Example of use found in database.html-resource file and
      * DatabaseController.
+     *
      * @param databaseId ID of selected database
      * @return A map in which String-object indicates the name of certain table, and Table contains its' columns
      * and rows in separate lists. In case of broken database, the only returned table name is "ERROR".
      */
-    public Map<String, Table> listDatabase(Long databaseId) {
+    public Map<String, Table> performUpdateQuery(Long databaseId, String updateQuery) {
         HashMap<String, Table> listedDatabase = new HashMap<>();
         Database database = databaseRepository.findOne(databaseId);
         Connection connection = null;
+        String query = database.getDatabaseSchema();
+
+        if (updateQuery != null) query += updateQuery;
 
         try {
-            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+            connection = createConnectionToDatabase(database.getName(), query);
 
             List<String> tables = listDatabaseTables(connection);
 
@@ -97,7 +99,8 @@ public class DatabaseService {
                 try {
                     table.setColumns(listTableColumns(tableName, finalConnection));
                     table.setRows(listTableRows(tableName, table.getColumns(), finalConnection));
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
                 listedDatabase.put(tableName, table);
             });
 
@@ -108,7 +111,8 @@ public class DatabaseService {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {}
+                } catch (SQLException e) {
+                }
             }
         }
 
@@ -116,15 +120,21 @@ public class DatabaseService {
     }
 
     /**
-     * Performs a SELECT-query in the selected database. Example of use found in database.html-resource file and
-     * DatabaseController.
+     * Performs a query in the selected database.
+     *
      * @param databaseId ID of the selected database
-     * @param sqlQuery the query. Syntax must be correct in order this to work!
-     * @return a table-object, which contains separately its' columns and rows. In case of syntax error, table-object's
-     * will be named "ERROR".
+     * @param sqlQuery   the query. Syntax must be correct in order this to work!
+     * @return a table-object, which contains separately its' columns and rows. In case of sql error, returned table
+     * will be named as the exception.
      */
-    public Table performSelectQuery(Long databaseId, String sqlQuery) {
-        Table queryResult = new Table("query");
+    public Map<String, Table> performQuery(Long databaseId, String sqlQuery) {
+
+        if (isUpdateQuery(sqlQuery)) {
+            return performUpdateQuery(databaseId, sqlQuery);
+        }
+
+        Map<String, Table> queryResult = new HashMap<>();
+        Table table = new Table("query");
         Database database = databaseRepository.findOne(databaseId);
         Statement statement = null;
         Connection connection = null;
@@ -134,41 +144,57 @@ public class DatabaseService {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sqlQuery);
 
-            queryResult.setColumns(listQueryColumns(resultSet));
-            queryResult.setRows(listQueryRows(resultSet, queryResult.getColumns()));
+            table.setColumns(listQueryColumns(resultSet));
+            table.setRows(listQueryRows(resultSet, table.getColumns()));
+            queryResult.put("Query", table);
         } catch (Exception e) {
-            queryResult.setName(e.toString());
+            queryResult.put(e.toString(), null);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {}
+                } catch (SQLException e) {
+                }
             }
         }
 
         return queryResult;
     }
 
-    public boolean isValidSelectQuery(Database database, String sqlQuery) {
+    public boolean isValidQuery(Database database, String sqlQuery) {
         Statement statement = null;
         Connection connection = null;
         Boolean isValid = true;
 
         try {
-            connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
-            statement = connection.createStatement();
-            statement.executeQuery(sqlQuery);
+            if (isUpdateQuery(sqlQuery)) {
+                connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema() + sqlQuery);
+            } else {
+                connection = createConnectionToDatabase(database.getName(), database.getDatabaseSchema());
+                statement = connection.createStatement();
+                statement.executeQuery(sqlQuery);
+            }
         } catch (Exception e) {
             isValid = false;
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {}
+                } catch (SQLException e) {
+                }
             }
         }
 
         return isValid;
+    }
+
+    private boolean isUpdateQuery(String sql) {
+        sql = sql.toUpperCase();
+        if (sql.contains("INSERT") || sql.contains("CREATE") || sql.contains("DROP") || sql.contains("UPDATE") || sql.contains("DELETE")) {
+            return true;
+        }
+
+        return false;
     }
 
     private List<List<String>> listQueryRows(ResultSet resultSet, List<String> columns) throws Exception {
@@ -216,7 +242,7 @@ public class DatabaseService {
         return tables;
     }
 
-    private List<String> listTableColumns(String tableName, Connection connection) throws Exception{
+    private List<String> listTableColumns(String tableName, Connection connection) throws Exception {
         ArrayList<String> columns = new ArrayList<>();
 
         DatabaseMetaData metaData = connection.getMetaData();

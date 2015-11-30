@@ -10,8 +10,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import wepaht.domain.Database;
+import wepaht.domain.User;
 import wepaht.domain.Task;
+import wepaht.repository.UserRepository;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 import wepaht.service.DatabaseService;
@@ -33,6 +34,9 @@ public class DevProfile {
     @Autowired
     private DatabaseRepository databaseRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostConstruct
     public void init() {
 
@@ -48,6 +52,25 @@ public class DevProfile {
         for (int i = 0; i < 10; i++) {
             taskRepository.save(randomTask());
         }
+
+        User student = new User();
+        student.setUsername("0123456789");
+        student.setPassword("opiskelija");
+        student.setRole("STUDENT");
+
+        User teacher = new User();
+        teacher.setUsername("avihavai");
+        teacher.setPassword("vihainen");
+        teacher.setRole("ADMIN");
+
+        User assistant = new User();
+        assistant.setUsername("assistant");
+        assistant.setPassword("iassist");
+        assistant.setRole("TEACHER");
+
+        userRepository.save(student);
+        userRepository.save(teacher);
+        userRepository.save(assistant);
     }
 
     public Task randomTask() {
