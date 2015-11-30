@@ -7,7 +7,7 @@
 <div>
     <div th:include="fragments/navbar_template :: navbar"></div>
 
-    <div sec:authorize="hasRole('ROLE_TEACHER')">
+    <div sec:authorize="!hasRole('ROLE_STUDENT')">
         <form th:method="POST" th:action="@{/queries/}">
 
             <a>Task Name</a>
@@ -37,7 +37,7 @@
         </form>
     </div>
 
-    <div sec:authorize="!hasRole('ROLE_TEACHER')">
+    <div sec:authorize="hasRole('ROLE_STUDENT')">
         <form th:method="POST" th:action="@{/queries/student}">
             <button type="submit" name="My queries" th:value="Queries">My Queries</button>
         </form>

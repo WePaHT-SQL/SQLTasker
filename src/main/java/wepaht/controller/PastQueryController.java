@@ -42,7 +42,7 @@ public class PastQueryController {
         return "query";
     }
 
-    @Secured("ROLE_TEACHER")
+    @Secured("ROLE_TEACHER, ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String getPastQuery(RedirectAttributes redirectAttributes,
                                @RequestParam Long taskId,
