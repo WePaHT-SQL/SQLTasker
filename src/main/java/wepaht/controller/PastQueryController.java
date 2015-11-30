@@ -46,8 +46,8 @@ public class PastQueryController {
     @RequestMapping(method = RequestMethod.POST)
     public String getPastQuery(RedirectAttributes redirectAttributes,
                                @RequestParam(required = false) Long taskId,
-                               @RequestParam(required = false) String username,
-                               @RequestParam(required = false) String isCorrect) {
+                               @RequestParam String username,
+                               @RequestParam String isCorrect) {
 
         List pastQueries = pastQueryService.returnQuery(username, taskId, isCorrect);
         if (pastQueries.isEmpty()) {

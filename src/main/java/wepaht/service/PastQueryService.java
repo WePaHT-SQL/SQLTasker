@@ -45,7 +45,7 @@ public class PastQueryService {
             return pastQueryRepository.findByCorrectnessAndUsername(correctnessChecker(isCorrect), username);
         }
 
-        if (!isCorrect.equals("true")) {
+        if (!isCorrect.equals("allAnswers")) {
             return pastQueryRepository.findByCorrectness(correctnessChecker(isCorrect));
         }
 
