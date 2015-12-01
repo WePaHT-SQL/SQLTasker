@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Category;
 import wepaht.domain.Task;
 import wepaht.repository.CategoryRepository;
+import wepaht.repository.TaskRepository;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -29,15 +30,20 @@ public class CategoryController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
     @RequestMapping(method = RequestMethod.GET)
     public String getCategories(Model model){
         model.addAttribute("categories",categoryRepository.findAll());
+        model.addAttribute("tasks", taskRepository.findAll());
         return "categories";
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(RedirectAttributes redirectAttributes,
-                             @Valid @ModelAttribute Category category, BindingResult result){
+                             @Valid @ModelAttribute Category category, BindingResult result,
+                                 @RequestParam List<Long> taskIds){
 
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("messages", "Errors in field! Check name, start date and expiration date.");
@@ -53,8 +59,11 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("messages", "Expired date is before starting date! Creation has failed!");
             return "redirect:/categories";
         }
-
-        category.setTaskList(new ArrayList<>());
+        List<Task> tasks = new ArrayList<>();
+        for (Long taskId :taskIds){
+            tasks.add(taskRepository.findOne(taskId));
+        }
+        category.setTaskList(tasks);
         categoryRepository.save(category);
         redirectAttributes.addFlashAttribute("messages", "Category has been created!");
         return "redirect:/categories";
@@ -76,7 +85,7 @@ public class CategoryController {
 
     @Transactional
     @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
-    public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
+    public String updateCategory(@PathVariable Long id, RedirectAttributes redirectAttributes,
                              @RequestParam String name,
                              @RequestParam Date startDate,
                              @RequestParam Date expiredDate,
@@ -88,6 +97,13 @@ public class CategoryController {
         oldCategory.setStartDate(startDate);
         redirectAttributes.addFlashAttribute("messages", "Category modified!");
         return "redirect:/categories/{id}";
+    }
+
+    @RequestMapping(value ="/{id}/edit", method = RequestMethod.GET)
+    public String getEditCategoryPage(@PathVariable Long id, Model model){
+        model.addAttribute("category", categoryRepository.findOne(id));
+
+        return "categoryEdit";
     }
 
 

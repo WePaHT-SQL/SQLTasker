@@ -28,7 +28,6 @@ public class Category extends AbstractPersistable<Long> {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern="dd-MM-yyyy")
     @NotNull
-    @Future
     private Date expiredDate;
 
     private String description;

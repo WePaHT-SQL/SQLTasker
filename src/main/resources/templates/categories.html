@@ -2,11 +2,16 @@
 <html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Title</title>
+
+    <div th:include="fragments/bootstrap :: bootstrap"></div>
+
 </head>
 <body>
-<div th:include="fragments/navbar_template :: navbar"></div>
 
+
+<div th:include="fragments/navbar_template :: navbar"></div>
 <div th:include="fragments/messages_template :: messages"></div>
+
 <div sec:authorize="hasRole('ROLE_ADMIN')">
     <h2>Create new category</h2>
 
@@ -22,17 +27,65 @@
         <br/>
         <label>Start date:</label><input type="date" name="startDate"/>
         <br/>
-        <label>Expired date: </label><input type="date"  name="expiredDate"/>
+        <label>Expired date: </label><input type="date" name="expiredDate"/>
         <br/>
 
-        <input type="submit" value="Create Task"/>
+        <div>
+            <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                    data-toggle="modal" data-target="#taskModal">
+                Chose Categories
+            </button>
+        </div>
+        <div class="modal fade" id="taskModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Chose categories</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+
+                        <div class="checkbox" th:each="task : ${tasks}" style="border: none">
+                            <label>
+                                <input type="checkbox" name="taskIds"  th:value="${task.id}"/>
+
+                                <p class="taskName" th:text="${task.name}"></p>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <input type="submit" value="Create Category"/>
     </form>
 
     <div th:each="category: ${categories}">
         <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
     </div>
 
+
     <div th:include="fragments/footer_template :: footer"></div>
 </div>
+<script>
+
+        var $tasks = $('.checkbox label');
+        $("#search").keyup(function () {
+            var inputText = $.trim($(this).val()).replace(/ +/g, '').toLowerCase();
+            $areas.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, '').toLowerCase();
+                return !~text.indexOf(inputText);
+            }).hide();
+        });
+
+</script>
 </body>
+
+
+
 </html>

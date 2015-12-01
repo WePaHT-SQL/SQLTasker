@@ -18,6 +18,8 @@ public class Task extends AbstractPersistable<Long> {
     private String solution;
 
 
+
+
     @ManyToOne
     private Database database;
 
@@ -70,4 +72,5 @@ public class Task extends AbstractPersistable<Long> {
     public void setSolution(String solution) {
         this.solution = solution;
     }
+
 }
