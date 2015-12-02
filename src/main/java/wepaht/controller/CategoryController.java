@@ -24,7 +24,6 @@ import java.util.List;
 
 @Controller
 @RequestMapping("categories")
-@Secured("ROLE_ADMIN")
 public class CategoryController {
 
     @Autowired
@@ -40,6 +39,7 @@ public class CategoryController {
         return "categories";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(RedirectAttributes redirectAttributes,
                                  @Valid @ModelAttribute Category category,
@@ -88,7 +88,7 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
-
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateCategory(@PathVariable Long id, RedirectAttributes redirectAttributes,
                                  @RequestParam String name,
@@ -113,6 +113,7 @@ public class CategoryController {
         return "redirect:/categories/{id}";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getEditCategoryPage(@PathVariable Long id,
                                       Model model) {
