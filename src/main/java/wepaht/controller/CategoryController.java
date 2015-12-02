@@ -34,16 +34,17 @@ public class CategoryController {
     private TaskRepository taskRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getCategories(Model model){
-        model.addAttribute("categories",categoryRepository.findAll());
+    public String getCategories(Model model) {
+        model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("tasks", taskRepository.findAll());
         return "categories";
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(RedirectAttributes redirectAttributes,
-                             @Valid @ModelAttribute Category category, BindingResult result,
-                                 @RequestParam List<Long> taskIds){
+                                 @Valid @ModelAttribute Category category,
+                                 BindingResult result,
+                                 @RequestParam(required = false) List<Long> taskIds) {
 
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("messages", "Errors in field! Check name, start date and expiration date.");
@@ -55,61 +56,75 @@ public class CategoryController {
             return "redirect:/categories";
         }
 
-        if (category.getExpiredDate().before(category.getStartDate())){
+        if (category.getExpiredDate().before(category.getStartDate())) {
             redirectAttributes.addFlashAttribute("messages", "Expired date is before starting date! Creation has failed!");
             return "redirect:/categories";
         }
         List<Task> tasks = new ArrayList<>();
-        for (Long taskId :taskIds){
-            tasks.add(taskRepository.findOne(taskId));
+        if (taskIds != null) {
+            for (Long taskId : taskIds) {
+                tasks.add(taskRepository.findOne(taskId));
+            }
         }
         category.setTaskList(tasks);
         categoryRepository.save(category);
         redirectAttributes.addFlashAttribute("messages", "Category has been created!");
         return "redirect:/categories";
     }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getCategory(@PathVariable Long id, Model model) throws Exception {
+    public String getCategory(@PathVariable Long id,
+                              Model model) throws Exception {
         model.addAttribute("category", categoryRepository.findOne(id));
         return "category";
     }
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public String removeCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
+    public String removeCategory(@PathVariable Long id,
+                                 RedirectAttributes redirectAttributes) throws Exception {
         categoryRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Category deleted!");
         return "redirect:/categories";
     }
 
 
-    @Transactional
-    @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateCategory(@PathVariable Long id, RedirectAttributes redirectAttributes,
-                             @RequestParam String name,
-                             @RequestParam Date startDate,
-                             @RequestParam Date expiredDate,
-                             @RequestParam String description){
+                                 @RequestParam String name,
+                                 @RequestParam Date startDate,
+                                 @RequestParam Date expiredDate,
+                                 @RequestParam String description,
+                                 @RequestParam(required = false) List<Long> taskIds) {
         Category oldCategory = categoryRepository.findOne(id);
         oldCategory.setName(name);
         oldCategory.setDescription(description);
         oldCategory.setExpiredDate(expiredDate);
         oldCategory.setStartDate(startDate);
+        List<Task> tasks = new ArrayList<>();
+        if (taskIds != null) {
+            for (Long taskId : taskIds) {
+                tasks.add(taskRepository.findOne(taskId));
+            }
+        }
+        oldCategory.setTaskList(tasks);
+        categoryRepository.save(oldCategory);
         redirectAttributes.addFlashAttribute("messages", "Category modified!");
         return "redirect:/categories/{id}";
     }
 
-    @RequestMapping(value ="/{id}/edit", method = RequestMethod.GET)
-    public String getEditCategoryPage(@PathVariable Long id, Model model){
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String getEditCategoryPage(@PathVariable Long id,
+                                      Model model) {
         model.addAttribute("category", categoryRepository.findOne(id));
-
+        model.addAttribute("allTasks", taskRepository.findAll());
         return "categoryEdit";
     }
 
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setLenient(true);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));
     }

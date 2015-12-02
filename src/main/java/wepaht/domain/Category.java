@@ -21,12 +21,10 @@ public class Category extends AbstractPersistable<Long> {
     private List<Task> taskList;
 
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern="dd-MM-yyyy")
     @NotNull
     private Date startDate;
 
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern="dd-MM-yyyy")
     @NotNull
     private Date expiredDate;
 

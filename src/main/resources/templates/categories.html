@@ -49,7 +49,7 @@
 
                         <div class="checkbox" th:each="task : ${tasks}" style="border: none">
                             <label>
-                                <input type="checkbox" name="taskIds"  th:value="${task.id}"/>
+                                <input type="checkbox" name="taskIds" th:value="${task.id}"/>
 
                                 <p class="taskName" th:text="${task.name}"></p>
                             </label>
@@ -72,20 +72,8 @@
 
     <div th:include="fragments/footer_template :: footer"></div>
 </div>
-<script>
-
-        var $tasks = $('.checkbox label');
-        $("#search").keyup(function () {
-            var inputText = $.trim($(this).val()).replace(/ +/g, '').toLowerCase();
-            $areas.show().filter(function () {
-                var text = $(this).text().replace(/\s+/g, '').toLowerCase();
-                return !~text.indexOf(inputText);
-            }).hide();
-        });
-
-</script>
+<div th:include="fragments/scripts :: searchScript"></div>
 </body>
-
 
 
 </html>

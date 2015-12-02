@@ -8,20 +8,20 @@
 <div th:include="fragments/navbar_template :: navbar"></div>
 
 <div th:include="fragments/messages_template :: messages"></div>
-<form method="POST" th:action="@{/categories}">
+<form method="POST" th:action="@{/categories/{id}/edit (id=${category.id})}">
 
     <label>Category name</label>
     <br/>
-    <input type="text" name="name" />
+    <input type="text" name="name" th:value="${category.name}"/>
     <br/>
     <label>Description</label>
     <br/>
-    <textarea name="description"></textarea>
+    <textarea name="description" th:text="${category.description}"></textarea>
     <br/>
     <br/>
-    <label>Start date:</label><input type="date" name="startDate"/>
+    <label>Start date:</label><input type="date" name="startDate" value="category.startDate"/>
     <br/>
-    <label>Expired date: </label><input type="date" name="expiredDate"/>
+    <label>Expired date: </label><input type="date" name="expiredDate" value="category.endDate"/>
     <br/>
 
     <div>
@@ -30,27 +30,32 @@
             Chose Categories
         </button>
     </div>
+
     <div class="modal fade" id="taskModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Chose categories</h4>
+                    <h4 class="modal-title">Choose tasks </h4>
                 </div>
+
                 <div class="modal-body">
-                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+                    <input type="text" id="search" placeholder="Type to search" class="topspace" />
 
-                    <div class="checkbox" th:each="task : ${tasks}" style="border: none">
-                        <label>
-                            <input type="checkbox" name="taskIds"  th:value="${task.id}"/>
-
+                    <div class="checkbox" th:each="task : ${allTasks}" style="border: none" >
+                        <label th:if="${#lists.contains(category.taskList, task)}">
+                            <input type="checkbox" name="taskIds" th:value="${task.id}" checked="true" />
+                            <p class="taskName" th:text="${task.name}"></p>
+                        </label>
+                        <label th:unless="${#lists.contains(category.taskList, task)}">
+                            <input type="checkbox" name="taskIds" th:value="${task.id}" />
                             <p class="taskName" th:text="${task.name}"></p>
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse</button>
+                    <button type="button" class="btn btn-primary"  data-dismiss="modal" >Choose</button>
                 </div>
             </div>
 
@@ -59,5 +64,6 @@
     <input type="submit" value="Update Category"/>
 </form>
 
+<div th:include="fragments/scripts :: searchScript"></div>
 </body>
 </html>
