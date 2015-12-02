@@ -21,7 +21,9 @@
     </div>
 
 <h2 th:text="${category.name}">Task name</h2>
+<a>When task can be started:</a>
 <p th:text="${category.startDate}">Description</p>
+<a>Last date when task can be done:</a>
 <p th:text="${category.expiredDate}">Description</p>
 <h3 th:if="${category.description}">Description</h3>
 <p th:text="${category.description}">Description</p>
