@@ -11,6 +11,23 @@
     {
       return confirm("Are you sure?");
     }
+
+
+    </script>
+</div>
+<div th:fragment="searchScript">
+    <script>
+
+        var $tasks = $('.checkbox label');
+        $("#search").keyup(function ()
+        {
+            var inputText = $.trim($(this).val()).replace(/ +/g, '').toLowerCase();
+            $tasks.show().filter(function ()
+            {
+                var text = $(this).text().replace(/\s+/g, '').toLowerCase();
+                return !~text.indexOf(inputText);
+            }).hide();
+        });
     </script>
 </div>
 </body>
