@@ -64,14 +64,15 @@
         </div>
         <input type="submit" value="Create Category"/>
     </form>
-
-    <div th:each="category: ${categories}">
-        <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
-    </div>
-
-
-    <div th:include="fragments/footer_template :: footer"></div>
 </div>
+
+<div th:each="category: ${categories}">
+    <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
+</div>
+
+
+<div th:include="fragments/footer_template :: footer"></div>
+
 <div th:include="fragments/scripts :: searchScript"></div>
 </body>
 
