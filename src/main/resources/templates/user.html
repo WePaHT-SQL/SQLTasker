@@ -61,6 +61,7 @@ and open the template in the editor.
 
 <div>
     <h2>User points</h2>
+    <a th:text="${points}">Points</a>
 </div>
 
 <div sec:authorize="hasRole('ROLE_ADMIN')">

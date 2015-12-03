@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title >Points-page</title>
+    </head>
+    <body>
+        <div th:include="fragments/navbar_template :: navbar"></div>
+
+        <div th:include="fragments/messages_template :: messages"></div>
+
+        <h2 sec:authorize="!hasRole('ROLE_TEACHER')">My points:</h2>
+        <h2 sec:authorize="hasRole('ROLE_TEACHER')">Points of all users:</h2>
+        <div th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
+
+        <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/scripts :: confirmScript"></div>
+    </body>
+
+</html>

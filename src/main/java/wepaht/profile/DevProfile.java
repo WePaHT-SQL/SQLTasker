@@ -78,6 +78,7 @@ public class DevProfile {
         task.setName(RandomStringUtils.randomAlphanumeric(10));
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
         task.setDatabase(databaseRepository.findAll().get(0));
+        task.setSolution("select address from persons");
         return task;
     }
 }

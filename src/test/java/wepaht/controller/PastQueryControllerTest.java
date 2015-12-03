@@ -1,8 +1,12 @@
 package wepaht.controller;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -14,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 //import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 //import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 //import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -21,10 +26,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import wepaht.Application;
 import wepaht.domain.Database;
+import wepaht.domain.User;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.PastQueryRepository;
 import wepaht.repository.TaskRepository;
 
+import wepaht.repository.UserRepository;
 import wepaht.service.DatabaseService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import wepaht.domain.PastQuery;
 
 import wepaht.service.PastQueryService;
+import wepaht.service.UserService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -55,14 +63,27 @@ public class PastQueryControllerTest {
     @Autowired
     private PastQueryService pastQueryService;
 
+    @Autowired
     private PastQueryRepository pastQueryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Mock
+    UserService userServiceMock;
+
+    @InjectMocks
+    PastQueryController testedObject;
 
     private MockMvc mockMvc = null;
     private PastQuery pastQuery = null;
     private Database database = null;
+    private User student = null;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         databaseService.createDatabase("testDatabase4", "CREATE TABLE Persons"
@@ -74,6 +95,19 @@ public class PastQueryControllerTest {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
         database = databaseRepository.findByName("testDatabase4").get(0);
+        student = new User();
+        student.setUsername("stud");
+        student.setPassword("test");
+        student.setRole("STUDENT");
+        student = userRepository.save(student);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
+    }
+
+    @After
+    public void tearDown() {
+        if (student != null) {
+            userRepository.delete(student);
+        }
     }
 
     @Test
@@ -134,30 +168,27 @@ public class PastQueryControllerTest {
                 .andReturn();   
     }
 
-// For now, current user cannot be used in tests until it is figured out how to do it.
-//    @Test
-//    public void studentFindsNoQuery() throws Exception {
-//        mockMvc.perform(post(API_URI+"/student")
-//                .with(user("stud").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(view().name("query"))
-//                .andExpect(flash().attribute("messages", "You have no past queries!"))
-//                .andExpect(flash().attributeExists("pastQueries"))
-//                .andReturn();
-//    }
+    @Test
+    public void studentFindsNoQuery() throws Exception {
+        pastQueryRepository.deleteAll();
+        mockMvc.perform(post(API_URI + "/student")
+                .with(user("stud").roles("STUDENT")).with(csrf()))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(flash().attribute("messages", "You have no past queries!"))
+            .andExpect(flash().attributeExists("pastQueries"))
+            .andReturn();
+    }
 
-//  For now, current user cannot be used in tests until it is figured out how to do it.
-//    @Test
-//    public void studentFindsQuery() throws Exception {
-//        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
-//
-//        mockMvc.perform(post(API_URI+"/student")
-//                    .param("username", "stud")
-//                    .with(user("stud").roles("STUDENT")).with(csrf()))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(view().name("query"))
-//                .andExpect(flash().attribute("messages", "Here are your queries:"))
-//                .andExpect(flash().attributeExists("pastQueries"))
-//                .andReturn();
-//    }
+    @Test
+    public void studentFindsQuery() throws Exception {
+        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
+
+        mockMvc.perform(post(API_URI+"/student")
+                    .param("username", "stud")
+                    .with(user("stud").roles("STUDENT")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Here are your queries:"))
+                .andExpect(flash().attributeExists("pastQueries"))
+                .andReturn();
+    }
 }

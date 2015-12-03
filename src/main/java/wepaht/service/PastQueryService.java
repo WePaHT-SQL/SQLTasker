@@ -63,6 +63,10 @@ public class PastQueryService {
     public List returnQueryOnlyByUsername(String username) {
         return pastQueryRepository.findByUsername(username);
     }
+    
+    public void deleteAllPastQueries(){
+        pastQueryRepository.deleteAll();
+    }
 
     private boolean correctnessChecker(String isCorrect) {
         if (isCorrect.equals("true")) {
@@ -71,5 +75,6 @@ public class PastQueryService {
             return false;
         }
     }
+    
 }
 
