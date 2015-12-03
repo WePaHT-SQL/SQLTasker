@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import wepaht.service.UserService;
 
-/**
- *
- * @author Kake
- */
 @Controller
 public class DefaultController {
 

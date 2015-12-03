@@ -31,9 +31,9 @@ and open the template in the editor.
 
     <p th:text="${task.description}">Task description</p>
 
-    <h3 th:if="${task.solution}">Suggested Solution</h3>
+    <h3 sec:authorize="hasRole('ROLE_TEACHER')" th:if="${task.solution}">Suggested Solution</h3>
 
-    <p th:text="${task.solution}">Task solution</p>
+    <p sec:authorize="hasRole('ROLE_TEACHER')" th:text="${task.solution}">Task solution</p>
 
     <h3>Database</h3>
     <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>

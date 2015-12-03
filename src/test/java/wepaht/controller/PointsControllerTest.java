@@ -3,6 +3,9 @@ package wepaht.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -15,6 +18,7 @@ import wepaht.domain.User;
 import wepaht.repository.UserRepository;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import wepaht.service.PastQueryService;
+import wepaht.service.UserService;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -37,17 +42,30 @@ public class PointsControllerTest {
     @Autowired
     private PastQueryService pastQueryService;
 
+    @Mock
+    UserService userServiceMock;
+
+    @InjectMocks
+    PointsController testingObject;
+
     private MockMvc mockMvc = null;
+    private User teacher = null;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
         pastQueryService.deleteAllPastQueries();
+        teacher = new User();
+        teacher.setRole("TEACHER");
+        teacher.setUsername("user");
+        teacher.setPassword("test");
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
     }
 
     @Test
     public void noPointslistWithoutPoints() throws Exception {
-        
         mockMvc.perform(get("/points").with(user("user").roles("TEACHER")).with(csrf()))
                 .andExpect(view().name("points"))
                 .andExpect(status().isOk())
@@ -57,7 +75,7 @@ public class PointsControllerTest {
     
     @Test
     public void returnsTable() throws Exception {
-        
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
         for(Long l=0l; l<5; l++){
         pastQueryService.saveNewPastQuery("student", l, "select firstname from persons", true);
         }

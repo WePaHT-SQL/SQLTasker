@@ -52,7 +52,6 @@ public class TaskController {
     @Autowired
     PastQueryService pastQueryService;
 
-
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
@@ -114,7 +113,7 @@ public class TaskController {
         model.addAttribute("task", taskRepository.findOne(id));
         model.addAttribute("databases", databaseRepository.findAll());
         model.addAttribute("user", userService.getAuthenticatedUser());
-        
+
         return "editTask";
     }
 
@@ -131,10 +130,10 @@ public class TaskController {
     @Transactional
     @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
     public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
-            @RequestParam Long databaseId,
-            @RequestParam String name,
-            @RequestParam String solution,
-            @RequestParam String description){
+                             @RequestParam Long databaseId,
+                             @RequestParam String name,
+                             @RequestParam String solution,
+                             @RequestParam String description){
         if (solution != null || !solution.isEmpty()) {
             if (!databaseService.isValidQuery(databaseRepository.findOne(databaseId), solution)) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
@@ -146,12 +145,12 @@ public class TaskController {
         oldtask.setDescription(description);
         oldtask.setName(name);
         oldtask.setSolution(solution);
-        
+
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("messages", "Task modified!");
         return "redirect:/tasks/{id}";
     }
-    
+
 
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
     public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
