@@ -42,6 +42,9 @@ public class PointsControllerTest {
     @Autowired
     private PastQueryService pastQueryService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Mock
     UserService userServiceMock;
 
@@ -57,10 +60,12 @@ public class PointsControllerTest {
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
         pastQueryService.deleteAllPastQueries();
+        userRepository.deleteAll();
         teacher = new User();
         teacher.setRole("TEACHER");
         teacher.setUsername("user");
         teacher.setPassword("test");
+        teacher = userRepository.save(teacher);
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
     }
 
