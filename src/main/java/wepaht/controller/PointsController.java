@@ -20,18 +20,37 @@ public class PointsController {
 
     @Autowired
     PointService pointService;
+    
+    @Autowired
+    UserService userService;
 
-    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.GET)
     public String listPoints(Model model, RedirectAttributes redirectAttributes) {
+        if(userService.getAuthenticatedUser().getRole().equals("STUDENT")){
+            return "redirect:/points/student";
+        }
         if (!pointService.getAllPoints().getRows().isEmpty()) {
             Table pointsTable = pointService.getAllPoints();
             Map<String, Table> tables = new HashMap<>();
-            tables.put("pointsTable", pointsTable);
+            tables.put("PointsTable", pointsTable);
             model.addAttribute("tables", tables);
             return "points";
         }
         model.addAttribute("messages", "No points available.");
         return "points";
-    }    
+    } 
+    
+    @RequestMapping(value="/student",method = RequestMethod.GET)
+    public String listPointsAndExercises(Model model, RedirectAttributes redirectAttributes) {
+        String username = userService.getAuthenticatedUser().getUsername();
+        if (!pointService.getPointsAndExercisesByUsername(username).getRows().isEmpty()) {
+            Table pointsTable = pointService.getPointsAndExercisesByUsername(username);
+            Map<String, Table> tables = new HashMap<>();
+            tables.put("PointsTable", pointsTable);
+            model.addAttribute("tables", tables);
+            return "points";
+        }
+        model.addAttribute("messages", "No points available.");
+        return "points";
+    }   
 }
