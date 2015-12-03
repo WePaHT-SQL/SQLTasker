@@ -21,16 +21,17 @@ public class PointsController {
     @Autowired
     PointService pointService;
 
+    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.GET)
     public String listPoints(Model model, RedirectAttributes redirectAttributes) {
-        if (!pointService.getAllPoints().getName().equals("empty")) {
+        if (!pointService.getAllPoints().getRows().isEmpty()) {
             Table pointsTable = pointService.getAllPoints();
             Map<String, Table> tables = new HashMap<>();
             tables.put("pointsTable", pointsTable);
             model.addAttribute("tables", tables);
             return "points";
         }
-        redirectAttributes.addFlashAttribute("message", "There are no points at the moment.");
-        return "redirect:/index";
-    }
+        model.addAttribute("messages", "No points available.");
+        return "points";
+    }    
 }

@@ -21,6 +21,8 @@ public class PointService {
     @Autowired
     TaskRepository taskRepository;
 
+    public Table pointsTable;
+
     public Integer getPointsByUsername(String username) {
         
         List pastQueries = pastQueryService.returnQuery(username, null, "true");
@@ -48,7 +50,7 @@ public class PointService {
             return new Table("empty");
         }
         
-        Table pointsTable = new Table("points");
+        pointsTable = new Table("points");
         List<String> columns = new ArrayList<>();
         columns.add("username");
         columns.add("points");

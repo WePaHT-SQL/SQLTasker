@@ -14,8 +14,7 @@ and open the template in the editor.
         <div th:include="fragments/messages_template :: messages"></div>
 
         <h2>Points of all users</h2>
-        <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
-
+        <div th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>

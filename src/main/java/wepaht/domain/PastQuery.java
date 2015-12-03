@@ -23,7 +23,7 @@ public class PastQuery extends AbstractPersistable<Long> {
 
 
     private boolean correctness;
-
+    
     public String getUsername() {
         return username;
     }
