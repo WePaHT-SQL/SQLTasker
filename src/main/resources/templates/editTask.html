@@ -9,7 +9,7 @@ and open the template in the editor.
         <title th:text="${task.name}">Edit task</title>
     </head>
     <body>
-    <div th:include="fragments/navbar_template :: navbar"></div>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
@@ -33,14 +33,28 @@ and open the template in the editor.
                 <br/>
                 <input type="radio" th:value="${task.database.id}" name ="databaseId" th:text="${task.database.name}" checked="checked"/>
                 <input type="radio" th:each="db : ${databases}" name="databaseId" th:text="${db.name}" th:value="${db.id}"/>
-                
+
 
                 <input type="submit" value="Save edits"/>
             </form>
-
             <br/>
             <hr/>
         </div>
+
+        <h2>Tags</h2>
+        <div th:each="tag : ${tags}">
+            <a th:text="${tag.name}">Tag name</a>
+            <form th:method="DELETE" th:action="@{/tasks/{id}/tags (id=${task.id})}">
+                <input type="hidden" name="name" th:value="${tag.name}"/>
+                <input type="submit" value="Delete tag"/>
+            </form>
+        </div>
+
+        <h3>Add a tag</h3>
+        <form method="POST" th:action="@{/tasks/{id}/tags (id=${task.id})}">
+            <input type="text" name="name"/>
+            <input type="submit" value="Save new tag"/>
+        </form>
 
         <a th:href="@{/tasks}">Back to listing</a>
 

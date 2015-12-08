@@ -17,7 +17,6 @@ public class Task extends AbstractPersistable<Long> {
     private String name;
     private String description;
     private String solution;
-    private List<String> tags = new ArrayList<>();
 
     @ManyToOne
     private Database database;
@@ -71,5 +70,4 @@ public class Task extends AbstractPersistable<Long> {
     public void setSolution(String solution) {
         this.solution = solution;
     }
-
 }

@@ -26,6 +26,10 @@ and open the template in the editor.
 
 
             <h2 th:text="${task.name}">Task name</h2>
+            <h3>Tags</h3>
+            <div th:if="${tags}" th:each="tag : ${tags}">
+                <a th:text="${tag.name}">Tag name</a>
+            </div>
 
             <h3 th:if="${task.description}">Description</h3>
 
