@@ -18,7 +18,7 @@ and open the template in the editor.
             <br/>
 
             <div  sec:authorize="hasRole('ROLE_STUDENT')">
-                <a th:href="@{/tasks}">Task listing</a>
+                <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/tasks}">Task listing</a>
                 <a th:href="@{/databases}">Database listing</a>
                 <a th:href="@{/queries}">Query listing</a>
                 <a th:href="@{/categories}">Category listing</a>

@@ -5,6 +5,7 @@
  */
 package wepaht.domain;
 
+import java.util.*;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -16,9 +17,7 @@ public class Task extends AbstractPersistable<Long> {
     private String name;
     private String description;
     private String solution;
-
-
-
+    private List<String> tags = new ArrayList<>();
 
     @ManyToOne
     private Database database;

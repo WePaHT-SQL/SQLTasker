@@ -33,12 +33,14 @@
                 <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create Task"/>
                 <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Suggest a Task"/>
             </form>
-
+        </div>    
+        
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
             <br/>
             <hr/>
-        </div>        
-        <div th:each="task: ${tasks}">
-            <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
+            <div th:each="task: ${tasks}">
+                <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
+            </div>
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>
