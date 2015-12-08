@@ -1,5 +1,6 @@
 package wepaht.controller;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import wepaht.Application;
+import wepaht.domain.AuthenticationToken;
+import wepaht.domain.User;
+import wepaht.repository.AuthenticationTokenRepository;
 import wepaht.repository.PastQueryRepository;
+import wepaht.repository.UserRepository;
 import wepaht.service.PastQueryService;
 
 import java.io.IOException;
@@ -25,8 +30,10 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -34,6 +41,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class RestExportControllerTest {
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    AuthenticationTokenRepository tokenRepository;
 
     @Autowired
     PastQueryService pastQueryService;
@@ -62,6 +75,7 @@ public class RestExportControllerTest {
     private final String API_URI = "/export";
     private final String name1 = "0123456789";
     private final String name2 = "0987654321";
+    private String authToken;
 
     @Before
     public void setUp() {
@@ -72,16 +86,37 @@ public class RestExportControllerTest {
         pastQueryService.saveNewPastQuery(name1, 1l, null, true);
         pastQueryService.saveNewPastQuery(name1, 2l, null, true);
         pastQueryService.saveNewPastQuery(name2, 1l, null, true);
+
+        userRepository.deleteAll();
+        User user = new User();
+        user.setRole("ADMIN");
+        user.setPassword("testi");
+        user.setUsername("admiini");
+        user = userRepository.save(user);
+
+        tokenRepository.deleteAll();
+        AuthenticationToken token = new AuthenticationToken();
+        token.setToken("");
+        token.setUser(user);
+        token = tokenRepository.save(token);
+        authToken = token.getToken();
+
+
+    }
+
+    @After
+    public void tearDown() {
+        tokenRepository.deleteAll();
     }
 
     @Test
     public void statusIsOk() throws Exception{
-        mockMvc.perform(get(API_URI + "/points")).andExpect(status().isOk()).andReturn();
+        mockMvc.perform(post(API_URI + "/points").param("exportToken", authToken)).andExpect(status().isOk()).andReturn();
     }
 
     @Test
     public void userCanGetPointsByUsername() throws Exception{
-        mockMvc.perform(get(API_URI + "/points/" + name1))
+        mockMvc.perform(post(API_URI + "/points/" + name1).param("exportToken", authToken))
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.username", is(name1)))
                 .andExpect(status().isOk())
@@ -90,10 +125,17 @@ public class RestExportControllerTest {
 
     @Test
     public void userCanListAllPoints() throws Exception{
-        mockMvc.perform(get(API_URI + "/points"))
+        mockMvc.perform(post(API_URI + "/points").param("exportToken", authToken))
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void pointsCanNotBeListedWithoutToken() throws Exception{
+        mockMvc.perform(post(API_URI + "/points"))
+                .andExpect(status().is4xxClientError())
                 .andReturn();
     }
 

@@ -22,6 +22,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login", "/", "/register","/logout", "/export/**").permitAll()
                 .anyRequest().authenticated();
 
+        http.csrf().ignoringAntMatchers("/export/**");
+
         http.formLogin()
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/")

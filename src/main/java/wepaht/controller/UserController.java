@@ -51,6 +51,7 @@ public class UserController {
         model.addAttribute("roles", roles);
         model.addAttribute("user", user);
         model.addAttribute("points", pointService.getPointsByUsername(user.getUsername()));
+        model.addAttribute("token", userService.getToken());
 
         return "user";
     }
@@ -126,5 +127,13 @@ public class UserController {
     public String viewRegister(Model model) {
         model.addAttribute("user", userService.getAuthenticatedUser());
         return "register";
+    }
+
+    @Secured("ROLE_TEACHER")
+    @RequestMapping(value = "profile/token", method = RequestMethod.POST)
+    public String createToken(RedirectAttributes redirectAttributes) {
+        userService.createToken();
+        redirectAttributes.addFlashAttribute("messages", "New token created successfully!");
+        return "redirect:/profile";
     }
 }

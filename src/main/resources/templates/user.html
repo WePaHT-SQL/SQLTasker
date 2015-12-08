@@ -15,6 +15,18 @@ and open the template in the editor.
 
 <h1 th:text="${editedUser.username}">User name</h1>
 
+<div sec:authorize="hasRole('ROLE_TEACHER')">
+    <p>To export points you need to include a token in your post-request</p>
+    <div th:if="${token}">
+        <label><b>Your export-token: </b></label>
+        <p th:text="${token.token}"></p>
+    </div>
+    <form method="POST" th:action="@{/profile/token}">
+        <button type="submit" th:value="createToken" Onclick="return Confirm();">Create new export-token</button>
+    </form>
+    <hr/>
+</div>
+
 <div>
     <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
         <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
@@ -35,7 +47,8 @@ and open the template in the editor.
             <br/>
             <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
                    checked="checked"/>
-            <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role" th:text="${role}" th:value="${role}"/>
+            <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
+                   th:text="${role}" th:value="${role}"/>
 
 
             <br/>
