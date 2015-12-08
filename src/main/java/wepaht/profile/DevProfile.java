@@ -5,13 +5,16 @@
  */
 package wepaht.profile;
 
+import java.util.Date;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import wepaht.domain.Category;
 import wepaht.domain.User;
 import wepaht.domain.Task;
+import wepaht.repository.CategoryRepository;
 import wepaht.repository.UserRepository;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
@@ -36,6 +39,9 @@ public class DevProfile {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @PostConstruct
     public void init() {
@@ -52,6 +58,12 @@ public class DevProfile {
         for (int i = 0; i < 10; i++) {
             taskRepository.save(randomTask());
         }
+        Category category = new Category();
+        category.setName("first week");
+        category.setDescription("easybeasy");
+        category.setStartDate(new Date());
+        category.setExpiredDate(new Date("22/22/2222"));
+        categoryRepository.save(category);
 
         User student = new User();
         student.setUsername("0123456789");

@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import wepaht.domain.Table;
+import wepaht.domain.User;
 import wepaht.service.DatabaseService;
 import wepaht.service.PastQueryService;
 import wepaht.service.TaskResultService;
@@ -62,15 +63,13 @@ public class TaskController {
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("databases", databaseRepository.findAll());
 
-        // queries = new HashMap<Long,String>();
         return "tasks";
     }
 
-    @Secured("ROLE_ADMIN")
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
-                             @ModelAttribute Task task,
-                             @RequestParam Long databaseId) {
+            @ModelAttribute Task task,
+            @RequestParam Long databaseId) {
         if (task == null) {
             redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
             return "redirect:/tasks";
@@ -84,6 +83,16 @@ public class TaskController {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
                 return "redirect:/tasks";
             }
+        }
+
+        User user = userService.getAuthenticatedUser();
+        if (user.getRole().equals("STUDENT")||user.getRole().equals("TEACHER")) {
+            task.setDescription(task.getDescription()+" SUGGESTED BY "+user.getUsername());
+            task.setName("SUGGESTION: " + task.getName());
+            taskRepository.save(task);
+            redirectAttributes.addFlashAttribute("messages", "Task has been created");
+
+            return "redirect:/tasks";
         }
 
         taskRepository.save(task);
@@ -128,12 +137,12 @@ public class TaskController {
 
     @Secured("ROLE_ADMIN")
     @Transactional
-    @RequestMapping(value ="/{id}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes,
-                             @RequestParam Long databaseId,
-                             @RequestParam String name,
-                             @RequestParam String solution,
-                             @RequestParam String description){
+            @RequestParam Long databaseId,
+            @RequestParam String name,
+            @RequestParam String solution,
+            @RequestParam String description) {
         if (solution != null || !solution.isEmpty()) {
             if (!databaseService.isValidQuery(databaseRepository.findOne(databaseId), solution)) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
@@ -151,7 +160,6 @@ public class TaskController {
         return "redirect:/tasks/{id}";
     }
 
-
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
     public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
         Task task = taskRepository.findOne(id);
@@ -161,9 +169,9 @@ public class TaskController {
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
             RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(),query,true);
-        }else{
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(),query,false);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true);
+        } else {
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, false);
         }
 
         Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);
@@ -171,5 +179,11 @@ public class TaskController {
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("tables", queryResult);
         return "redirect:/tasks/{id}";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/suggestions")
+    public String getSuggestionPage(Model model) {
+        model.addAttribute("databases", databaseRepository.findAll());
+        return "suggestion";
     }
 }
