@@ -21,7 +21,7 @@ public interface PastQueryRepository extends JpaRepository<PastQuery, Long>{
 
     List<PastQuery> findByCorrectnessAndUsername(boolean correctness, String username);
 
-    List<PastQuery> findByCorrectnessAndUsernameAndcanGetPoint(boolean correctness, String username, boolean canGetPoint);
+    List<PastQuery> findByCorrectnessAndUsernameAndCanGetPoint(boolean correctness, String username, boolean canGetPoint);
 
     List<PastQuery> findByCorrectness(boolean correctness);
     List<PastQuery> findByTaskId(Long taskId);

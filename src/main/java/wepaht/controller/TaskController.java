@@ -114,7 +114,7 @@ public class TaskController {
         }
 
         model.addAttribute("task", task);
-
+        model.addAttribute("categoryId", 1);
         return "task";
     }
 
