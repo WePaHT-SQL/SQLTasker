@@ -1,6 +1,7 @@
 package wepaht.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class UserService {
 
     public User getAuthenticatedUser() {
         return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    public void customLogout() {
+        SecurityContextHolder.clearContext();
     }
 
     public void createToken() {
