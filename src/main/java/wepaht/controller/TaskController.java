@@ -162,8 +162,10 @@ public class TaskController {
         return "redirect:/tasks/{id}";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
-    public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
+    @RequestMapping(method = RequestMethod.POST, value = "/{categoryId}/{id}/query")
+    public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query,
+                            @PathVariable Long categoryId,
+                            @PathVariable Long id) {
         Task task = taskRepository.findOne(id);
 
         queries.put(id, query);
@@ -171,16 +173,16 @@ public class TaskController {
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
             RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true, categoryId);
         } else {
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, false);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, false, categoryId);
         }
 
         Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);
 
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("tables", queryResult);
-        return "redirect:/tasks/{id}";
+        return "redirect:/categories/{categoryId}/tasks/{id}";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/suggestions")
