@@ -58,6 +58,7 @@ public class TaskController {
         queries = new HashMap<>();
     }
 
+    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.GET)
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
@@ -101,6 +102,7 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
+    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String getTask(@PathVariable Long id, Model model) throws Exception {
         Task task = taskRepository.findOne(id);

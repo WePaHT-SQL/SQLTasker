@@ -50,7 +50,8 @@ and open the template in the editor.
             <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
         </div>
 
-        <a th:href="@{/tasks}">Back to listing</a>
+        <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
+        <a sec:autorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>

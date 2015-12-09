@@ -122,6 +122,14 @@ public class CategoryController {
         return "categoryEdit";
     }
 
+    @RequestMapping(value = "/{id}/tasks/{taskId}", method = RequestMethod.GET)
+    public String getCategoryTask(@PathVariable Long id, @PathVariable Long taskId, Model model) {
+        model.addAttribute("task", taskRepository.findOne(taskId));
+        model.addAttribute("category", categoryRepository.findOne(id));
+
+        return "task";
+    }
+
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
