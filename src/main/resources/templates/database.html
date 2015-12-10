@@ -15,7 +15,7 @@ and open the template in the editor.
 
 <!-- Example usage of listing database's tables -->
 <h1 th:text="${database.name}">Database name</h1>
-<p th:text="${database.databaseSchema}">Database create-tables</p>
+<pre th:text="${database.databaseSchema}">Database create-tables</pre>
 <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 
 <br/>
