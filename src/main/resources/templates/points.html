@@ -5,21 +5,20 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title >Points</title>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-    </head>
-    <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+<head>
+    <title>Points</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+<div th:include="fragments/messages_template :: messages"></div>
 
-        <h2 sec:authorize="!hasRole('ROLE_TEACHER')">My points:</h2>
-        <h2 sec:authorize="hasRole('ROLE_TEACHER')">Points of all users:</h2>
-        <div th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
+<h2 sec:authorize="!hasRole('ROLE_TEACHER')">My points:</h2>
+<h2 sec:authorize="hasRole('ROLE_TEACHER')">Points of all users:</h2>
+<div th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>
-    </body>
-
+<div th:include="fragments/footer_template :: footer"></div>
+<div th:include="fragments/scripts :: confirmScript"></div>
+<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+</body>
 </html>

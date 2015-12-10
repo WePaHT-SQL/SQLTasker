@@ -5,88 +5,88 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title th:text="${editedUser.username}">User Profile</title>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-    </head>
-    <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+<head>
+    <title th:text="${editedUser.username}">User Profile</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+<div th:include="fragments/messages_template :: messages"></div>
 
-        <h1 th:text="${editedUser.username}">User name</h1>
-
-        <div>
-            <form sec:authorize="hasRole('ROLE_ADMIN')" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
-                <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
-            </form>
-
-<div sec:authorize="hasRole('ROLE_TEACHER')">
-    <p>To export points you need to include a token in your post-request</p>
-    <div th:if="${token}">
-        <label><b>Your export-token: </b></label>
-        <p th:text="${token.token}"></p>
-    </div>
-    <form method="POST" th:action="@{/profile/token}">
-        <button type="submit" th:value="createToken" Onclick="return Confirm();">Create new export-token</button>
-    </form>
-    <hr/>
-</div>
+<h1 th:text="${editedUser.username}">User name</h1>
 
 <div>
-    <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+    <form sec:authorize="hasRole('ROLE_ADMIN')" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
         <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
     </form>
 
-            <div>
-                <h2>Edit user</h2>
-
-                <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
-                    <div th:not="${editedUser.id.equals(user.id)}">
-                        <label>Username:</label>
-                        <br/>
-                        <input type="text" name="username" th:value="${editedUser.username}"/>
-                    </div>
-            <br/>
-            <label>Role:</label>
-            <br/>
-            <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
-                   checked="checked"/>
-            <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
-                   th:text="${role}" th:value="${role}"/>
-
-                    <br/>
-
-                    <div>
-                        <label>New password:</label>
-                        <br/>
-                        <input type="password" name="password"></input>
-                        <br/>
-                        <label>Retype new password:</label>
-                        <br/>
-                        <input type="password" name="repassword"></input>
-                        <br/>
-                    </div>
-
-                    <input type="submit" value="Save edits"/>
-                </form>
-            </div>
-
-            <br/>
-            <hr/>
+    <div sec:authorize="hasRole('ROLE_TEACHER')">
+        <p>To export points you need to include a token in your post-request</p>
+        <div th:if="${token}">
+            <label><b>Your export-token: </b></label>
+            <p th:text="${token.token}"></p>
         </div>
+        <form method="POST" th:action="@{/profile/token}">
+            <button type="submit" th:value="createToken" Onclick="return Confirm();">Create new export-token</button>
+        </form>
+        <hr/>
+    </div>
+
+    <div>
+        <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+            <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
+        </form>
 
         <div>
-            <h2>User points</h2>
-            <p th:text="${points}">Points</p>
+            <h2>Edit user</h2>
+
+            <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
+                <div th:not="${editedUser.id.equals(user.id)}">
+                    <label>Username:</label>
+                    <br/>
+                    <input type="text" name="username" th:value="${editedUser.username}"/>
+                </div>
+                <br/>
+                <label>Role:</label>
+                <br/>
+                <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
+                       checked="checked"/>
+                <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
+                       th:text="${role}" th:value="${role}"/>
+
+                <br/>
+
+                <div>
+                    <label>New password:</label>
+                    <br/>
+                    <input type="password" name="password"></input>
+                    <br/>
+                    <label>Retype new password:</label>
+                    <br/>
+                    <input type="password" name="repassword"></input>
+                    <br/>
+                </div>
+
+                <input type="submit" value="Save edits"/>
+            </form>
         </div>
 
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
-            <a th:href="@{/users}">Back to user listing</a>
-        </div>
+        <br/>
+        <hr/>
+    </div>
+</div>
+<div>
+    <h2>User points</h2>
+    <p th:text="${points}">Points</p>
+</div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-        <div th:include="fragments/scripts :: confirmScript"></div>
-    </body>
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{/users}">Back to user listing</a>
+</div>
+
+<div th:include="fragments/footer_template :: footer"></div>
+<div th:include="fragments/scripts :: confirmScript"></div>
+<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+</body>
 
 </html>
