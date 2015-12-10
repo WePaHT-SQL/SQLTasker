@@ -17,7 +17,11 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-
+    /**
+     *  Adds task to categorys' task list.
+     * @param categoryId which category
+     * @param task which task
+     */
     @Transactional
     public void setCategoryToTask(Long categoryId, Task task) {
         Category category = categoryRepository.findOne(categoryId);

@@ -1,81 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Categories</title>
-
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
+<head>
+    <title>Categories</title>
 
 </head>
 <body>
 
 
-    <div th:include="fragments/navbar_template :: navbar"></div>
-    <div th:include="fragments/messages_template :: messages"></div>
+<div th:include="fragments/navbar_template :: navbar"></div>
+<div th:include="fragments/messages_template :: messages"></div>
 
-    <div sec:authorize="hasRole('ROLE_ADMIN')">
-        <h2>Create new category</h2>
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <h2>Create new category</h2>
 
-        <form method="POST" th:action="@{/categories}">
-            <label>Category name</label>
-            <br/>
-            <input type="text" name="name"/>
-            <br/>
-            <label>Description</label>
-            <br/>
-            <textarea name="description"></textarea>
-            <br/>
-            <br/>
-            <label>Start date:</label><input type="date" name="startDate"/>
-            <br/>
-            <label>Expired date: </label><input type="date" name="expiredDate"/>
-            <br/>
+    <form method="POST" th:action="@{/categories}">
+        <label>Category name</label>
+        <br/>
+        <input type="text" name="name"/>
+        <br/>
+        <label>Description</label>
+        <br/>
+        <textarea name="description"></textarea>
+        <br/>
+        <br/>
+        <label>Start date:</label><input type="date" name="startDate"/>
+        <br/>
+        <label>Expired date: </label><input type="date" name="expiredDate"/>
+        <br/>
 
-            <div>
-                <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
-                        data-toggle="modal" data-target="#taskModal">
-                    Choose Tasks
-                </button>
-            </div>
-            <div class="modal fade" id="taskModal" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">Choose Tasks</h4>
-                        </div>
-                        <div class="modal-body">
-                            <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+        <div>
+            <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                    data-toggle="modal" data-target="#taskModal">
+                Choose Tasks
+            </button>
+        </div>
+        <div class="modal fade" id="taskModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Choose Tasks</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="search" placeholder="Type to search" class="topspace"/>
 
-                            <div class="checkbox" th:each="task : ${tasks}" style="border: none">
-                                <label>
-                                    <input type="checkbox" name="taskIds" th:value="${task.id}"/>
+                        <div class="checkbox" th:each="task : ${tasks}" style="border: none">
+                            <label>
+                                <input type="checkbox" name="taskIds" th:value="${task.id}"/>
 
-                                    <p class="taskName" th:text="${task.name}"></p>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse</button>
+                                <p class="taskName" th:text="${task.name}"></p>
+                            </label>
                         </div>
                     </div>
-
+                    <div class="modal-footer">
+                        <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse
+                        </button>
+                    </div>
                 </div>
+
             </div>
             <input type="submit" value="Create category"/>
-        </form>
-    </div>
-
-    <a sec:authorize="!hasRole('ROLE_ADMIN')" th:href="@{/tasks}">Suggest a task!</a>
-
-    <div th:each="category: ${categories}">
-        <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
-    </div>
+    </form>
+</div>
 
 
-    <div th:include="fragments/footer_template :: footer"></div>
+<div th:each="category: ${categories}">
+    <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
+</div>
 
-    <div th:include="fragments/scripts :: searchScript"></div>
+
+<div th:include="fragments/footer_template :: footer"></div>
+
+<div th:include="fragments/scripts :: searchScript"></div>
+<div th:include="fragments/bootstrap :: bootstrap"></div>
 </body>
 
 

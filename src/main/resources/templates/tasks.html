@@ -38,10 +38,11 @@
         
         <div sec:authorize="hasRole('ROLE_ADMIN')">
             <br/>
+
+        </div>        
+        <div sec:authorize="hasRole('ROLE_TEACHER')" th:each="task: ${tasks}">
             <hr/>
-            <div th:each="task: ${tasks}">
-                <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
-            </div>
+            <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>

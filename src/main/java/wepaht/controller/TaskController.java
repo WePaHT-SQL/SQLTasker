@@ -63,7 +63,6 @@ public class TaskController {
         queries = new HashMap<>();
     }
 
-    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.GET)
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
@@ -120,7 +119,7 @@ public class TaskController {
         List<Tag> tags = tagRepository.findByTaskId(id);
         model.addAttribute("tags", tags);        
         model.addAttribute("task", task);
-
+        model.addAttribute("categoryId", 1);
         return "task";
     }
 
@@ -169,8 +168,10 @@ public class TaskController {
         return "redirect:/tasks/{id}";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}/query")
-    public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query, @PathVariable Long id) {
+    @RequestMapping(method = RequestMethod.POST, value = "/{categoryId}/{id}/query")
+    public String sendQuery(RedirectAttributes redirectAttributes, @RequestParam(required = false, defaultValue = "") String query,
+                            @PathVariable Long categoryId,
+                            @PathVariable Long id) {
         Task task = taskRepository.findOne(id);
 
         queries.put(id, query);
@@ -178,16 +179,16 @@ public class TaskController {
 
         if (task.getSolution() != null && taskResultService.evaluateSubmittedQueryStrictly(task, query)) {
             RedirectAttributes messages = redirectAttributes.addFlashAttribute("messages", "Your answer is correct!");
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, true, categoryId);
         } else {
-            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, false);
+            pastQueryService.saveNewPastQuery(userService.getAuthenticatedUser().getUsername(), task.getId(), query, false, categoryId);
         }
 
         Map<String, Table> queryResult = databaseService.performQuery(task.getDatabase().getId(), query);
 
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("tables", queryResult);
-        return "redirect:/tasks/{id}";
+        return "redirect:/categories/{categoryId}/tasks/{id}";
     }
     
     @Secured("ROLE_TEACHER")
@@ -212,5 +213,11 @@ public class TaskController {
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
         return "redirect:/tasks/{id}/edit";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/suggest")
+    public String getSuggestionPage(Model model) {
+        model.addAttribute("databases", databaseRepository.findAll());
+        return "tasks";
     }
 }
