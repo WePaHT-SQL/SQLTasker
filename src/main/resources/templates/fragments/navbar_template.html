@@ -32,8 +32,8 @@ and open the template in the editor.
 
     <nav sec:authorize="isAnonymous()">
         <ul id="sql-ul">
-            <li id="sql-li"><a th:href="@{/login}">Login</a></li>
-            <li id="sql-li"><a th:href="@{/register}">Register</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/login}">Login</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/register}">Register</a></li>
         </ul>
     </nav>
 
