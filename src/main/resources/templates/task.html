@@ -61,7 +61,7 @@ and open the template in the editor.
     <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back
         to category</a>
 </div>
-<a sec:autorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
+<a sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
 
 <div th:include="fragments/footer_template :: footer"></div>
 <div th:include="fragments/scripts :: confirmScript"></div>
