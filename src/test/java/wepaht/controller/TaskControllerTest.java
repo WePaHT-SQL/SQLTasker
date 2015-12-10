@@ -265,4 +265,9 @@ public class TaskControllerTest {
 
         assertNotNull(pastQueryService.returnQuery("allUsers", task.getId(), "allAnswers").get(0));
     }
+
+    @Test
+    public void teacherCanCreateTag() throws Exception {
+
+    }
 }
