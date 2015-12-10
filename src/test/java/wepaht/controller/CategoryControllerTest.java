@@ -1,14 +1,19 @@
 package wepaht.controller;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -16,9 +21,12 @@ import wepaht.Application;
 import wepaht.domain.Category;
 import wepaht.domain.Database;
 import wepaht.domain.Task;
+import wepaht.domain.User;
 import wepaht.repository.CategoryRepository;
 import wepaht.repository.TaskRepository;
+import wepaht.repository.UserRepository;
 import wepaht.service.DatabaseService;
+import wepaht.service.UserService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,12 +36,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(value = SpringJUnit4ClassRunner.class)
@@ -53,13 +63,25 @@ public class CategoryControllerTest {
     @Autowired
     private WebApplicationContext webAppContext;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Mock
+    UserService userServiceMock;
+
+    @InjectMocks
+    CategoryController testingObject;
+
     private final String URI = "/categories";
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Database database;
     private MockMvc mockMvc;
+    private User student;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(springSecurity()).build();
 
         databaseService.createDatabase("testDatabase4", "CREATE TABLE Persons"
@@ -70,6 +92,18 @@ public class CategoryControllerTest {
                 + "VALUES (1, 'Jaaskelainen', 'Timo', 'Jossakin', 'Heslinki');"
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
+
+        student = new User();
+        student.setUsername("stud");
+        student.setPassword("test");
+        student.setRole("STUDENT");
+        student = userRepository.save(student);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
+    }
+
+    @After
+    public void tearDown() {
+        userRepository.deleteAll();
     }
 
     private Task randomTask() {
@@ -96,7 +130,7 @@ public class CategoryControllerTest {
 
     @Test
     public void statusIsOk() throws Exception{
-        mockMvc.perform(get(URI).with(user("user")))
+        mockMvc.perform(get(URI).with(user("stud")))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -183,5 +217,22 @@ public class CategoryControllerTest {
         List<Task> tasks = created.getTaskList();
 
         assertTrue(tasks.containsAll(Arrays.asList(task1, task2, task3)));
+    }
+
+    @Test
+    public void studentCannotSeeCategoriesOfWhichStartDateIsInFuture() throws Exception{
+        Category futureCategory = createCategory();
+        String name = "future";
+        futureCategory.setName("future");
+        futureCategory.setStartDate(futureCategory.getExpiredDate());
+
+        MvcResult result = mockMvc.perform(get(URI).with(user("stud")))
+                .andExpect(model().attributeExists("categories"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<Category> categories = (List) result.getModelAndView().getModel().get("categories");
+
+        assertFalse(categories.stream().filter(cat -> cat.getName().equals(name)).findFirst().isPresent());
     }
 }
