@@ -58,7 +58,6 @@ public class TaskController {
         queries = new HashMap<>();
     }
 
-    @Secured("ROLE_TEACHER")
     @RequestMapping(method = RequestMethod.GET)
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
@@ -185,9 +184,9 @@ public class TaskController {
         return "redirect:/categories/{categoryId}/tasks/{id}";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/suggestions")
+    @RequestMapping(method = RequestMethod.GET, value = "/suggest")
     public String getSuggestionPage(Model model) {
         model.addAttribute("databases", databaseRepository.findAll());
-        return "suggestion";
+        return "tasks";
     }
 }

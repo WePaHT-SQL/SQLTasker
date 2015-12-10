@@ -35,9 +35,10 @@
             </form>
 
             <br/>
-            <hr/>
+
         </div>        
-        <div th:each="task: ${tasks}">
+        <div sec:authorize="hasRole('ROLE_TEACHER')" th:each="task: ${tasks}">
+            <hr/>
             <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
         </div>
 
