@@ -2,7 +2,10 @@ package wepaht.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import wepaht.domain.Category;
 import wepaht.domain.PastQuery;
+import wepaht.repository.CategoryRepository;
 import wepaht.repository.PastQueryRepository;
 
 import java.util.Date;
@@ -15,15 +18,23 @@ public class PastQueryService {
     @Autowired
     PastQueryRepository pastQueryRepository;
 
-    public void saveNewPastQuery(String username, Long taskId, String query, boolean correctness) {
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    public void saveNewPastQuery(String username, Long taskId, String query, boolean correctness, Long categoryId) {
         PastQuery pastQuery = new PastQuery();
         pastQuery.setPastQuery(query);
         pastQuery.setUsername(username);
         pastQuery.setTaskId(taskId);
         pastQuery.setCorrectness(correctness);
         pastQuery.setDate(new Date());
+        pastQuery.setCanGetPoint(compareExpirationDate(categoryRepository.findOne(categoryId).getExpiredDate()));
         pastQueryRepository.save(pastQuery);
 
+    }
+
+    private boolean compareExpirationDate(Date expiredDate) {
+        return expiredDate.before(new Date());
     }
 
 
@@ -75,6 +86,30 @@ public class PastQueryService {
             return false;
         }
     }
-    
+
+    @Transactional
+    public void changeQueriesesUsernames(String oldUsername, String newUsername) {
+        List<PastQuery> pastQueries = pastQueryRepository.findByUsername(oldUsername);
+
+        for (PastQuery query: pastQueries) {
+            query.setUsername(newUsername);
+        }
+    }
+
+    public void saveNewPastQueryForTests(String username, long taskId, String query, boolean correctness) {
+        PastQuery pastQuery = new PastQuery();
+        pastQuery.setPastQuery(query);
+        pastQuery.setUsername(username);
+        pastQuery.setTaskId(taskId);
+        pastQuery.setCorrectness(correctness);
+        pastQuery.setDate(new Date());
+
+        if(correctness){
+            pastQuery.setCanGetPoint(true);
+        }else{
+            pastQuery.setCanGetPoint(false);
+        }
+        pastQueryRepository.save(pastQuery);
+    }
 }
 

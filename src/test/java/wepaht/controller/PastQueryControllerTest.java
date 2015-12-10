@@ -123,7 +123,7 @@ public class PastQueryControllerTest {
     
     @Test
     public void findsQueryByTaskId() throws Exception {
-        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
         
         mockMvc.perform(post(API_URI).param("taskId", ""+1337l).param("username", "allUsers").param("isCorrect", "allAnswers")
                     .with(user("teach").roles("TEACHER")).with(csrf()))
@@ -135,7 +135,7 @@ public class PastQueryControllerTest {
     
     @Test
     public void findsQueryByUsername() throws Exception {
-        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
         
         mockMvc.perform(post(API_URI).param("username", "stud").param("isCorrect", "true")
                     .with(user("teach").roles("TEACHER")).with(csrf()))
@@ -147,7 +147,7 @@ public class PastQueryControllerTest {
      
     @Test
     public void findsQueryByIscorrect() throws Exception {
-        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
         
         mockMvc.perform(post(API_URI).param("username", "allUsers").param("isCorrect", "true")
                 .with(user("teach").roles("TEACHER")).with(csrf()))
@@ -158,7 +158,7 @@ public class PastQueryControllerTest {
     
     @Test 
     public void findsQueryByAllInfo() throws Exception { 
-        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
         
         mockMvc.perform(post(API_URI).param("taskId", ""+1337l).param("username", "stud").param("isCorrect", "true")
                 .with(user("teach").roles("TEACHER")).with(csrf()))
@@ -181,7 +181,7 @@ public class PastQueryControllerTest {
 
     @Test
     public void studentFindsQuery() throws Exception {
-        pastQueryService.saveNewPastQuery("stud", 1337l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("stud", 1337l, "select firstname from persons", true);
 
         mockMvc.perform(post(API_URI+"/student")
                     .param("username", "stud")

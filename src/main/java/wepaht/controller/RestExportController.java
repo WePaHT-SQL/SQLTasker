@@ -1,11 +1,10 @@
 package wepaht.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import wepaht.domain.AuthenticationToken;
 import wepaht.domain.PointHolder;
+import wepaht.repository.AuthenticationTokenRepository;
 import wepaht.service.PointService;
 
 import java.util.ArrayList;
@@ -18,28 +17,44 @@ public class RestExportController {
     @Autowired
     PointService pointService;
 
-    @RequestMapping(value = "/points",method = RequestMethod.GET)
-    public List<PointHolder> getAllPoints() {
+    @Autowired
+    AuthenticationTokenRepository tokenRepository;
+
+    @RequestMapping(value = "/points", method = RequestMethod.POST)
+    public List<PointHolder> getAllPoints(@RequestParam String exportToken) {
         List<PointHolder> points = new ArrayList<>();
 
-        List<List<String>> rows = pointService.getAllPoints().getRows();
-        for (List<String> row: rows) {
-            PointHolder point = new PointHolder();
-            point.setUsername(row.get(0));
-            point.setPoints(Integer.valueOf(row.get(1)));
+        if (isValidToken(exportToken)) {
+            List<List<String>> rows = pointService.getAllPoints().getRows();
+            for (List<String> row : rows) {
+                PointHolder point = new PointHolder();
+                point.setUsername(row.get(0));
+                point.setPoints(Integer.valueOf(row.get(1)));
 
-            points.add(point);
+                points.add(point);
+            }
         }
 
         return points;
     }
 
-    @RequestMapping(value = "/points/{username}",method = RequestMethod.GET)
-    public PointHolder getPointsByUsername(@PathVariable String username) {
+    @RequestMapping(value = "/points/{username}", method = RequestMethod.POST)
+    public PointHolder getPointsByUsername(@PathVariable String username, @RequestParam String exportToken) {
         PointHolder points = new PointHolder();
-        points.setUsername(username);
-        points.setPoints(pointService.getPointsByUsername(username));
+        if (isValidToken(exportToken)) {
+            points.setUsername(username);
+            points.setPoints(pointService.getPointsByUsername(username));
+        }
 
         return points;
+    }
+
+    private boolean isValidToken(String token) {
+        AuthenticationToken foundToken = tokenRepository.findByToken(token);
+
+        if ((token != null || foundToken != null) && !foundToken.getUser().getRole().equals("STUDENT")) {
+            return true;
+        }
+        return false;
     }
 }

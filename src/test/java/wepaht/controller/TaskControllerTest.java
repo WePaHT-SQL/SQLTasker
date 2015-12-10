@@ -99,7 +99,7 @@ public class TaskControllerTest {
         admin.setPassword("test");
         admin.setRole("ADMIN");
         admin = userRepository.save(admin);
-        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(admin);        
     }
 
     @After
@@ -119,7 +119,7 @@ public class TaskControllerTest {
 
     @Test
     public void statusIsOkTest() throws Exception {
-        mockMvc.perform(get(API_URI).with(user("user")))
+        mockMvc.perform(get(API_URI).with(user("user").roles("TEACHER")))
                 .andExpect(status().isOk());
     }
 
@@ -130,7 +130,7 @@ public class TaskControllerTest {
 
         String query = "select firstname, lastname from testdb";
 
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
@@ -144,13 +144,35 @@ public class TaskControllerTest {
                     .param("description", "To test creation of a task with a database")
                     .param("solution", "select * from persons;")
                     .param("databaseId", databaseId.toString())
-                    .with(user("admin").roles("ADMIN")).with(csrf()))
+                    .with(user("test").roles("ADMIN")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
         List<Task> tasks = taskRepository.findAll();
 
         assertTrue(tasks.stream().filter(task -> task.getName().equals(taskName)).findFirst().isPresent());
+    }
+    
+    @Test
+    public void studentCanSuggestTask() throws Exception {
+        User student = new User();
+        student.setUsername("student");
+        student.setPassword("student");
+        student.setRole("STUDENT");
+        student = userRepository.save(student);
+        when(userServiceMock.getAuthenticatedUser()).thenReturn(student);
+        
+        String taskName = "testTask";
+        Long databaseId = database.getId();
+        mockMvc.perform(post(API_URI).param("name", taskName)
+                    .param("description", "To test suggestion")
+                    .param("solution", "select * from persons;")
+                    .param("databaseId", databaseId.toString())
+                    .with(user("student")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        assertNotNull(taskRepository.findByName("SUGGESTION: "+taskName).get(0));
     }
 
 
@@ -159,7 +181,7 @@ public class TaskControllerTest {
         Task testTask = randomTask();
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("tables"))
                 .andReturn();
@@ -172,7 +194,7 @@ public class TaskControllerTest {
         testTask.setSolution(solution);
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Your answer is correct!"))
                 .andReturn();
@@ -222,7 +244,7 @@ public class TaskControllerTest {
         taskRepository.save(testTask);
         String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
 
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query")
+        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query")
                     .param("query", sql)
                     .with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -236,7 +258,7 @@ public class TaskControllerTest {
         task = taskRepository.save(task);
 
         String query = "select firstname, lastname from testdb";
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
