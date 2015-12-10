@@ -82,7 +82,7 @@ public class PointsControllerTest {
     public void returnsTable() throws Exception {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(teacher);
         for(Long l=0l; l<5; l++){
-        pastQueryService.saveNewPastQuery("student", l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("student", l, "select firstname from persons", true);
         }
         mockMvc.perform(get("/points").with(user("user").roles("TEACHER")).with(csrf()))
                 .andExpect(view().name("points"))

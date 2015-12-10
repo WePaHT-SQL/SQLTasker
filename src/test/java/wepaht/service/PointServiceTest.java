@@ -30,7 +30,7 @@ public class PointServiceTest {
     
     @Test
     public void tableHasOneRow() throws Exception {
-        pastQueryService.saveNewPastQuery("student", 0l, "select firstname from persons", true);
+        pastQueryService.saveNewPastQueryForTests("student", 0l, "select firstname from persons", true);
         pointService.getAllPoints();
         assertEquals(1, pointService.pointsTable.getRows().size());
     }
