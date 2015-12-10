@@ -6,6 +6,7 @@
 package wepaht.profile;
 
 import java.util.Date;
+import java.util.*;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class DevProfile {
         category.setDescription("easybeasy");
         category.setStartDate(new Date());
         category.setExpiredDate(new Date("22/22/2222"));
+        category.setTaskList(taskRepository.findAll());
         categoryRepository.save(category);
 
         User student = new User();

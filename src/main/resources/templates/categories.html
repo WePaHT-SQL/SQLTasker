@@ -56,23 +56,26 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse
-                        </button>
+                        <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse</button>
                     </div>
                 </div>
-
+                <div class="modal-footer">
+                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse
+                    </button>
+                </div>
             </div>
+
         </div>
-        <input type="submit" value="Create Category"/>
-    </form>
+</div>
+<input type="submit" value="Create Category"/>
+</form>
 </div>
 
+<a sec:authorize="!hasRole('ROLE_ADMIN')" th:href="@{/tasks}">Suggest a task!</a>
 
 <div th:each="category: ${categories}">
     <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
 </div>
-
-
 <div th:include="fragments/footer_template :: footer"></div>
 
 <div th:include="fragments/scripts :: searchScript"></div>
