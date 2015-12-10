@@ -31,7 +31,7 @@
 <h3 th:if="${category.taskList}">Category list</h3>
     <p th:each="task : ${category.taskList}">
         <a>Task name:</a>
-        <a th:text=" ${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a>
+        <a th:text=" ${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a>
     </p>
 
 </body>

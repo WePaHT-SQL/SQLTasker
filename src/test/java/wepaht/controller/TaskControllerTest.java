@@ -119,7 +119,7 @@ public class TaskControllerTest {
 
     @Test
     public void statusIsOkTest() throws Exception {
-        mockMvc.perform(get(API_URI).with(user("user")))
+        mockMvc.perform(get(API_URI).with(user("user").roles("TEACHER")))
                 .andExpect(status().isOk());
     }
 

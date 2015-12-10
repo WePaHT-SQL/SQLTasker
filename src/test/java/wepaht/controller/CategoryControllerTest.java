@@ -184,4 +184,40 @@ public class CategoryControllerTest {
 
         assertTrue(tasks.containsAll(Arrays.asList(task1, task2, task3)));
     }
+
+    @Test
+    @Transactional
+    public void taskCanBeInMultipleCategories() throws Exception{
+        Category category1 = createCategory();
+        category1.setName("First Category");
+        category1 = categoryRepository.save(createCategory());
+        Category category2 = createCategory();
+        category2.setName("Second Category");
+        category2 = categoryRepository.save(createCategory());
+        Task task = randomTask();
+
+        mockMvc.perform(post(URI + "/" + category1.getId() + "/edit")
+                .param("name", "First Category")
+                .param("description", category1.getDescription())
+                .param("startDate", sdf.format((Date) category1.getStartDate()))
+                .param("expiredDate", sdf.format((Date) category1.getExpiredDate()))
+                .param("taskIds", task.getId().toString())
+                .with(user("admin").roles("ADMIN")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Category modified!"))
+                .andReturn();
+
+        mockMvc.perform(post(URI + "/" + category2.getId() + "/edit")
+                .param("name", "Second Category")
+                .param("description", category2.getDescription())
+                .param("startDate", sdf.format((Date) category2.getStartDate()))
+                .param("expiredDate", sdf.format((Date) category2.getExpiredDate()))
+                .param("taskIds", task.getId().toString())
+                .with(user("admin").roles("ADMIN")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Category modified!"))
+                .andReturn();
+
+        assertTrue(category1.getTaskList().contains(task) && category2.getTaskList().contains(task));
+    }
 }

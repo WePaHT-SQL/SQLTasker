@@ -106,6 +106,7 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
+    @Secured("ROLE_TEACHER")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String getTask(@PathVariable Long id, Model model) throws Exception {
         Task task = taskRepository.findOne(id);
@@ -210,5 +211,11 @@ public class TaskController {
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
         return "redirect:/tasks/{id}/edit";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/suggest")
+    public String getSuggestionPage(Model model) {
+        model.addAttribute("databases", databaseRepository.findAll());
+        return "tasks";
     }
 }
