@@ -1,5 +1,8 @@
 # SQLTasker
 
+Projekti on syksyn 2015 web-palvelinohjelmoinnin harjoitustyön tuotos. Tavoitteena oli luoda harjoittelutyökalu kurssia tietokantojen perusteet varten.
+Projektissa kurssin pitäjä voi luoda sql-tietokantoja, ja tehdä niillä tehtäviä kurssin oppilaille. Opiskelija kykenee tekemään tietokantakyselyjä tehtäviin saaden itselleen pisteitä kutakin oikeata vastausta kohden.
+
 Trello: https://trello.com/b/si5PUjzJ/projekti
 
 Päiväkirja: https://docs.google.com/spreadsheets/d/1_RNe-BYhveb5zemlZAoGLvDDlPj8-jCzZozDTjsn2ZA/edit#gid=0
