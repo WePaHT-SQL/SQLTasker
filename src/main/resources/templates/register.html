@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Registeration</title>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
 </head>
 <body>
 <div th:include="fragments/navbar_template :: navbar"></div>
@@ -12,7 +13,7 @@
     <label>Username:</label>
     <input type="text" name="username"/>
     <label>Password:</label>
-    <input type="text" name="password"/>
+    <input type="password" name="password"/>
     <input type="hidden" name="role" value="STUDENT"/>
     <input type="submit" value="Register"/>
 </form>

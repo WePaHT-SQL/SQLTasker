@@ -7,6 +7,7 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Databases</title>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </head>
     <body>
 
@@ -30,7 +31,7 @@ and open the template in the editor.
 
                 <br/>
 
-                <input type="submit" value="Submit New Database"/>
+                <input type="submit" value="Submit new database"/>
             </form>
             <hr/>
         </div>
@@ -38,7 +39,6 @@ and open the template in the editor.
         <h2>Existing Databases</h2>
         <div th:each="database: ${databases}">
             <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Database name</a></h3>
-            <br/>
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>category</title>
-    <div th:include="fragments/bootstrap :: bootstrap"></div>
+    <title th:text="${category.name}">Category name</title>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
 </head>
 <body>
 
@@ -20,7 +20,7 @@
         </form>
     </div>
 
-<h2 th:text="${category.name}">Task name</h2>
+<h2 th:text="${category.name}">Category name</h2>
 <a>When task can be started:</a>
 <p th:text="${category.startDate}">Description</p>
 <a>Last date when task can be done:</a>
@@ -31,7 +31,7 @@
 <h3 th:if="${category.taskList}">Category list</h3>
     <p th:each="task : ${category.taskList}">
         <a>Task name:</a>
-        <a th:text=" ${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a>
+        <a th:text=" ${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a>
     </p>
 
 </body>

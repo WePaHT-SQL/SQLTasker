@@ -19,6 +19,7 @@ import wepaht.repository.CategoryRepository;
 import wepaht.repository.UserRepository;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
+import wepaht.service.CategoryService;
 import wepaht.service.DatabaseService;
 
 /**
@@ -43,6 +44,9 @@ public class DevProfile {
     
     @Autowired
     private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private CategoryService categoryService;
 
     @PostConstruct
     public void init() {
@@ -56,17 +60,19 @@ public class DevProfile {
                 + "INSERT INTO PERSONS (PERSONID, LASTNAME, FIRSTNAME, ADDRESS, CITY)"
                 + "VALUES (3, 'Entieda', 'Kake?', 'Laiva', 'KJYR');");
 
-        for (int i = 0; i < 10; i++) {
-            taskRepository.save(randomTask());
-        }
         Category category = new Category();
         category.setName("first week");
         category.setDescription("easybeasy");
         category.setStartDate(new Date());
         category.setExpiredDate(new Date("22/22/2222"));
-        category.setTaskList(taskRepository.findAll());
         categoryRepository.save(category);
 
+        for (int i = 0; i < 10; i++) {
+            Task task = randomTask();
+            taskRepository.save(task);
+            categoryService.setCategoryToTask(category.getId(), task);
+        }        
+        
         User student = new User();
         student.setUsername("0123456789");
         student.setPassword("opiskelija");

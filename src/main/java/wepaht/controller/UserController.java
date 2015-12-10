@@ -5,12 +5,18 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.User;
 import wepaht.repository.UserRepository;
+import wepaht.service.PastQueryService;
 import wepaht.service.PointService;
 import wepaht.service.UserService;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -26,11 +32,17 @@ public class UserController {
     @Autowired
     PointService pointService;
 
+    @Autowired
+    PastQueryService pastQueryService;
+
     @Secured("ROLE_TEACHER")
     @RequestMapping(value = "users", method = RequestMethod.GET)
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("roles", roles);
+        model.addAttribute("students", userRepository.findByRole("STUDENT"));
+        model.addAttribute("teachers", userRepository.findByRole("TEACHER"));
+        model.addAttribute("admins", userRepository.findByRole("ADMIN"));
         return "users";
     }
 
@@ -51,12 +63,18 @@ public class UserController {
         model.addAttribute("roles", roles);
         model.addAttribute("user", user);
         model.addAttribute("points", pointService.getPointsByUsername(user.getUsername()));
+        model.addAttribute("token", userService.getToken());
 
         return "user";
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String create(@ModelAttribute User newUser, RedirectAttributes redirectAttributes) {
+    public String create(@Valid @ModelAttribute User newUser, RedirectAttributes redirectAttributes, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addAttribute("messages", bindingResult.getAllErrors());
+            return "redirect:/register";
+        }
+
         if (newUser.getRole() == null) newUser.setRole("STUDENT");
         userRepository.save(newUser);
         redirectAttributes.addFlashAttribute("messages", "User created succesfully, please log in.");
@@ -88,10 +106,13 @@ public class UserController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String password,
             @RequestParam(required = false) String repassword) {
+
+        String redirectAddress = "redirect:/";
+        List<String> messages = new ArrayList<>();
         
         if (password != null && !password.equals(repassword)) {
             redirectAttributes.addFlashAttribute("messages", "Passwords didn't match");
-            return "redirect:/";
+            return redirectAddress;
         }
 
         User loggedUser = userService.getAuthenticatedUser();
@@ -108,23 +129,38 @@ public class UserController {
                 userToBeEdited.setRole(role);
             }
 
-            if (username != null || !username.isEmpty()) userToBeEdited.setUsername(username);
-            if (password != null || !password.isEmpty()) userToBeEdited.setPassword(password);
+            if (password != null || !password.isEmpty()) {
+                userToBeEdited.setPassword(password);
+            }
 
+            if (!username.equals(userToBeEdited.getUsername()) && (username != null || !username.isEmpty())) {
+                String oldUsername = userToBeEdited.getUsername();
+                userToBeEdited.setUsername(username);
+                pastQueryService.changeQueriesesUsernames(oldUsername, username);
+                messages.add("Username modified. Please log in.");
+                userService.customLogout();
+            }
 
-            redirectAttributes.addAttribute("id", id);
-            redirectAttributes.addFlashAttribute("messages", "User modified!");
+            messages.add("User modified!");
         } else {
-            redirectAttributes.addFlashAttribute("messages", "User modification failed!");
+            messages.add("User modification failed!");
         }
-        
 
-        return "redirect:/";
+        redirectAttributes.addFlashAttribute("messages", messages);
+        return redirectAddress;
     }
 
     @RequestMapping(value = "register", method = RequestMethod.GET)
     public String viewRegister(Model model) {
         model.addAttribute("user", userService.getAuthenticatedUser());
         return "register";
+    }
+
+    @Secured("ROLE_TEACHER")
+    @RequestMapping(value = "profile/token", method = RequestMethod.POST)
+    public String createToken(RedirectAttributes redirectAttributes) {
+        userService.createToken();
+        redirectAttributes.addFlashAttribute("messages", "New token created successfully!");
+        return "redirect:/profile";
     }
 }

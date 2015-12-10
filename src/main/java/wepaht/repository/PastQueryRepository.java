@@ -1,10 +1,12 @@
 package wepaht.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RestResource;
 import wepaht.domain.PastQuery;
 
 import java.util.List;
 
+@RestResource(exported = false)
 public interface PastQueryRepository extends JpaRepository<PastQuery, Long>{
 
 

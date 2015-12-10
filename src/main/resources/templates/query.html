@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Past queries listing.</title>
+    <title>Pastqueries</title>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
 </head>
 <body>
 <div>
@@ -39,7 +40,7 @@
 
     <div sec:authorize="hasRole('ROLE_STUDENT')">
         <form th:method="POST" th:action="@{/queries/student}">
-            <button type="submit" name="My queries" th:value="Queries">My Queries</button>
+            <button type="submit" name="My queries" th:value="Queries">My queries</button>
         </form>
     </div>
 

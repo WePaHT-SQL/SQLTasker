@@ -7,6 +7,7 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title th:text="${task.name}">TODO supply a title</title>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </head>
     <body>
         <div th:include="fragments/navbar_template :: navbar"></div>
@@ -35,7 +36,7 @@ and open the template in the editor.
 
             <p th:text="${task.description}">Task description</p>
 
-            <h3 sec:authorize="hasRole('ROLE_TEACHER')" th:if="${task.solution}">Suggested Solution</h3>
+            <h3 sec:authorize="hasRole('ROLE_TEACHER')" th:if="${task.solution}">Suggested solution</h3>
 
             <p sec:authorize="hasRole('ROLE_TEACHER')" th:text="${task.solution}">Task solution</p>
 
@@ -54,8 +55,11 @@ and open the template in the editor.
             <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
         </div>
 
-        <a th:href="@{/tasks}">Back to listing</a>
-
+        <div th:if="${category}">
+        <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
+        <a sec:autorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
+        </div>
+        
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>
     </body>
