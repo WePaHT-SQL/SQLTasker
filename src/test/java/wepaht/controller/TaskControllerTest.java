@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import wepaht.Application;
 import wepaht.domain.*;
 import wepaht.repository.DatabaseRepository;
+import wepaht.repository.TagRepository;
 import wepaht.repository.TaskRepository;
 
 import java.util.List;
@@ -68,6 +69,9 @@ public class TaskControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TagRepository tagRepository;
 
     @Mock
     UserService userServiceMock;
@@ -268,6 +272,38 @@ public class TaskControllerTest {
 
     @Test
     public void teacherCanCreateTag() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+        String tagName = "cool tag bro";
 
+        mockMvc.perform(post(API_URI + "/" + task.getId() + "/tags")
+                .param("name", tagName)
+                .with(user("teacher").roles("TEACHER")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Tag added!"))
+                .andReturn();
+
+        List<Tag> tags = tagRepository.findAll();
+
+        assertTrue(tags.stream().filter(tag -> tag.getName().equals(tagName)).findFirst().isPresent());
+    }
+
+    public void teacherCanDeleteTag() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+        Tag tag = new Tag();
+        String tagName = "Diz iz ded";
+        tag.setName(tagName);
+        tag.setTaskId(task.getId());
+        tag = tagRepository.save(tag);
+
+        mockMvc.perform(delete(API_URI + "/" + task.getId() + "/tags").param("name", tagName)
+                .with(user("teacher").roles("TEACHER")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        List<Tag> tags = tagRepository.findAll();
+
+        assertFalse(tags.stream().filter(t -> t.getName().equals(tagName)).findFirst().isPresent());
     }
 }
