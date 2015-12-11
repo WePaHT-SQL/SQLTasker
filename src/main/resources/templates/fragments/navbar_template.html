@@ -15,23 +15,6 @@ and open the template in the editor.
 <div th:fragment="navbar">
     <h1 id="sql-h1">SQL-TASKER</h1>
 
-<<<<<<< HEAD
-            <nav sec:authorize="hasRole('ROLE_STUDENT')">
-                <ul id="sql-ul">
-                    <li id="sql-li"><a id="sql-a" sec:authentication="name" th:href="@{/profile}">Username</a></li>
-                    <li id="sql-li"><a id="sql-a" th:href="@{/categories}">Categories</a></li>
-                    <li id="sql-li"><a id="sql-a" th:href="@{/queries}">Queries</a></li>
-                    <li id="sql-li"><a id="sql-a" th:href="@{/points}">Points</a></li>
-                    <li id="sql-li"><a id="sql-a" th:href="@{/databases}">Databases</a></li>
-                    <li id="sql-li"><a id="sql-a" sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/tasks}">Tasks</a></li>
-                    <li id="sql-li"><a id="sql-a" sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/users}">Users</a></li>
-                    <li id="sql-li"><a id="sql-a" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a></li>
-                </ul>
-            </nav>
-            <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}">
-                <input type="submit" value="Logout"/>
-            </form>
-=======
     <nav sec:authorize="hasRole('ROLE_STUDENT')">
         <ul id="sql-ul">
             <li id="sql-li"><a id="sql-a" sec:authentication="name" th:href="@{/profile}">Username</a></li>
@@ -46,7 +29,6 @@ and open the template in the editor.
             </li>
         </ul>
     </nav>
->>>>>>> 683b0c3525d1d0877e6ad083216762a514edd968
 
     <nav sec:authorize="isAnonymous()">
         <ul id="sql-ul">

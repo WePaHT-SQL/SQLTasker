@@ -95,7 +95,7 @@ public class TaskController {
             task.setDescription(task.getDescription()+" SUGGESTED BY "+user.getUsername());
             task.setName("SUGGESTION: " + task.getName());
             taskRepository.save(task);
-            redirectAttributes.addFlashAttribute("messages", "Task has been created");
+            redirectAttributes.addFlashAttribute("messages", "Task has been suggested");
 
             return "redirect:/tasks";
         }
