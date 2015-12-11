@@ -83,9 +83,9 @@ public class RestExportControllerTest {
 
         pastQueryRepository.deleteAll();
 
-        pastQueryService.saveNewPastQuery(name1, 1l, null, true);
-        pastQueryService.saveNewPastQuery(name1, 2l, null, true);
-        pastQueryService.saveNewPastQuery(name2, 1l, null, true);
+        pastQueryService.saveNewPastQueryForTests(name1, 1l, null, true);
+        pastQueryService.saveNewPastQueryForTests(name1, 2l, null, true);
+        pastQueryService.saveNewPastQueryForTests(name2, 1l, null, true);
 
         userRepository.deleteAll();
         User user = new User();

@@ -2,12 +2,9 @@
 <html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Categories</title>
-
         <div th:include="fragments/bootstrap :: bootstrap"></div>
-
-</head>
+    </head>
 <body>
-
 
     <div th:include="fragments/navbar_template :: navbar"></div>
     <div th:include="fragments/messages_template :: messages"></div>
@@ -56,17 +53,17 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse</button>
+                            <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse
+                            </button>
                         </div>
                     </div>
 
                 </div>
-            </div>
-            <input type="submit" value="Create category"/>
+                <input type="submit" value="Create category"/>
         </form>
     </div>
 
-    <a sec:authorize="!hasRole('ROLE_ADMIN')" th:href="@{/tasks}">Suggest a task!</a>
+
 
     <div th:each="category: ${categories}">
         <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>

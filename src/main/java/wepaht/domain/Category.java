@@ -17,7 +17,7 @@ public class Category extends AbstractPersistable<Long> {
     @NotBlank
     private String name;
 
-    @OneToMany
+    @ManyToMany
     private List<Task> taskList;
 
     @Temporal(TemporalType.DATE)

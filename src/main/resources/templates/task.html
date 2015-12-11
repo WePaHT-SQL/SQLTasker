@@ -44,21 +44,24 @@ and open the template in the editor.
             <a th:text="${task.database.name}" th:href="@{/databases/{id} (id = ${task.database.id})}">Task database</a>
         </div>
         <br/>
-        <form th:method="POST" th:action="@{/tasks/{id}/query (id=${task.id})}">
+        <div th:if="${category != null}">
+        <form th:method="POST" th:action="@{/tasks/{categoryId}/{id}/query (categoryId=${category.id}, id=${task.id})}">
             <textarea name="query"/>
             <input type="hidden" name="id" th:value="${task.id}"/>
-            <input type="submit" value="Submit query"/>
-        </form>
 
+            <input type="submit" value="Submit query"/>
+
+        </form>
+        </div>
         <!-- SELECT query to a database results -->
         <div th:if="${tables}">
             <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
         </div>
 
-        <div th:if="${category}">
+        <div th:if="${category != null}">
         <a th:id="${category}" th:href="@{/categories/{id} (id = ${category.id})}" th:text="'Back to ' + ${category.name}">Back to category</a>
-        <a sec:autorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
         </div>
+        <a sec:autorize="hasRole('ROLE_TEACHER')" th:href="@{/tasks}">Back to task listing</a>
         
         <div th:include="fragments/footer_template :: footer"></div>
         <div th:include="fragments/scripts :: confirmScript"></div>

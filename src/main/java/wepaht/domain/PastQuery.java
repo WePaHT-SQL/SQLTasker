@@ -18,12 +18,14 @@ public class PastQuery extends AbstractPersistable<Long> {
     @Lob
     private String pastQuery;
 
+    private boolean canGetPoint;
+
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-
     private boolean correctness;
-    
+
     public String getUsername() {
         return username;
     }
@@ -53,13 +55,23 @@ public class PastQuery extends AbstractPersistable<Long> {
         return correctness;
     }
 
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
     public void setCorrectness(boolean correctness) {
         this.correctness = correctness;
     }
-    public void setDate(Date date){
-        this.date=date;
+
+    public void setCanGetPoint(boolean canGet) {
+        this.canGetPoint = canGet;
     }
-    public Date getDate(){
-        return date;
+
+    public boolean getCanGetPoint() {
+        return canGetPoint;
     }
 }

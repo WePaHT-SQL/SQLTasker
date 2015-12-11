@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import wepaht.Application;
 import wepaht.domain.*;
 import wepaht.repository.DatabaseRepository;
+import wepaht.repository.TagRepository;
 import wepaht.repository.TaskRepository;
 
 import java.util.List;
@@ -68,6 +69,9 @@ public class TaskControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TagRepository tagRepository;
 
     @Mock
     UserService userServiceMock;
@@ -130,7 +134,7 @@ public class TaskControllerTest {
 
         String query = "select firstname, lastname from testdb";
 
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
@@ -181,7 +185,7 @@ public class TaskControllerTest {
         Task testTask = randomTask();
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query").param("query", "SELECT * FROM persons;").with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("tables"))
                 .andReturn();
@@ -194,7 +198,7 @@ public class TaskControllerTest {
         testTask.setSolution(solution);
         testTask = taskRepository.save(testTask);
 
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query").param("query", solution).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Your answer is correct!"))
                 .andReturn();
@@ -244,7 +248,7 @@ public class TaskControllerTest {
         taskRepository.save(testTask);
         String sql = "UPDATE persons SET city='Helesinki' WHERE personid=3;";
 
-        mockMvc.perform(post(API_URI + "/" + testTask.getId() + "/query")
+        mockMvc.perform(post(API_URI + "/1/" + testTask.getId() + "/query")
                     .param("query", sql)
                     .with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -258,11 +262,48 @@ public class TaskControllerTest {
         task = taskRepository.save(task);
 
         String query = "select firstname, lastname from testdb";
-        mockMvc.perform(post(API_URI + "/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
+        mockMvc.perform(post(API_URI + "/1/" + task.getId() + "/query").param("query", query).param("id", "" + task.getId()).with(user("test")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("messages", "Query sent."))
                 .andReturn();
 
         assertNotNull(pastQueryService.returnQuery("allUsers", task.getId(), "allAnswers").get(0));
+    }
+
+    @Test
+    public void teacherCanCreateTag() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+        String tagName = "cool tag bro";
+
+        mockMvc.perform(post(API_URI + "/" + task.getId() + "/tags")
+                .param("name", tagName)
+                .with(user("teacher").roles("TEACHER")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("messages", "Tag added!"))
+                .andReturn();
+
+        List<Tag> tags = tagRepository.findAll();
+
+        assertTrue(tags.stream().filter(tag -> tag.getName().equals(tagName)).findFirst().isPresent());
+    }
+
+    public void teacherCanDeleteTag() throws Exception {
+        Task task = randomTask();
+        task = taskRepository.save(task);
+        Tag tag = new Tag();
+        String tagName = "Diz iz ded";
+        tag.setName(tagName);
+        tag.setTaskId(task.getId());
+        tag = tagRepository.save(tag);
+
+        mockMvc.perform(delete(API_URI + "/" + task.getId() + "/tags").param("name", tagName)
+                .with(user("teacher").roles("TEACHER")).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        List<Tag> tags = tagRepository.findAll();
+
+        assertFalse(tags.stream().filter(t -> t.getName().equals(tagName)).findFirst().isPresent());
     }
 }

@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Category;
 import wepaht.domain.Task;
+import wepaht.domain.User;
 import wepaht.repository.CategoryRepository;
 import wepaht.repository.TaskRepository;
+import wepaht.service.UserService;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -32,9 +34,20 @@ public class CategoryController {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(method = RequestMethod.GET)
     public String getCategories(Model model) {
-        model.addAttribute("categories", categoryRepository.findAll());
+        User user = userService.getAuthenticatedUser();
+        if (user.getRole().equals("TEACHER") ||user.getRole().equals("ADMIN")  ) {
+            model.addAttribute("categories", categoryRepository.findAll());
+        } else {
+            List<Category> categoryList=categoryRepository.findByStartDateBefore(new Date());
+            categoryList.addAll(categoryRepository.findByStartDate(new Date()));
+            model.addAttribute("categories", categoryList);
+        }
+
         model.addAttribute("tasks", taskRepository.findAll());
         return "categories";
     }
@@ -123,11 +136,19 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/{id}/tasks/{taskId}", method = RequestMethod.GET)
-    public String getCategoryTask(@PathVariable Long id, @PathVariable Long taskId, Model model) {
-        model.addAttribute("task", taskRepository.findOne(taskId));
-        model.addAttribute("category", categoryRepository.findOne(id));
+    public String getCategoryTask(@PathVariable Long id,
+                                  @PathVariable Long taskId,
+                                  Model model, RedirectAttributes redirectAttributes) {
+        Category category = categoryRepository.findOne(id);
+        User user = userService.getAuthenticatedUser();
+        if(category.getStartDate().before(new Date()) || category.getStartDate().equals(new Date()) || user.getRole().equals("TEACHER") ||user.getRole().equals("ADMIN")) {
+            model.addAttribute("task", taskRepository.findOne(taskId));
+            model.addAttribute("category", category);
+            return "task";
+        }
 
-        return "task";
+        redirectAttributes.addFlashAttribute("messages", "You shall not pass here!");
+        return "redirect:/categories/";
     }
 
 
