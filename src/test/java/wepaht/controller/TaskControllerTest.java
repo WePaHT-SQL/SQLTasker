@@ -176,7 +176,7 @@ public class TaskControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
-        assertNotNull(taskRepository.findByName("SUGGESTION: "+taskName).get(0));
+        assertNotNull(taskRepository.findByNameOrderByNameDesc("SUGGESTION: "+taskName).get(0));
     }
 
 

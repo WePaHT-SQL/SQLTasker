@@ -1,50 +1,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Tasks</title>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-    </head>
-    <body>
-        <div th:include="fragments/navbar_template :: navbar"></div>
+<head>
+    <title>Tasks</title>
+</head>
+<body>
+<div th:include="fragments/navbar_template :: navbar"></div>
 
-        <div th:include="fragments/messages_template :: messages"></div>
+<div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
-            <h2 sec:authorize="hasRole('ROLE_ADMIN')">Create new task</h2>
-            <h2 sec:authorize="!hasRole('ROLE_ADMIN')">Suggest a task</h2>
+<div>
+    <h2 sec:authorize="hasRole('ROLE_ADMIN')">Create new task</h2>
+    <h2 sec:authorize="!hasRole('ROLE_ADMIN')">Suggest a task</h2>
 
-            <form method="POST" th:action="@{/tasks}">
-                <label>Task name</label>
-                <br/>
-                <input type="text" name="name"/>
+    <form method="POST" th:action="@{/tasks}">
+        <label>Task name</label>
+        <br/>
+        <input type="text" name="name"/>
 
-                <br/>
-                <label>Description</label>
-                <br/>
-                <textarea name="description"></textarea>
-                <br/>
-                <label>Solution</label>
-                <br/>
-                <textarea name="solution"></textarea>
+        <br/>
+        <label>Description</label>
+        <br/>
+        <textarea name="description"></textarea>
+        <br/>
+        <label>Solution</label>
+        <br/>
+        <textarea name="solution"></textarea>
 
-                <br/>
-                <div th:each="db : ${databases}">
-                    <input type="radio" name="databaseId" th:value="${db.id}" th:text="${db.name}"/>
-                    <br/>
-                </div>
-                <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create task"/>
-                <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Submit suggestion"/>
-            </form>
-        </div>    
-        
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <br/>
+        <div th:each="db : ${databases}">
+            <input type="radio" name="databaseId" th:value="${db.id}" th:text="${db.name}"/>
             <br/>
-
-        </div>        
-        <div sec:authorize="hasRole('ROLE_TEACHER')" th:each="task: ${tasks}">
-            <hr/>
-            <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
         </div>
+        <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create task"/>
+        <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Submit suggestion"/>
+    </form>
+</div>
 
-        <div th:include="fragments/footer_template :: footer"></div>
-    </body>
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <br/>
+
+</div>
+<div sec:authorize="hasRole('ROLE_TEACHER')" th:each="task: ${tasks}">
+    <hr/>
+    <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
+</div>
+
+<div th:include="fragments/footer_template :: footer"></div>
+<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+</body>
 </html>

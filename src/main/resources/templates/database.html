@@ -7,21 +7,22 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title th:text="${database.name}">Database name</title>
-        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </head>
     <body>
-    <div th:include="fragments/navbar_template :: navbar "></div>
+        <div th:include="fragments/navbar_template :: navbar "></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
+
         <!-- Example usage of listing database's tables -->
         <h1 th:text="${database.name}">Database name</h1>
-        <code th:text="${database.databaseSchema}">Database create-tables</code>
+        <pre th:text="${database.databaseSchema}">Database create-tables</pre>
         <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
 
         <br/>
         <a th:href="@{/databases}">Back to Database listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

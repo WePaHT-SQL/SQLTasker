@@ -18,7 +18,7 @@ and open the template in the editor.
                 <div th:if="${table.key}">
                     <h2 th:text="${table.key}">Table name</h2>
                 </div>
-                <table th:if="${table.value}">
+                <table th:if="${table.value}" class="table table-bordered">
                     <tr>
                         <div th:each="column : ${table.value.columns}">
                             <th th:text="${column}">Column name</th>

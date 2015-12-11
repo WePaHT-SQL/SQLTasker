@@ -2,7 +2,7 @@
 <html sec:authorize="hasRole('ROLE_ADMIN')" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Edit category</title>
-        <div th:include="fragments/bootstrap :: bootstrap"></div>
+    <div th:include="fragments/bootstrap :: bootstrap"></div>
 </head>
 <body>
 <div th:include="fragments/navbar_template :: navbar"></div>
@@ -41,21 +41,21 @@
                 </div>
 
                 <div class="modal-body">
-                    <input type="text" id="search" placeholder="Type to search" class="topspace" />
+                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
 
-                    <div class="checkbox" th:each="task : ${allTasks}" style="border: none" >
+                    <div class="checkbox" th:each="task : ${allTasks}" style="border: none">
                         <label th:if="${#lists.contains(category.taskList, task)}">
-                            <input type="checkbox" name="taskIds" th:value="${task.id}" checked="true" />
+                            <input type="checkbox" name="taskIds" th:value="${task.id}" checked="true"/>
                             <p class="taskName" th:text="${task.name}"></p>
                         </label>
                         <label th:unless="${#lists.contains(category.taskList, task)}">
-                            <input type="checkbox" name="taskIds" th:value="${task.id}" />
+                            <input type="checkbox" name="taskIds" th:value="${task.id}"/>
                             <p class="taskName" th:text="${task.name}"></p>
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary"  data-dismiss="modal" >Choose</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Choose</button>
                 </div>
             </div>
 
@@ -64,6 +64,8 @@
     <input type="submit" value="Update Category"/>
 </form>
 
+<div th:include="fragments/footer_template :: footer"></div>
 <div th:include="fragments/scripts :: searchScript"></div>
+<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
 </body>
 </html>

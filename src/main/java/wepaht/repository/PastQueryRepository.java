@@ -1,13 +1,7 @@
 package wepaht.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-<<<<<<< HEAD
 import org.springframework.data.rest.core.annotation.RestResource;
-=======
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.rest.core.annotation.RestResource;
-import wepaht.domain.Database;
->>>>>>> b2cd874b1d23868bba0a16eba757c3f91ad2b9bc
 import wepaht.domain.PastQuery;
 
 import java.util.List;

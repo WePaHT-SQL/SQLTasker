@@ -5,15 +5,17 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>navbar_template</title>
-        <link href="../../bootstrap-3.3.6-dist/css/navbarmenu.css" th:href="@{/bootstrap-3.3.6-dist/css/navbarmenu.css}" rel="stylesheet" type="text/css" />
-    </head>
+<head>
+    <title>navbar_template</title>
+    <link href="../../bootstrap-3.3.6-dist/css/navbarmenu.css" th:href="@{/bootstrap-3.3.6-dist/css/navbarmenu.css}"
+          rel="stylesheet" type="text/css"/>
+</head>
 
-    <body>
-        <div th:fragment="navbar">
-            <h1 id="sql-h1">SQL-TASKER</h1>
+<body>
+<div th:fragment="navbar">
+    <h1 id="sql-h1">SQL-TASKER</h1>
 
+<<<<<<< HEAD
             <nav sec:authorize="hasRole('ROLE_STUDENT')">
                 <ul id="sql-ul">
                     <li id="sql-li"><a id="sql-a" sec:authentication="name" th:href="@{/profile}">Username</a></li>
@@ -29,12 +31,34 @@ and open the template in the editor.
             <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}">
                 <input type="submit" value="Logout"/>
             </form>
+=======
+    <nav sec:authorize="hasRole('ROLE_STUDENT')">
+        <ul id="sql-ul">
+            <li id="sql-li"><a id="sql-a" sec:authentication="name" th:href="@{/profile}">Username</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/categories}">Categories</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/queries}">Queries</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/points}">Points</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/databases}">Databases</a></li>
+            <li id="sql-li" sec:authorize="hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/tasks}">Tasks</a></li>
+            <li id="sql-li" sec:authorize="!hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/tasks/suggest}">Suggest Task</a></li>
+            <li id="sql-li" sec:authorize="hasRole('ROLE_TEACHER')"><a id="sql-a" th:href="@{/users}">Users</a></li>
+            <li id="sql-li"><a id="sql-a" href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+        </ul>
+    </nav>
+>>>>>>> 683b0c3525d1d0877e6ad083216762a514edd968
 
-            <div sec:authorize="isAnonymous()">
-                <a th:href="@{/login}">Login</a>
-                <a th:href="@{/register}">Register</a>
-            </div>
+    <nav sec:authorize="isAnonymous()">
+        <ul id="sql-ul">
+            <li id="sql-li"><a id="sql-a" th:href="@{/login}">Login</a></li>
+            <li id="sql-li"><a id="sql-a" th:href="@{/register}">Register</a></li>
+        </ul>
+    </nav>
 
-        </div>
-    </body>
+    <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}">
+        <input type="submit" value="Logout"/>
+    </form>
+
+</div>
+</body>
 </html>
