@@ -13,9 +13,10 @@ and open the template in the editor.
 
 <div th:include="fragments/messages_template :: messages"></div>
 
+<div class="get-in-touch">
 <h2 sec:authorize="!hasRole('ROLE_TEACHER')">My points:</h2>
-<h2 sec:authorize="hasRole('ROLE_TEACHER')">Points of all users:</h2>
 <div th:if="${tables}" th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
+</div>
 
 <div th:include="fragments/footer_template :: footer"></div>
 <div th:include="fragments/scripts :: confirmScript"></div>

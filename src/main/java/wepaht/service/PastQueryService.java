@@ -34,7 +34,7 @@ public class PastQueryService {
     }
 
     private boolean compareExpirationDate(Date expiredDate) {
-        return expiredDate.before(new Date());
+        return expiredDate.after(new Date());
     }
 
 

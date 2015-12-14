@@ -13,63 +13,62 @@ and open the template in the editor.
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <h1 th:text="${editedUser.username}">User name</h1>
-        <div>
-            <form sec:authorize="hasRole('ROLE_ADMIN')" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
-                <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
-            </form>
+        <h2>
+            <span th:text="${editedUser.username}">User name</span>
+            | Points:
+            <span th:text="${points}">User points</span>
+        </h2>
 
-            <div sec:authorize="hasRole('ROLE_TEACHER')">
-                <p>To export points you need to include a token in your post-request</p>
-                <div th:if="${token}">
-                    <label><b>Your export-token: </b></label>
-                    <p th:text="${token.token}"></p>
-                </div>
-                <form method="POST" th:action="@{/profile/token}">
-                    <button type="submit" th:value="createToken" Onclick="return Confirm();">Create new export-token</button>
+        <ul>
+            <li id="sql-li">
+                <form sec:authorize="hasRole('ROLE_ADMIN')" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+                    <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
                 </form>
-                <hr/>
-            </div>
-            <div>
-                <h2>Edit user</h2>
+            </li>
 
+            <li id="sql-li">
+                <form method="POST" th:action="@{/profile/token}">
+                    <input id="sql-input" type="submit" th:value="createToken" Onclick="return Confirm();"></input>
+                </form>
+            </li>
+        </ul>
+
+        <div sec:authorize="hasRole('ROLE_TEACHER')">
+            <p>To export points you need to include a token in your post-request</p>
+            <div th:if="${token}">
+                <label><b>Your export-token: </b></label>
+                <p th:text="${token.token}"></p>
+            </div>
+        </div>
+
+        <div class="get-in-touch">
+            <h2>Edit user</h2>
+            <div class="get-in-touch-text-boxs">
                 <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
-                    <div th:not="${editedUser.id.equals(user.id)}">
-                        <label>Username:</label>
-                        <br/>
+
+                    <div class="get-in-touch-text-box" th:not="${editedUser.id.equals(user.id)}">
+                        <span>Username:</span>
                         <input type="text" name="username" th:value="${editedUser.username}"/>
                     </div>
-                    <br/>
-                    <label>Role:</label>
-                    <br/>
-                    <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
-                           checked="checked"/>
-                    <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
-                           th:text="${role}" th:value="${role}"/>
 
-                    <br/>
+                    <div class="get-in-touch-text-box">
+                        <span>Role:</span>
+                        <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
+                               checked="checked"/>
+                        <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
+                               th:text="${role}" th:value="${role}"/>
+                    </div>
 
-                    <div>
-                        <label>New password:</label>
-                        <br/>
+                    <div class="get-in-touch-text-box">
+                        <span>New password:</span>
                         <input type="password" name="password"></input>
-                        <br/>
-                        <label>Retype new password:</label>
-                        <br/>
+                        <span>Retype new password:</span>
                         <input type="password" name="repassword"></input>
-                        <br/>
                     </div>
 
                     <input type="submit" value="Save edits"/>
                 </form>
             </div>
-
-            <br/>
-            <hr/>
-        </div>
-        <div>
-            <h2>User points</h2>
-            <p th:text="${points}">Points</p>
         </div>
 
         <div sec:authorize="hasRole('ROLE_ADMIN')">

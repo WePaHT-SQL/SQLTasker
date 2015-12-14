@@ -10,62 +10,71 @@
         <div th:include="fragments/navbar_template :: navbar"></div>
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="get-in-touch" sec:authorize="hasRole('ROLE_ADMIN')">
             <h2>Create new category</h2>
 
             <form method="POST" th:action="@{/categories}">
-                <label>Category name</label>
-                <br/>
-                <input type="text" name="name"/>
-                <br/>
-                <label>Description</label>
-                <br/>
-                <textarea name="description"></textarea>
-                <br/>
-                <br/>
-                <label>Start date:</label><input type="date" name="startDate"/>
-                <br/>
-                <label>Expired date: </label><input type="date" name="expiredDate"/>
-                <br/>
+                <div class="get-in-touch-text-boxs">
+                    <div class="get-in-touch-text-box">
+                        <span>Category name</span>
+                        <input type="text" name="name"/>
+                    </div>
 
-                <div>
-                    <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
-                            data-toggle="modal" data-target="#taskModal">
-                        Choose Tasks
-                    </button>
-                </div>
-                <div class="modal fade" id="taskModal" role="dialog">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title">Choose Tasks</h4>
-                            </div>
-                            <div class="modal-body">
-                                <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+                    <div class="get-in-touch-text-box">
+                        <span>Description</span>
+                        <textarea name="description"></textarea>
+                    </div>
 
-                                <div class="checkbox" th:each="task : ${tasks}" style="border: none">
-                                    <label>
-                                        <input type="checkbox" name="taskIds" th:value="${task.id}"/>
+                    <div class="get-in-touch-text-box">
+                        <span>Start date:</span><input type="date" name="startDate"/>
+                        <br/>
+                        <br/>
+                        <span>Expired date: </span><input type="date" name="expiredDate"/>
+                    </div>
 
-                                        <p class="taskName" th:text="${task.name}"></p>
-                                    </label>
+                    <div>
+                        <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                                data-toggle="modal" data-target="#taskModal">
+                            Choose Tasks
+                        </button>
+                    </div>
+                    <div class="modal fade" id="taskModal" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Choose Tasks</h4>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse
-                                </button>
+                                <div class="modal-body">
+                                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+
+                                    <div class="checkbox" th:each="task : ${tasks}" style="border: none">
+                                        <label>
+                                            <input type="checkbox" name="taskIds" th:value="${task.id}"/>
+
+                                            <p class="taskName" th:text="${task.name}"></p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Valitse
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <br/>
                     <input type="submit" value="Create category"/>
                 </div>
             </form>
         </div>
 
-        <div th:each="category: ${categories}">
-            <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
+        <div class="get-in-touch">
+            <h2>List of categories</h2>        
+            <div th:each="category: ${categories}">
+                <h3><a th:text="${category.name}" th:href="@{/categories/{id}(id=${category.id})}">Category name</a></h3>
+            </div>
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>

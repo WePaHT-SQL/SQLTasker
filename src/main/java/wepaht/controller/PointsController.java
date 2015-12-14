@@ -32,7 +32,7 @@ public class PointsController {
         if (!pointService.getAllPoints().getRows().isEmpty()) {
             Table pointsTable = pointService.getAllPoints();
             Map<String, Table> tables = new HashMap<>();
-            tables.put("PointsTable", pointsTable);
+            tables.put("Points of all users", pointsTable);
             model.addAttribute("tables", tables);
             return "points";
         }
@@ -46,7 +46,7 @@ public class PointsController {
         if (!pointService.getPointsAndExercisesByUsername(username).getRows().isEmpty()) {
             Table pointsTable = pointService.getPointsAndExercisesByUsername(username);
             Map<String, Table> tables = new HashMap<>();
-            tables.put("PointsTable", pointsTable);
+            tables.put("Points from exercises:", pointsTable);
             model.addAttribute("tables", tables);
             return "points";
         }

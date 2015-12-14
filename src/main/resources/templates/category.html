@@ -1,38 +1,50 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title th:text="${category.name}">Category name</title>
-</head>
-<body>
+    <head>
+        <title th:text="${category.name}">Category name</title>
+    </head>
+    <body>
 
-<div th:include="fragments/navbar_template :: navbar"></div>
-<div th:include="fragments/scripts :: confirmScript"></div>
-<div th:include="fragments/messages_template :: messages"></div>
+        <div th:include="fragments/navbar_template :: navbar"></div>
+        <div th:include="fragments/scripts :: confirmScript"></div>
+        <div th:include="fragments/messages_template :: messages"></div>
 
-<div sec:authorize="hasRole('ROLE_ADMIN')">
-    <form th:method="DELETE" th:action="@{/categories/{id} (id=${category.id})}">
-        <button type="submit" value="delete" Onclick="return Confirm();">Delete category</button>
-    </form>
+        <ul sec:authorize="hasRole('ROLE_ADMIN')">
+            <li id="sql-li">
+                <form th:method="DELETE" th:action="@{/categories/{id} (id=${category.id})}">
+                    <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
+                </form>
+            </li>
 
-    <form th:method="GET" th:action="@{/categories/{id}/edit (id=${category.id})}">
-        <button type="submit" value="edit" Onclick="return Confirm();">Edit category</button>
-    </form>
-</div>
+            <li id="sql-li">
+                <form th:method="GET" th:action="@{/categories/{id}/edit (id=${category.id})}">
+                    <input id="sql-input" type="submit" value="edit" Onclick="return Confirm();"></input>
+                </form>
+            </li>
+        </ul>
 
-<h2 th:text="${category.name}">Category name</h2>
-<label>Start date:</label>
-<p th:text="${category.startDate}">Description</p>
-<label>Expire date:</label>
-<p th:text="${category.expiredDate}">Description</p>
-<h3 th:if="${category.description}">Description</h3>
-<p th:text="${category.description}">Description</p>
+        <div class="get-in-touch">
+            <div class="get-in-touch-text-boxs">
+                <h2 th:text="${category.name}">Category name</h2>
+                <h3>Start date:</h3>
+                <p th:text="${category.startDate}">Description</p>
+                <h3>Expire date:</h3>
+                <p th:text="${category.expiredDate}">Description</p>
+                <h3 th:if="${category.description}">Description</h3>
+                <p th:text="${category.description}">Description</p>
+            </div>
+        </div>
 
-<h3 th:if="${category.taskList}">Task list</h3>
-<h4 th:each="task : ${category.taskList}">
-    <a th:text=" ${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a>
-</h4>
+        <div class="get-in-touch">
+            <h3 th:if="${category.taskList}">Task list</h3>
+            <h4 th:each="task : ${category.taskList}">
+                <a th:text=" ${task.name}" th:href="@{/categories/{id}/tasks/{taskId} (id=${category.id}, taskId=${task.id})}">Task name</a>
+            </h4>
+        </div>
 
-<div th:include="fragments/footer_template :: footer"></div>
-<div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
-</body>
+        <a th:href="@{/categories}">Back to category listing</a>
+
+        <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+    </body>
 </html>

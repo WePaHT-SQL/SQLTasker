@@ -6767,7 +6767,7 @@ button.close {
     line-height: 30px;
 
     border-radius: 10px;    /* taustaväriksi h1-elementin taustaväri */
-    background-color: rgb(200, 220, 200);
+    background-color: rgb(180,160,200);
 
     /* ei näytetä palloja */
     list-style-type: none;
@@ -6776,12 +6776,17 @@ button.close {
     border-radius: 10px;
 }
 
+#sql-ul-notype {
+        list-style-type: none;
+}
+
 #sql-li {
-    display: inline;
+    display: inline-block;
+    list-style-type: none;
 }
 
 #sql-a {
-    color: rgb(40, 40, 40);
+    color: rgb(252, 252, 252);
     display: inline-block;
     padding: 5px 1.5em;
     text-decoration: none;
@@ -6790,7 +6795,7 @@ button.close {
 /* kun a-elementin päälle viedään hiiri, muutetaan sekä 
    taustaväriä että tekstin väriä */
 nav ul li a:hover {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(210,190,230);
     color: rgb(40, 40, 40);
 }
 
@@ -6802,5 +6807,35 @@ nav ul li a:hover {
 #sql-hr {
     background-color: rgb(0,0,0);
     color: rgb(0,0,0);
+}
+
+#sql-input[type="submit"]{
+	background:rgb(210,190,230);
+	color:#FFF;
+	padding:0.7em;
+	display:block;
+	border:none;
+	font-family: 'Raleway-SemiBold';
+	border-radius:0.2em;
+	-webkit-border-radius:0.2em;
+	-moz-border-radius:0.2em;
+	-o-border-radius:0.2em;
+	-ms-border-radius:0.2em;
+	text-transform:uppercase;
+	font-size:0.9em;
+	outline:none;
+	transition:0.5s all;
+	-webkit-transition:0.5s all;
+	-moz-transition:0.5s all;
+	-o-transition:0.5s all;
+	-ms-transition:0.5s all;
+}
+#sql-input[type="submit"]:hover{
+	background: rgb(180,160,200);
+	color: #FFF;
+}
+
+#sql-input-aligned[type="submit"]{
+    margin-left: 100px;
 }
 /*# sourceMappingURL=bootstrap.css.map */

@@ -28,13 +28,15 @@ and open the template in the editor.
                 <input type="password" name="password"></input>
             </div>
 
+            <div class="get-in-touch-text-box">
+            <span>Role</span>
             <ul id="sql-id">
                 <input type="radio" th:each="role : ${roles}" name="role" th:value="${role}">
                 <li id="sql-li" th:text="${role}">Role</li>
                 </input>
             </ul>
-            <br/>
-
+            </div>
+            
             <input type="submit" value="Create user"/>
         </div>
     </form>
