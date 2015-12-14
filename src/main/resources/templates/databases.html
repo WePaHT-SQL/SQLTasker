@@ -10,37 +10,38 @@ and open the template in the editor.
     </head>
     <body>
 
-    <div th:include="fragments/navbar_template :: navbar"></div>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="get-in-touch" sec:authorize="hasRole('ROLE_ADMIN')">
             <h2>Create new Database</h2>
             <form method="POST" th:action="@{/databases}">
-                <label>Database Name</label>
-                <br/>
-                <input type="text" name="name"/>
+                <div class="get-in-touch-text-boxs">
+                    <div class="get-in-touch-text-box">
+                        <span>Database Name</span>
+                        <input type="text" name="name"/>
+                    </div>
 
-                <br/>
+                    <div class="get-in-touch-text-box">
+                        <span>Database Create-tables</span>
+                        <textarea name="databaseSchema">CREATE TABLE Foo(id integer);INSERT INTO Foo (id) VALUES (7);
+                        </textarea>
+                    </div>
 
-                <label>Database Create-tables</label>
-                <br/>
-                <textarea name="databaseSchema">CREATE TABLE Foo(id integer);INSERT INTO Foo (id) VALUES (7);
-                </textarea>
-
-                <br/>
-
-                <input type="submit" value="Submit New Database"/>
+                    <input type="submit" value="Submit new database"/>
+                </div>
             </form>
-            <hr/>
         </div>
 
-        <h2>Existing Databases</h2>
-        <div th:each="database: ${databases}">
-            <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Database name</a></h3>
-            <br/>
+        <div class="get-in-touch">
+            <h2>Existing Databases</h2>
+            <div th:each="database: ${databases}">
+                <h3><a th:text="${database.name}" th:href="@{/databases/{id}(id=${database.id})}">Database name</a></h3>
+            </div>
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

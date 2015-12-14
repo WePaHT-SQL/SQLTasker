@@ -22,7 +22,9 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import wepaht.domain.Table;
+import wepaht.domain.Tag;
 import wepaht.domain.User;
+import wepaht.repository.TagRepository;
 import wepaht.service.DatabaseService;
 import wepaht.service.PastQueryService;
 import wepaht.service.TaskResultService;
@@ -53,6 +55,9 @@ public class TaskController {
     @Autowired
     PastQueryService pastQueryService;
 
+    @Autowired
+    TagRepository tagRepository;
+    
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
@@ -90,7 +95,7 @@ public class TaskController {
             task.setDescription(task.getDescription()+" SUGGESTED BY "+user.getUsername());
             task.setName("SUGGESTION: " + task.getName());
             taskRepository.save(task);
-            redirectAttributes.addFlashAttribute("messages", "Task has been created");
+            redirectAttributes.addFlashAttribute("messages", "Task has been suggested");
 
             return "redirect:/tasks";
         }
@@ -111,7 +116,8 @@ public class TaskController {
         } else {
             model.addAttribute("queryResults", new Table("dummy"));
         }
-
+        List<Tag> tags = tagRepository.findByTaskId(id);
+        model.addAttribute("tags", tags);        
         model.addAttribute("task", task);
         model.addAttribute("categoryId", 1);
         return "task";
@@ -120,6 +126,8 @@ public class TaskController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getTaskEditor(@PathVariable Long id, Model model) {
+        List<Tag> tags = tagRepository.findByTaskId(id);
+        model.addAttribute("tags", tags);
         model.addAttribute("task", taskRepository.findOne(id));
         model.addAttribute("databases", databaseRepository.findAll());
         model.addAttribute("user", userService.getAuthenticatedUser());
@@ -131,7 +139,6 @@ public class TaskController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
         taskRepository.delete(id);
-        // remove all connections here
         redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";
     }
@@ -182,6 +189,30 @@ public class TaskController {
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addFlashAttribute("tables", queryResult);
         return "redirect:/categories/{categoryId}/tasks/{id}";
+    }
+    
+    @Secured("ROLE_TEACHER")
+    @RequestMapping(value = "/{id}/tags", method = RequestMethod.POST)
+    public String addTag(@PathVariable Long id, @RequestParam() String name,
+            RedirectAttributes redirectAttributes) throws Exception {
+        Tag tag = new Tag();
+        tag.setName(name);
+        tag.setTaskId(id);
+        tagRepository.save(tag);
+        redirectAttributes.addAttribute("id", id);
+        redirectAttributes.addFlashAttribute("messages", "Tag added!");
+        return "redirect:/tasks/{id}/edit";
+    }
+    
+    @Secured("ROLE_TEACHER")
+    @RequestMapping(value = "/{id}/tags", method = RequestMethod.DELETE)
+    public String removeTag(@PathVariable Long id, @RequestParam() String name,
+            RedirectAttributes redirectAttributes) throws Exception {
+        Tag tag = tagRepository.findByNameAndTaskId(name, id);
+        tagRepository.delete(tag);
+        redirectAttributes.addAttribute("id", id);
+        redirectAttributes.addFlashAttribute("messages", "Tag deleted!");
+        return "redirect:/tasks/{id}/edit";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/suggest")

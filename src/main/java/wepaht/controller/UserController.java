@@ -40,6 +40,9 @@ public class UserController {
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("roles", roles);
+        model.addAttribute("students", userRepository.findByRole("STUDENT"));
+        model.addAttribute("teachers", userRepository.findByRole("TEACHER"));
+        model.addAttribute("admins", userRepository.findByRole("ADMIN"));
         return "users";
     }
 

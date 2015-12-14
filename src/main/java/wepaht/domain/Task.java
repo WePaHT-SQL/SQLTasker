@@ -5,6 +5,7 @@
  */
 package wepaht.domain;
 
+import java.util.*;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -16,9 +17,6 @@ public class Task extends AbstractPersistable<Long> {
     private String name;
     private String description;
     private String solution;
-
-
-
 
     @ManyToOne
     private Database database;
@@ -72,5 +70,4 @@ public class Task extends AbstractPersistable<Long> {
     public void setSolution(String solution) {
         this.solution = solution;
     }
-
 }

@@ -13,5 +13,5 @@ import java.util.List;
 
 @RestResource(exported = false)
 public interface TaskRepository extends JpaRepository<Task,Long> {
-    List<Task> findByName(String name);
+    List<Task> findByNameOrderByNameDesc(String name);
 }

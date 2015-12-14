@@ -9,41 +9,74 @@ and open the template in the editor.
         <title th:text="${task.name}">Edit task</title>
     </head>
     <body>
-    <div th:include="fragments/navbar_template :: navbar"></div>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
+        <div class="get-in-touch">
             <h2>Edit task</h2>
 
             <form method="POST" th:action="@{/tasks/{id}/edit (id=${task.id})}">
-                <label>Task name</label>
-                <br/>
-                <input type="text" name="name" th:value="${task.name}"/>
+                <div class="get-in-touch-text-boxs">
+                    <div class="get-in-touch-text-box">
+                        <span>Task name</span>
+                        <input type="text" name="name" th:value="${task.name}"/>
+                    </div>
 
-                <br/>
-                <label>Description</label>
-                <br/>
-                <textarea name="description" th:text="${task.description}"></textarea>
-                <br/>
-                <label>Solution</label>
-                <br/>
-                <textarea name="solution" th:text="${task.solution}"></textarea>
+                    <div class="get-in-touch-text-box">
+                        <span>Description</span>
+                        <textarea name="description" th:text="${task.description}"></textarea>
+                    </div>
 
-                <br/>
-                <input type="radio" th:value="${task.database.id}" name ="databaseId" th:text="${task.database.name}" checked="checked"/>
-                <input type="radio" th:each="db : ${databases}" name="databaseId" th:text="${db.name}" th:value="${db.id}"/>
-                
+                    <div class="get-in-touch-text-box">
+                        <span>Solution</span>
+                        <textarea name="solution" th:text="${task.solution}"></textarea>
+                    </div>
 
-                <input type="submit" value="Save edits"/>
+                    <div class="get-in-touch-text-box">
+                        <span>Database</span>
+                        <ul id="sql-id">
+                            <input type="radio" th:value="${task.database.id}" name="databaseId" 
+                                   th:text="${task.database.name}" checked="checked"/>
+                            <input type="radio" th:each="db : ${databases}" name="databaseId" th:text="${db.name}" th:value="${db.id}"/>
+                        </ul>
+                    </div>
+
+                    <input type="submit" value="Save edits"/>
+                </div>
             </form>
-
-            <br/>
-            <hr/>
         </div>
 
-        <a th:href="@{/tasks}">Back to listing</a>
+        <div class="get-in-touch">
+            <h2>Tags</h2>
+            <div th:each="tag : ${tags}">
+                <ul>
+                    <li id="sql-li">
+                        <p th:text="${tag.name}">Tag name</p>
+                    </li>
+                    <li id="sql-li">
+                        <form th:method="DELETE" th:action="@{/tasks/{id}/tags (id=${task.id})}">
+                            <input type="hidden" name="name" th:value="${tag.name}"/>
+                            <input id="sql-input" type="submit" value="Delete tag"/>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="get-in-touch-text-box">
+                <span>Add a tag</span>
+                <form method="POST" th:action="@{/tasks/{id}/tags (id=${task.id})}">
+                    <input type="text" name="name"/>
+                    <br/>
+                    <br/>
+                    <input id="sql-input" type="submit" value="Save new tag"/>
+                </form>
+            </div>
+        </div>
+
+        <a th:text="'Back to '+${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Back to task</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

@@ -5,84 +5,79 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title th:value="${editedUser.username}">Profile-page</title>
-</head>
-<body>
-<div th:include="fragments/navbar_template :: navbar"></div>
+    <head>
+        <title th:text="${editedUser.username}">User Profile</title>
+    </head>
+    <body>
+        <div th:include="fragments/navbar_template :: navbar"></div>
 
-<div th:include="fragments/messages_template :: messages"></div>
+        <div th:include="fragments/messages_template :: messages"></div>
 
-<h1 th:text="${editedUser.username}">User name</h1>
+        <h2>
+            <span th:text="${editedUser.username}">User name</span>
+            | Points:
+            <span th:text="${points}">User points</span>
+        </h2>
 
-<div sec:authorize="hasRole('ROLE_TEACHER')">
-    <p>To export points you need to include a token in your post-request</p>
-    <div th:if="${token}">
-        <label><b>Your export-token: </b></label>
-        <p th:text="${token.token}"></p>
-    </div>
-    <form method="POST" th:action="@{/profile/token}">
-        <button type="submit" th:value="createToken" Onclick="return Confirm();">Create new export-token</button>
-    </form>
-    <hr/>
-</div>
+        <ul>
+            <li id="sql-li">
+                <form sec:authorize="hasRole('ROLE_ADMIN')" th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
+                    <input id="sql-input" type="submit" value="delete" Onclick="return Confirm();"></input>
+                </form>
+            </li>
 
-<div>
-    <form th:method="DELETE" th:action="@{/users/{id} (id=${editedUser.id})}">
-        <button type="submit" value="delete" Onclick="return Confirm();">Delete user</button>
-    </form>
+            <li id="sql-li">
+                <form method="POST" th:action="@{/profile/token}">
+                    <input id="sql-input" type="submit" th:value="createToken" Onclick="return Confirm();"></input>
+                </form>
+            </li>
+        </ul>
 
-    <div>
-        <h2>Edit user</h2>
-
-        <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
-            <div th:not="${editedUser.id.equals(user.id)}">
-                <label>Username:</label>
-                <br/>
-                <input type="text" name="username" th:value="${editedUser.username}"/>
+        <div sec:authorize="hasRole('ROLE_TEACHER')">
+            <p>To export points you need to include a token in your post-request</p>
+            <div th:if="${token}">
+                <label><b>Your export-token: </b></label>
+                <p th:text="${token.token}"></p>
             </div>
+        </div>
 
-            <br/>
-            <label>Role:</label>
-            <br/>
-            <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
-                   checked="checked"/>
-            <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
-                   th:text="${role}" th:value="${role}"/>
+        <div class="get-in-touch">
+            <h2>Edit user</h2>
+            <div class="get-in-touch-text-boxs">
+                <form method="POST" th:action="@{/users/{id}/edit (id=${editedUser.id})}">
 
+                    <div class="get-in-touch-text-box" th:not="${editedUser.id.equals(user.id)}">
+                        <span>Username:</span>
+                        <input type="text" name="username" th:value="${editedUser.username}"/>
+                    </div>
 
-            <br/>
+                    <div class="get-in-touch-text-box">
+                        <span>Role:</span>
+                        <input type="radio" th:value="${editedUser.role}" name="role" th:text="${editedUser.role}"
+                               checked="checked"/>
+                        <input sec:authorize="hasRole('ROLE_ADMIN')" type="radio" th:each="role : ${roles}" name="role"
+                               th:text="${role}" th:value="${role}"/>
+                    </div>
 
-            <div>
-                <label>New password:</label>
-                <br/>
-                <input type="password" name="password"></input>
-                <br/>
-                <label>Retype new password:</label>
-                <br/>
-                <input type="password" name="repassword"></input>
-                <br/>
+                    <div class="get-in-touch-text-box">
+                        <span>New password:</span>
+                        <input type="password" name="password"></input>
+                        <span>Retype new password:</span>
+                        <input type="password" name="repassword"></input>
+                    </div>
+
+                    <input type="submit" value="Save edits"/>
+                </form>
             </div>
+        </div>
 
-            <input type="submit" value="Save edits"/>
-        </form>
-    </div>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/users}">Back to user listing</a>
+        </div>
 
-    <br/>
-    <hr/>
-</div>
-
-<div>
-    <h2>User points</h2>
-    <a th:text="${points}">Points</a>
-</div>
-
-<div sec:authorize="hasRole('ROLE_ADMIN')">
-    <a th:href="@{/users}">Back to user listing</a>
-</div>
-
-<div th:include="fragments/footer_template :: footer"></div>
-<div th:include="fragments/scripts :: confirmScript"></div>
-</body>
+        <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/scripts :: confirmScript"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+    </body>
 
 </html>

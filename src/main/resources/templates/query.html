@@ -1,64 +1,74 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Past queries listing.</title>
-</head>
-<body>
-<div>
-    <div th:include="fragments/navbar_template :: navbar"></div>
+    <head>
+        <title>Past Queries</title>
 
-    <div sec:authorize="hasRole('ROLE_TEACHER')">
-        <form th:method="POST" th:action="@{/queries/}">
+    </head>
+    <body>
+        <div>
+            <div th:include="fragments/navbar_template :: navbar"></div>
 
-            <a>Task Name</a>
-            <select th:name="taskId">
-                <option th:value="null" text="Any task">Any task</option>
-                <option th:each="query : ${queries}"
-                        th:value="${query.getId()}"
-                        th:text="${query.getName()}"></option>
-            </select>
+            <div sec:authorize="hasRole('ROLE_TEACHER')">
+                <form id="logout-form" th:method="POST" th:action="@{/queries/}">
 
-            <a>Username</a>
-            <select th:name="username">
-                <option th:value="allUsers" text="All users">All users</option>
-                <option th:each="user : ${users}"
-                        th:value="${user.getUsername()}"
-                        th:text="${user.getUsername()}"></option>
-            </select>
+                    <span>Task Name</span>
+                    <select th:name="taskId">
+                        <option th:value="null" text="Any task">Any task</option>
+                        <option th:each="query : ${queries}"
+                                th:value="${query.getId()}"
+                                th:text="${query.getName()}"></option>
+                    </select>
 
-            <a>Answer is correct?</a>
-            <select th:name="isCorrect">
-                <option th:value="allAnswers" th:text="All"></option>
-                <option th:value="true" text="Only correct answers">Only correct answers</option>
-                <option th:value="false" text="Only incorrect answers">Only incorrect answers</option>
-            </select>
+                    <span>Username</span>
+                    <select th:name="username">
+                        <option th:value="allUsers" text="All users">All users</option>
+                        <option th:each="user : ${users}"
+                                th:value="${user.getUsername()}"
+                                th:text="${user.getUsername()}"></option>
+                    </select>
 
-            <input type="submit" value="Submit"/>
-        </form>
-    </div>
+                    <span>Answer is correct?</span>
+                    <select th:name="isCorrect">
+                        <option th:value="allAnswers" th:text="All"></option>
+                        <option th:value="true" text="Only correct answers">Only correct answers</option>
+                        <option th:value="false" text="Only incorrect answers">Only incorrect answers</option>
+                    </select>
+                    <br/>
+                    <br/>
+                    
 
-    <div sec:authorize="hasRole('ROLE_STUDENT')">
-        <form th:method="POST" th:action="@{/queries/student}">
-            <button type="submit" name="My queries" th:value="Queries">My Queries</button>
-        </form>
-    </div>
+                    <ul>
+                        <li id="sql-li"><input id="sql-input" type="submit" value="Submit"/></li>
+                        <li id="sql-li" sec:authorize="hasRole('ROLE_STUDENT')">
+                            <form th:method="POST" th:action="@{/queries/student}">
+                                <input id="sql-input" type="submit" name="My queries" value="My Queries"></input>
+                            </form>
+                        </li>                    
+                    </ul>
+                </form>
+            </div>
 
-    <div th:include="fragments/messages_template :: messages"></div>
 
-    <div th:each="qr : ${pastQueries}">
-        <table>
-            <tr>
-                <div>
-                    <th th:text="${qr.taskId}">Column name</th>
-                    <th th:text="${qr.username}">Column name</th>
-                    <th th:text="${qr.pastQuery}">Column name</th>
-                    <th th:text="${qr.correctness}">Column name</th>
-                    <th th:text="${qr.date}">Column name</th>
+            <div th:include="fragments/messages_template :: messages"></div>
+
+            <div class="get-in-touch">
+                <div th:each="qr : ${pastQueries}">
+                    <table>
+                        <tr>
+                            <div>
+                                <th th:text="${qr.taskId}">Column name</th>
+                                <th th:text="${qr.username}">Column name</th>
+                                <th th:text="${qr.pastQuery}">Column name</th>
+                                <th th:text="${qr.correctness}">Column name</th>
+                                <th th:text="${qr.date}">Column name</th>
+                            </div>
+                        </tr>
+                    </table>
                 </div>
-            </tr>
-        </table>
-    </div>
+            </div>
+        </div>
 
-</div>
-</body>
+        <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+    </body>
 </html>
