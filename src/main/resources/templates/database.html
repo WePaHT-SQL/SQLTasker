@@ -9,18 +9,24 @@ and open the template in the editor.
         <title th:text="${database.name}">Database name</title>
     </head>
     <body>
-    <div th:include="fragments/navbar_template :: navbar "></div>
+        <div th:include="fragments/navbar_template :: navbar "></div>
 
         <div th:include="fragments/messages_template :: messages"></div>
 
+
         <!-- Example usage of listing database's tables -->
         <h1 th:text="${database.name}">Database name</h1>
-        <p th:text="${database.databaseSchema}">Database create-tables</p>
+        <pre th:text="${database.databaseSchema}">Database create-tables</pre>
+        <div class="get-in-touch">
+            <div class="get-in-touch-text-boxs">
         <div th:include="fragments/essentials :: tableListing (tables = ${tables})"></div>
+            </div>
+        </div>
 
         <br/>
         <a th:href="@{/databases}">Back to Database listing</a>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

@@ -19,7 +19,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login", "/", "/register","/logout", "/export/**").permitAll()
+                .antMatchers("/login", "/", "/register","/logout", "/export/**", "/static/**", "/bootstrap-3.3.6-dist/**").permitAll()
                 .anyRequest().authenticated();
 
         http.csrf().ignoringAntMatchers("/export/**");

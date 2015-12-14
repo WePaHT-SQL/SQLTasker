@@ -7,43 +7,50 @@
 
         <div th:include="fragments/messages_template :: messages"></div>
 
-        <div>
+        <div class="get-in-touch">
             <h2 sec:authorize="hasRole('ROLE_ADMIN')">Create new task</h2>
             <h2 sec:authorize="!hasRole('ROLE_ADMIN')">Suggest a task</h2>
 
             <form method="POST" th:action="@{/tasks}">
-                <label>Task name</label>
-                <br/>
-                <input type="text" name="name"/>
+                <div class="get-in-touch-text-boxs">
 
-                <br/>
-                <label>Description</label>
-                <br/>
-                <textarea name="description"></textarea>
-                <br/>
-                <label>Solution</label>
-                <br/>
-                <textarea name="solution"></textarea>
+                    <div class="get-in-touch-text-box">
+                        <span>Task name</span>
+                        <input type="text" name="name"/>
+                    </div>
 
-                <br/>
-                <div th:each="db : ${databases}">
-                    <input type="radio" name="databaseId" th:value="${db.id}" th:text="${db.name}"/>
-                    <br/>
+                    <div class="get-in-touch-text-box">
+                        <span>Description</span>
+                        <textarea name="description"></textarea>
+                    </div>
+
+                    <div class="get-in-touch-text-box">
+                        <span>Solution</span>
+                        <textarea name="solution"></textarea>
+                    </div>
+
+                    <span>Database</span>
+                    <ul id="sql-id">
+                        <input type="radio" name="databaseId" th:each="db : ${databases}" th:value="${db.id}">
+                            <li id="sql-li" th:text="${db.name}">Database</li>
+                        </input>
+                    </ul>
+
+                    <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create task"/>
+                    <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Submit suggestion"/>
                 </div>
-                <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create Task"/>
-                <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Suggest a Task"/>
             </form>
-        </div>    
-        
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
-            <br/>
+        </div>
 
-        </div>        
-        <div sec:authorize="hasRole('ROLE_TEACHER')" th:each="task: ${tasks}">
-            <hr/>
-            <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
+        <div class="get-in-touch" sec:authorize="hasRole('ROLE_ADMIN')">
+            <h2>List of tasks</h2>
+
+            <div th:each="task: ${tasks}">
+                <h3><a th:text="${task.name}" th:href="@{/tasks/{id}(id=${task.id})}">Task name</a></h3>
+            </div>
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
     </body>
 </html>

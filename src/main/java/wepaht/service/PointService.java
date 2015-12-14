@@ -64,13 +64,10 @@ public class PointService {
 
         for (PastQuery query : pastQueries) {
 
-
             Long taskId = query.getTaskId();
 
-            if (tasksCompleted.containsKey(taskId)) {
-                if (query.getCorrectness() && !tasksCompleted.get(taskId) && query.getCanGetPoint()) {
-                    tasksCompleted.put(taskId, true);
-                }
+            if (query.getCorrectness() && query.getCanGetPoint()) {
+                tasksCompleted.put(taskId, true);
             } else {
                 tasksCompleted.put(taskId, false);
             }
@@ -87,7 +84,6 @@ public class PointService {
         }
         return pointsTable;
     }
-
 
     public Table getAllPoints() {
 
@@ -129,6 +125,5 @@ public class PointService {
         }
         return pointsTable;
     }
-
 
 }
