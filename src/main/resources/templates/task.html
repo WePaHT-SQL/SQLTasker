@@ -4,7 +4,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
     <head>
         <title th:text="${task.name}">Task name</title>
     </head>
@@ -15,14 +15,14 @@ and open the template in the editor.
 
         <div>
             <ul sec:authorize="hasRole('ROLE_ADMIN')">
-                <li id="sql-li">
+                <li id="sql-li1">
                     <form th:method="DELETE" th:action="@{/tasks/{id} (id=${task.id})}">
-                        <input id="sql-input" type="submit" value="delete task" Onclick="return Confirm();"/>
+                        <input id="sql-input1" type="submit" value="delete task" Onclick="return Confirm();"/>
                     </form>
                 </li>
-                <li id="sql-li">
+                <li id="sql-li2">
                     <form th:method="GET" th:action="@{/tasks/{id}/edit (id=${task.id})}">
-                        <input id="sql-input" type="submit" value="edit task" Onclick="return Confirm();"/>
+                        <input id="sql-input2" type="submit" value="edit task" Onclick="return Confirm();"/>
                     </form>
                 </li>
             </ul>
