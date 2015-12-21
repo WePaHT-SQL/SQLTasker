@@ -9,13 +9,16 @@ import java.util.*;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 public class Task extends AbstractPersistable<Long> {
-    
+
+    @NotBlank
     private String name;
     private String description;
+
     private String solution;
 
     @ManyToOne

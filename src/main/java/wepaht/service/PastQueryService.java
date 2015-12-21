@@ -37,7 +37,13 @@ public class PastQueryService {
         return expiredDate.after(new Date());
     }
 
-
+    /**
+     * Return all queries by definition made by teacher.
+     * @param username allUsers if all users is wanted. Else username of wanted user.
+     * @param taskId null if all tasks are wanted. Else long id of wanted task.
+     * @param isCorrect allAnswers if correct and incorrect answers is wanted. Else true or false.
+     * @return wanted list of queries.
+     */
     public List returnQuery(String username, Long taskId, String isCorrect) {
 
         if (taskId != null && !isCorrect.equals("allAnswers") && !username.equals("allUsers")) {
@@ -72,6 +78,7 @@ public class PastQueryService {
 
 
     public List returnQueryOnlyByUsername(String username) {
+
         return pastQueryRepository.findByUsername(username);
     }
     
@@ -79,6 +86,11 @@ public class PastQueryService {
         pastQueryRepository.deleteAll();
     }
 
+    /**
+     * Check if wanted query needs to be correct or not.
+     * @param isCorrect
+     * @return
+     */
     private boolean correctnessChecker(String isCorrect) {
         if (isCorrect.equals("true")) {
             return true;
@@ -87,6 +99,11 @@ public class PastQueryService {
         }
     }
 
+    /**
+     * Keeps track if user chance his or hers username.
+     * @param oldUsername
+     * @param newUsername
+     */
     @Transactional
     public void changeQueriesesUsernames(String oldUsername, String newUsername) {
         List<PastQuery> pastQueries = pastQueryRepository.findByUsername(oldUsername);
@@ -96,6 +113,13 @@ public class PastQueryService {
         }
     }
 
+    /**
+     * Used only in test
+     * @param username
+     * @param taskId
+     * @param query
+     * @param correctness
+     */
     public void saveNewPastQueryForTests(String username, long taskId, String query, boolean correctness) {
         PastQuery pastQuery = new PastQuery();
         pastQuery.setPastQuery(query);

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.Database;
@@ -20,6 +21,7 @@ import wepaht.repository.TaskRepository;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import wepaht.domain.Table;
 import wepaht.domain.Tag;
@@ -73,8 +75,22 @@ public class TaskController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
-            @ModelAttribute Task task,
-            @RequestParam Long databaseId) {
+                             @Valid @ModelAttribute Task task,
+                             @RequestParam(required = false) Long databaseId,
+                             BindingResult result) {
+
+        if(databaseId==null){
+            redirectAttributes.addFlashAttribute("messages", "You didn't chose database!");
+
+            return "redirect:/tasks";
+
+        }
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("messages", "Error!");
+
+            return "redirect:/tasks";
+
+        }
         if (task == null) {
             redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
             return "redirect:/tasks";
