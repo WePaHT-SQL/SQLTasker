@@ -14,8 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.domain.Database;
-import wepaht.domain.Task;
+import wepaht.domain.*;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
@@ -23,14 +22,8 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import wepaht.domain.Table;
-import wepaht.domain.Tag;
-import wepaht.domain.User;
 import wepaht.repository.TagRepository;
-import wepaht.service.DatabaseService;
-import wepaht.service.PastQueryService;
-import wepaht.service.TaskResultService;
-import wepaht.service.UserService;
+import wepaht.service.*;
 
 @Controller
 @RequestMapping("tasks")
@@ -59,6 +52,9 @@ public class TaskController {
 
     @Autowired
     TagRepository tagRepository;
+
+    @Autowired
+    CategoryService categoryService;
     
     @PostConstruct
     public void init() {
@@ -98,7 +94,7 @@ public class TaskController {
 
         Database db = databaseRepository.findOne(databaseId);
         task.setDatabase(db);
-
+        task.setCategoryList(new ArrayList<Category>());
         if (task.getSolution() != null || !task.getSolution().isEmpty()) {
             if (!databaseService.isValidQuery(db, task.getSolution())) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
@@ -154,6 +150,8 @@ public class TaskController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
+
+        categoryService.removeTaskFromCategory(taskRepository.findOne(id));
         taskRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";

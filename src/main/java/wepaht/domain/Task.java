@@ -7,7 +7,9 @@ package wepaht.domain;
 
 import java.util.*;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -23,6 +25,9 @@ public class Task extends AbstractPersistable<Long> {
 
     @ManyToOne
     private Database database;
+
+    @ManyToMany
+    private List<Category> categoryList;
 
     /**
      * @return the name
@@ -72,5 +77,16 @@ public class Task extends AbstractPersistable<Long> {
      */
     public void setSolution(String solution) {
         this.solution = solution;
+    }
+
+    public void setCategoryList(List<Category> categoryList){
+        this.categoryList=categoryList;
+    }
+
+    public void addCategoryToList(Category category){
+        this.categoryList.add(category);
+    }
+    public List<Category> getCategoryList(){
+        return categoryList;
     }
 }
