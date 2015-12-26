@@ -28,6 +28,38 @@
                         <span>Solution</span>
                         <textarea name="solution"></textarea>
                     </div>
+                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                        <button type="button" style="margin-bottom: 10px" class="btn btn-default btn-sm topspace" id="myBtn"
+                                data-toggle="modal" data-target="#categoryModal">
+                            Select Categories
+                        </button>
+                    </div>
+                    <div class="modal fade" id="categoryModal" role="dialog" sec:authorize="hasRole('ROLE_ADMIN')" >
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Select Categories</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="text" id="search" placeholder="Type to search" class="topspace"/>
+
+                                    <div class="checkbox" th:each="category : ${categories}" style="border: none">
+                                        <label>
+                                            <input type="checkbox" name="categoryIds" th:value="${category.id}"/>
+
+                                            <p class="categoryName" th:text="${category.name}"></p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" name="move" class="btn btn-primary" data-dismiss="modal">Select
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <span>Database</span>
                     <ul id="sql-id">
@@ -35,6 +67,7 @@
                             <li id="sql-li" th:text="${db.name}">Database</li>
                         </input>
                     </ul>
+
 
                     <input sec:authorize="hasRole('ROLE_ADMIN')" type="submit" value="Create task"/>
                     <input sec:authorize="!hasRole('ROLE_ADMIN')" type="submit" value="Submit suggestion"/>
@@ -51,6 +84,9 @@
         </div>
 
         <div th:include="fragments/footer_template :: footer"></div>
+        <div th:include="fragments/bootstrap :: bootstrap"></div>
+        <div th:include="fragments/scripts :: searchScript"></div>
         <div th:include="fragments/twitterBootstrap :: twitterBootstrap"></div>
+
     </body>
 </html>

@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import wepaht.domain.*;
+import wepaht.repository.CategoryRepository;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
@@ -55,7 +56,10 @@ public class TaskController {
 
     @Autowired
     CategoryService categoryService;
-    
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
@@ -65,7 +69,7 @@ public class TaskController {
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("databases", databaseRepository.findAll());
-
+        model.addAttribute("categories", categoryRepository.findAll());
         return "tasks";
     }
 
@@ -73,6 +77,7 @@ public class TaskController {
     public String createTask(RedirectAttributes redirectAttributes,
                              @Valid @ModelAttribute Task task,
                              @RequestParam(required = false) Long databaseId,
+                             @RequestParam(required= false) List<Long> categoryIds,
                              BindingResult result) {
 
         if(databaseId==null){
@@ -95,6 +100,9 @@ public class TaskController {
         Database db = databaseRepository.findOne(databaseId);
         task.setDatabase(db);
         task.setCategoryList(new ArrayList<Category>());
+        if(categoryIds!=null) {
+            categoryService.setTaskToCategories(task, categoryIds);
+        }
         if (task.getSolution() != null || !task.getSolution().isEmpty()) {
             if (!databaseService.isValidQuery(db, task.getSolution())) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");

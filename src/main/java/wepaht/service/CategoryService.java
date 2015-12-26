@@ -53,5 +53,11 @@ public class CategoryService {
         taskRepository.save(task);
     }
 
+    public void setTaskToCategories(Task task, List<Long> categoryIds){
+        for (Long id:categoryIds){
+            setCategoryToTask(id,task);
+        }
+
+    }
 
 }
