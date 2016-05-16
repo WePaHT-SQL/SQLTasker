@@ -25,6 +25,10 @@ public class User extends AbstractPersistable<Long> {
     private String role;
     private String salt;
 
+    /**
+     *
+     * @return username
+     */
     public String getUsername() {
         return username;
     }

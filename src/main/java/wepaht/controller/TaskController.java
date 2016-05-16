@@ -11,24 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wepaht.domain.Database;
-import wepaht.domain.Task;
+import wepaht.domain.*;
+import wepaht.repository.CategoryRepository;
 import wepaht.repository.DatabaseRepository;
 import wepaht.repository.TaskRepository;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
-import wepaht.domain.Table;
-import wepaht.domain.Tag;
-import wepaht.domain.User;
 import wepaht.repository.TagRepository;
-import wepaht.service.DatabaseService;
-import wepaht.service.PastQueryService;
-import wepaht.service.TaskResultService;
-import wepaht.service.UserService;
+import wepaht.service.*;
 
 @Controller
 @RequestMapping("tasks")
@@ -57,7 +53,13 @@ public class TaskController {
 
     @Autowired
     TagRepository tagRepository;
-    
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
     @PostConstruct
     public void init() {
         queries = new HashMap<>();
@@ -67,14 +69,29 @@ public class TaskController {
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("databases", databaseRepository.findAll());
-
+        model.addAttribute("categories", categoryRepository.findAll());
         return "tasks";
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String createTask(RedirectAttributes redirectAttributes,
-            @ModelAttribute Task task,
-            @RequestParam Long databaseId) {
+                             @Valid @ModelAttribute Task task,
+                             @RequestParam(required = false) Long databaseId,
+                             @RequestParam(required= false) List<Long> categoryIds,
+                             BindingResult result) {
+
+        if(databaseId==null){
+            redirectAttributes.addFlashAttribute("messages", "You didn't chose database!");
+
+            return "redirect:/tasks";
+
+        }
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("messages", "Error!");
+
+            return "redirect:/tasks";
+
+        }
         if (task == null) {
             redirectAttributes.addFlashAttribute("messages", "Task creation has failed");
             return "redirect:/tasks";
@@ -82,7 +99,10 @@ public class TaskController {
 
         Database db = databaseRepository.findOne(databaseId);
         task.setDatabase(db);
-
+        task.setCategoryList(new ArrayList<Category>());
+        if(categoryIds!=null) {
+            categoryService.setTaskToCategories(task, categoryIds);
+        }
         if (task.getSolution() != null || !task.getSolution().isEmpty()) {
             if (!databaseService.isValidQuery(db, task.getSolution())) {
                 redirectAttributes.addFlashAttribute("messages", "Task creation failed due to invalid solution");
@@ -138,6 +158,8 @@ public class TaskController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String removeTask(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
+
+        categoryService.removeTaskFromCategory(taskRepository.findOne(id));
         taskRepository.delete(id);
         redirectAttributes.addFlashAttribute("messages", "Task deleted!");
         return "redirect:/tasks";

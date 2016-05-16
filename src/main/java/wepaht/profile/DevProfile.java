@@ -99,6 +99,7 @@ public class DevProfile {
         task.setDescription(RandomStringUtils.randomAlphabetic(30));
         task.setDatabase(databaseRepository.findAll().get(0));
         task.setSolution("select address from persons");
+        task.setCategoryList(new ArrayList<>());
         return task;
     }
 }
