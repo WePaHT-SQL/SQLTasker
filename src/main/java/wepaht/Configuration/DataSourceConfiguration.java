@@ -15,13 +15,13 @@ import wepaht.Application;
 @Configuration
 public class DataSourceConfiguration {
     
-    Logger log = Logger.getLogger(Application.class.getName());
+    //Logger log = Logger.getLogger(Application.class.getName());
     
     @Bean
     @Profile("prod")
     public DataSource prodDataSource() {
         String databaseUrl= System.getenv("DATABASE_URL");
-        log.info("Initializing postgreSQL database");
+        //log.info("Initializing postgreSQL database");
         
         URI dbUri;
         
@@ -29,7 +29,7 @@ public class DataSourceConfiguration {
             dbUri = new URI(databaseUrl);
             
         } catch (URISyntaxException e) {
-            log.error(String.format("Invalid DATABASE_URL: %s", databaseUrl), e);
+            //log.error(String.format("Invalid DATABASE_URL: %s", databaseUrl), e);
             return null;
         }
         
