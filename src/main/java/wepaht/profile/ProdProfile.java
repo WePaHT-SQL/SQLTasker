@@ -28,7 +28,7 @@ public class ProdProfile {
 //        userRepository.save(admin);
 //    }
 
-    @Bean
+    
     public BasicDataSource dataSource() throws URISyntaxException {
         URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
