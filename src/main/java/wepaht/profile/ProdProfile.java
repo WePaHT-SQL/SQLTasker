@@ -9,10 +9,8 @@ import wepaht.domain.User;
 import wepaht.repository.UserRepository;
 
 import javax.annotation.PostConstruct;
-import org.apache.log4j.Logger;
-import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
-import wepaht.Application;
 
 @Configuration
 @Profile(value = "prod")
@@ -20,8 +18,6 @@ public class ProdProfile {
 
     @Autowired
     private UserRepository userRepository;
-
-    Logger log = Logger.getLogger(Application.class.getName());
 
     @PostConstruct
     public void init() {
@@ -33,35 +29,18 @@ public class ProdProfile {
     }
 
     @Bean
-    public DataSource prodDataSource() {
-        String databaseUrl = System.getenv("DATABASE_URL");
-        log.info("Initializing postgreSQL database");
-
-        URI dbUri;
-
-        try {
-            dbUri = new URI(databaseUrl);
-
-        } catch (URISyntaxException e) {
-            log.error(String.format("Invalid DATABASE_URL: %s", databaseUrl), e);
-            return null;
-        }
+    public BasicDataSource dataSource() throws URISyntaxException {
+        URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":"
-                + dbUri.getPort() + dbUri.getPath();
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
-        org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl(dbUrl);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setTestOnBorrow(true);
-        dataSource.setTestWhileIdle(true);
-        dataSource.setTestOnReturn(true);
-        dataSource.setValidationQuery("SELECT 1");
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl(dbUrl);
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
 
-        return dataSource;
+        return basicDataSource;
     }
 }
