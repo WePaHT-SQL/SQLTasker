@@ -11,6 +11,7 @@ import wepaht.repository.UserRepository;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.springframework.context.annotation.Bean;
 import wepaht.Application;
 
 @Configuration
@@ -31,6 +32,7 @@ public class ProdProfile {
         userRepository.save(admin);
     }
 
+    @Bean
     public DataSource prodDataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
         log.info("Initializing postgreSQL database");
