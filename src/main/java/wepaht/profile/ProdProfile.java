@@ -19,14 +19,14 @@ public class ProdProfile {
     @Autowired
     private UserRepository userRepository;
 
-    @PostConstruct
-    public void init() {
-        User admin = new User();
-        admin.setRole("ADMIN");
-        admin.setUsername("admin");
-        admin.setPassword("admin");
-        userRepository.save(admin);
-    }
+//    @PostConstruct
+//    public void init() {
+//        User admin = new User();
+//        admin.setRole("ADMIN");
+//        admin.setUsername("admin");
+//        admin.setPassword("admin");
+//        userRepository.save(admin);
+//    }
 
     @Bean
     public BasicDataSource dataSource() throws URISyntaxException {
