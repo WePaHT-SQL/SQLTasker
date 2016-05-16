@@ -9,6 +9,7 @@ import wepaht.domain.User;
 import wepaht.repository.UserRepository;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 
@@ -28,8 +29,8 @@ public class ProdProfile {
 //        userRepository.save(admin);
 //    }
 
-    
-    public BasicDataSource dataSource() throws URISyntaxException {
+    @Bean
+    public DataSource dataSource() throws URISyntaxException {
         URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
         String username = dbUri.getUserInfo().split(":")[0];
@@ -37,6 +38,7 @@ public class ProdProfile {
         String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
         BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setDriverClassName("org.postgresql.Driver");
         basicDataSource.setUrl(dbUrl);
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
